@@ -102,76 +102,62 @@
   .status{ font-family:var(--font-mono); font-size:12.5px; color:var(--text-faint); padding:60px 0; text-align:center; }
   .status.err{ color:var(--down); }
 
-  .table-scroll{ overflow-x:auto; }
-  table{ width:100%; border-collapse:collapse; font-size:12px; min-width:1900px; }
-  th{ text-align:right; color:var(--text-faint); font-weight:600; padding:6px 8px; border-bottom:1px solid var(--border); font-size:10.5px; letter-spacing:0.2px; white-space:nowrap; }
-  th:first-child, td:first-child{ text-align:left; }
-  th:last-child, td.sig-cell{ text-align:left; }
-  td{ text-align:right; padding:7px 8px; border-bottom:1px solid var(--border); font-family:var(--font-mono); color:var(--text-dim); white-space:nowrap; }
+  /* ---------- 표: 헤더·시간 열 고정, 줄무늬, 값 크기 막대 ---------- */
+  .table-scroll{ overflow:auto; max-height:72vh; border:1px solid var(--border); border-radius:8px; }
+  table{ width:100%; border-collapse:separate; border-spacing:0; font-size:12px; min-width:1350px; font-variant-numeric:tabular-nums; }
+  th{ position:sticky; top:0; z-index:2; background:var(--bg-elev2); text-align:right; color:var(--text-faint); font-weight:600; padding:7px 8px; border-bottom:1px solid var(--border); font-size:10.5px; letter-spacing:0.2px; white-space:nowrap; }
+  th:first-child, td:first-child{ text-align:left; position:sticky; left:0; }
+  th:first-child{ z-index:3; }
+  td:first-child{ z-index:1; background:var(--bg-elev); border-left:3px solid transparent; }
+  td{ text-align:right; padding:6px 8px; border-bottom:1px solid var(--border); font-family:var(--font-mono); color:var(--text-dim); white-space:nowrap; }
+  tbody tr:nth-child(even) td{ background-color:rgba(255,255,255,0.018); }
+  [data-theme="light"] tbody tr:nth-child(even) td{ background-color:rgba(0,0,0,0.022); }
+  tbody tr:nth-child(even) td:first-child{ background-color:var(--bg-elev2); }
+  tbody tr:hover td{ background-color:rgba(61,214,196,0.07); }
+  tbody tr:hover td:first-child{ background-color:var(--bg-elev2); }
   tr:last-child td{ border-bottom:none; }
-  tr.current-row td{ color:var(--text); font-weight:700; background:var(--bg-elev2); }
+  tr.current-row td{ color:var(--text); font-weight:700; background-color:var(--bg-elev2); }
+  tr.day-start td{ border-top:2px solid var(--accent-dim); }
+  td.bull{ border-left-color:var(--up); }
+  td.bear{ border-left-color:var(--down); }
+  .c-up{ color:var(--up); }
+  .c-down{ color:var(--down); }
   .pct-cell{ font-weight:700; }
+  /* 값 크기를 배경 막대로 표시 (이미지 없이 CSS 그라디언트만 사용) */
+  td.bar{ background-repeat:no-repeat; background-position:right center; background-size:var(--w,0%) 62%; }
+  td.bar-range{ background-image:linear-gradient(rgba(61,214,196,0.22),rgba(61,214,196,0.22)); }
+  td.bar-vol{ background-image:linear-gradient(rgba(129,140,248,0.24),rgba(129,140,248,0.24)); }
+  td.bar-buy-up{ background-image:linear-gradient(rgba(52,211,153,0.22),rgba(52,211,153,0.22)); }
+  td.bar-buy-down{ background-image:linear-gradient(rgba(249,115,22,0.22),rgba(249,115,22,0.22)); }
+  .table-legend{ font-size:10.5px; color:var(--text-faint); margin:0 0 8px 0; line-height:1.7; }
+  .table-legend i{ display:inline-block; width:14px; height:8px; border-radius:2px; vertical-align:middle; margin:0 4px 0 10px; }
 
-  /* 이정표 캔들 강조 */
-  tr.milestone td{ background:rgba(52,211,153,0.07); }
-  tr.milestone td:first-child{ border-left:3px solid var(--up); color:var(--text); font-weight:700; }
-  tr.milestone.bear td{ background:rgba(249,115,22,0.07); }
-  tr.milestone.bear td:first-child{ border-left-color:var(--down); }
-  tr.milestone.current-row td{ background:var(--bg-elev2); }
-
-  /* 신호 배지 */
-  .sig{ display:inline-block; font-size:9.5px; font-weight:700; padding:1px 5px; border-radius:4px; margin:1px 3px 1px 0; border:1px solid var(--border); font-family:var(--font-ui); white-space:nowrap; }
-  .sig.up{ color:var(--up); border-color:var(--up); }
-  .sig.down{ color:var(--down); border-color:var(--down); }
-  .sig.neutral{ color:var(--text-faint); }
-  .sig.strong{ background:var(--up); color:#06281c; border-color:var(--up); }
-  .sig.strong-down{ background:var(--down); color:#2b1500; border-color:var(--down); }
-  .sig-legend{ font-size:10.5px; color:var(--text-faint); line-height:2; margin-bottom:12px; }
-
-  /* 액션 판정 배지 */
-  .sig.act-long{ background:var(--up); color:#06281c; border-color:var(--up); }
-  .sig.act-short{ background:var(--down); color:#2b1500; border-color:var(--down); }
-  .sig.act-wait{ color:var(--text-faint); }
-  .sig.act-reject{ color:var(--strong-down, #EF4444); border-color:var(--strong-down, #EF4444); }
-
-  /* 실행 계획 패널 */
-  .pb-head{ display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:10px; }
-  .pb-title{ font-size:13px; font-weight:700; color:var(--text-dim); letter-spacing:0.3px; }
-  .pb-regime{ font-size:11.5px; font-family:var(--font-mono); padding:4px 10px; border-radius:6px; border:1px solid var(--border); color:var(--text-dim); }
-  .pb-regime.long{ color:var(--up); border-color:var(--up); }
-  .pb-regime.short{ color:var(--down); border-color:var(--down); }
-  .pb-regime.wait{ color:var(--text-faint); }
-
-  .pb-plan{ border:1px solid var(--border); border-left-width:4px; border-radius:8px; padding:14px 16px; background:var(--bg-elev2); margin-bottom:14px; }
-  .pb-plan.long{ border-left-color:var(--up); }
-  .pb-plan.short{ border-left-color:var(--down); }
-  .pb-plan.wait{ border-left-color:var(--text-faint); }
-  .pb-plan.reject{ border-left-color:var(--strong-down, #EF4444); }
-  .pb-status{ font-size:15px; font-weight:700; margin-bottom:10px; }
-  .pb-when{ font-size:11px; font-weight:500; color:var(--text-faint); font-family:var(--font-mono); margin-left:8px; }
-  .pb-levels{ display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:10px; }
-  .pb-levels > div{ background:var(--bg-elev); border:1px solid var(--border); border-radius:7px; padding:9px 11px; }
-  .pb-levels span{ display:block; font-size:10.5px; color:var(--text-faint); font-weight:600; }
-  .pb-levels b{ display:block; font-family:var(--font-mono); font-size:16px; margin-top:3px; }
-  .pb-levels small{ display:block; font-size:10px; color:var(--text-faint); margin-top:2px; font-family:var(--font-mono); }
-  .pb-action{ font-size:12.5px; line-height:1.65; color:var(--text-dim); }
-  .pb-cond{ margin-top:10px; font-size:11px; color:var(--text-faint); font-family:var(--font-mono); }
-  .pb-cond span{ display:inline-block; margin:2px 4px 2px 0; padding:1px 6px; border-radius:4px; border:1px solid var(--border); }
-  .pb-cond .ok{ color:var(--up); border-color:var(--up); }
-  .pb-cond .no{ color:var(--text-faint); opacity:0.6; }
-  .pb-outcome{ margin-top:9px; font-size:11.5px; color:var(--text-dim); font-family:var(--font-mono); }
-  .pb-stats{ font-size:11px; color:var(--text-faint); font-family:var(--font-mono); line-height:1.7; margin-bottom:18px; padding-bottom:16px; border-bottom:1px solid var(--border); }
-  .pb-stats .pb-warn{ display:block; color:var(--down); font-family:var(--font-ui); margin-top:4px; }
-  .pb-params{ display:flex; flex-wrap:wrap; gap:8px 14px; align-items:center; margin-bottom:14px; padding:10px 12px;
-    background:var(--bg-elev2); border:1px solid var(--border); border-radius:8px; font-size:11px; color:var(--text-faint); }
-  .pb-params label{ display:flex; align-items:center; gap:5px; font-family:var(--font-ui); }
-  .pb-params input[type=number]{ width:56px; background:var(--bg-elev); border:1px solid var(--border); color:var(--text);
-    border-radius:5px; padding:3px 6px; font-size:11px; font-family:var(--font-mono); }
-  .pb-params select{ background:var(--bg-elev); border:1px solid var(--border); color:var(--text);
-    border-radius:5px; padding:3px 6px; font-size:11px; font-family:var(--font-ui); }
-  .pb-params input[type=checkbox]{ accent-color:var(--accent); }
-
-  @media (max-width:700px){ .pb-levels{ grid-template-columns:1fr; } }
+  /* ---------- 추세 지표 카드 ---------- */
+  .ind-head{ display:flex; justify-content:space-between; align-items:center; margin:0 0 10px 0; gap:8px; flex-wrap:wrap; }
+  .ind-head .t{ font-size:12px; font-weight:700; color:var(--text-dim); letter-spacing:0.3px; }
+  .seg{ display:inline-flex; border:1px solid var(--border); border-radius:7px; overflow:hidden; }
+  .seg button{ background:var(--bg-elev); color:var(--text-faint); border:none; padding:5px 11px; font-size:11px; font-weight:700; cursor:pointer; }
+  .seg button.on{ background:var(--accent-dim); color:var(--accent); }
+  .ind-grid{ display:grid; grid-template-columns:repeat(4, 1fr); gap:12px; margin-bottom:22px; }
+  .ind-card{ background:var(--bg-elev); border:1px solid var(--border); border-radius:var(--radius); padding:12px 14px; cursor:pointer; }
+  .ind-card.active{ border-color:var(--accent); }
+  .ind-card .tf-label{ font-size:12px; color:var(--text-dim); font-weight:700; display:flex; justify-content:space-between; align-items:center; gap:6px; }
+  .ind-sec{ margin-top:10px; padding-top:9px; border-top:1px dashed var(--border); }
+  .ind-sec:first-of-type{ border-top:none; padding-top:0; }
+  .ind-k{ font-size:10.5px; color:var(--text-faint); font-weight:600; margin-bottom:5px; display:flex; justify-content:space-between; }
+  .pill{ display:inline-block; font-size:10.5px; font-weight:700; padding:2px 7px; border-radius:5px; border:1px solid var(--border); color:var(--text-dim); white-space:nowrap; }
+  .pill.up{ color:var(--up); border-color:var(--up); }
+  .pill.down{ color:var(--down); border-color:var(--down); }
+  .pill.mix{ color:var(--text-faint); }
+  .ma-row{ display:grid; grid-template-columns:30px 1fr 14px; gap:4px; font-family:var(--font-mono); font-size:11px; line-height:1.65; }
+  .ma-row span:first-child{ color:var(--text-faint); }
+  .ma-row span:nth-child(2){ text-align:right; color:var(--text-dim); }
+  .ma-row span:last-child{ text-align:center; }
+  .ind-line{ font-size:12px; font-weight:700; margin-bottom:5px; }
+  .ind-sub{ font-family:var(--font-mono); font-size:10.5px; color:var(--text-faint); line-height:1.6; }
+  .chips{ display:flex; flex-wrap:wrap; gap:4px; margin:4px 0; }
+  .cz-strip{ display:flex; gap:2px; height:14px; margin:5px 0 4px 0; }
+  .cz-strip i{ flex:1; border-radius:2px; }
 
   .copy-btn{
     background:var(--bg-elev2); border:1px solid var(--border); color:var(--text);
@@ -186,6 +172,7 @@
 
   @media (max-width:900px){
     .summary-grid{ grid-template-columns:repeat(2, 1fr); }
+    .ind-grid{ grid-template-columns:repeat(2, 1fr); }
     .stat-row{ grid-template-columns:repeat(1, 1fr); }
   }
 </style>
@@ -197,7 +184,7 @@
     <span class="dot"></span>
     <div>
       <h1>크립토 변동성 대시보드</h1>
-      <small>BTC · ETH · SOL · ZEC · HYPE · ENA · VVV · PUMP — 1일 · 4시간 · 15분 · 5분 봉 기준 변동폭 · 거래대금 + 20봉 평균</small>
+      <small>BTC · ETH · SOL · ZEC · HYPE · ENA · VVV · PUMP · NEAR · ONDO · TAO · WLD · PENGU · DOGE — 1일 · 4시간 · 15분 · 5분 봉 기준 변동폭 · 거래대금 · 이평선 · MACD · Chop Zone</small>
     </div>
   </div>
   <div style="display:flex; gap:8px; align-items:center;">
@@ -213,6 +200,15 @@
 
   <div class="summary-grid" id="summaryGrid"></div>
 
+  <div class="ind-head">
+    <div class="t">추세 지표 — 이동평균선 · MACD(12/26/9) · Chop Zone</div>
+    <div class="seg" id="maTypeSeg">
+      <button data-ma="EMA">EMA</button>
+      <button data-ma="SMA">SMA</button>
+    </div>
+  </div>
+  <div class="ind-grid" id="indGrid"></div>
+
   <div class="tabs" id="tfTabs">
     <div class="tab active" data-tf="1d">1일봉</div>
     <div class="tab" data-tf="4h">4시간봉</div>
@@ -221,8 +217,6 @@
   </div>
 
   <div class="detail-panel">
-    <div id="playbook"></div>
-
     <div class="stat-row" id="statRow"></div>
 
     <div class="panel-head">
@@ -250,25 +244,18 @@
     </div>
 
     <div class="panel-head">
-      <div class="panel-title">최근 캔들 상세 (40개)</div>
+      <div class="panel-title" id="tableTitle">최근 캔들 상세</div>
       <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
-        <span style="font-family:var(--font-mono); font-size:11px; color:var(--text-faint);">◆ = 이정표 캔들</span>
-        <button class="copy-btn" id="copyTableBtn">📋 표 데이터 복사</button>
+        <button class="copy-btn" id="copyTableBtn" title="숫자 데이터 + 분석 요청 프롬프트가 함께 복사됩니다">📋 표 데이터 복사 (분석 프롬프트 포함)</button>
         <button class="copy-btn primary" id="askClaudeBtn">Claude에게 분석 요청</button>
       </div>
     </div>
-    <div class="sig-legend">
-      <span class="sig strong">CHoCH↑</span> 하락→상승 구조 전환
-      <span class="sig strong-down">CHoCH↓</span> 상승→하락 구조 전환
-      <span class="sig up">BOS↑</span><span class="sig down">BOS↓</span> 같은 방향 구조 돌파 (추세 지속)
-      <span class="sig up">인걸핑·핀바</span> 반전 캔들 패턴
-      <span class="sig neutral">확장</span> 변동폭·거래대금 동시 급증
-      <span class="sig neutral">스윙H/L</span> 확정된 국소 고점·저점
-      <br>
-      <b style="color:var(--text-dim)">액션 판정</b> —
-      <span class="sig act-long">매수 준비</span><span class="sig act-short">매도 준비</span> 3층 조건 모두 통과, 다음 봉에서 진입 검토
-      <span class="sig act-wait">관망 / 조건 미달</span> 국면 불일치 또는 근거 부족
-      <span class="sig act-reject">기각</span> 손절 폭이 감당 범위를 넘음
+    <div class="table-legend">
+      시간 칸 왼쪽 선: <span class="c-up">초록</span>=양봉 · <span class="c-down">주황</span>=음봉 ·
+      <i style="background:rgba(61,214,196,0.35)"></i>변동폭 크기
+      <i style="background:rgba(129,140,248,0.4)"></i>거래대금 크기 (표 안 상위 5% 값을 가득 찬 막대로 환산)
+      <i style="background:rgba(52,211,153,0.35)"></i>/<i style="background:rgba(249,115,22,0.35);margin-left:0"></i>매수비중 50% 기준 초과/미달 정도 ·
+      굵은 선 = 날짜 바뀜
     </div>
     <div class="table-scroll">
       <table>
@@ -276,7 +263,7 @@
           <tr>
             <th>시간</th><th>시가</th><th>고가</th><th>저가</th><th>종가</th>
             <th>변동폭 ($)</th><th>변동폭 (%)</th><th>상승률 (%)</th><th>하락률 (%)</th>
-            <th>거래대금</th><th>매수비중</th><th>OI</th><th>OI 변화</th><th>펀딩비</th><th>신호</th><th>국면</th><th>액션 판정</th><th>이후 전개</th>
+            <th>거래대금</th><th>매수비중</th><th>OI</th><th>OI 변화</th><th>펀딩비</th>
           </tr>
         </thead>
         <tbody id="tableBody"></tbody>
@@ -285,18 +272,12 @@
 
     <div class="disclaimer">
       ※ 데이터: Binance klines (공개 API, 키 불필요). 각 타임프레임의 "현재" 캔들은 아직 마감되지 않은 진행 중인 봉이며, 20봉 평균은 <b>마감된 최근 20개 캔들</b> 기준으로 계산합니다. 변동폭(%) = (고가−저가) ÷ 시가 × 100. 상승률(%) = (고가−시가) ÷ 시가 × 100, 하락률(%) = (시가−저가) ÷ 시가 × 100.<br>
-      ※ <b>거래대금</b>은 해당 봉 동안 체결된 금액(USDT)입니다. <b>매수비중</b>은 전체 거래대금 중 테이커 매수(시장가로 먼저 치고 들어온 매수)가 차지하는 비율로, 50%보다 높으면 그 봉에서 매수세가 우위였다는 뜻입니다.<br>
-      ※ 현재 진행 중인 봉은 거래대금이 아직 쌓이는 중이라 마감된 봉의 20봉 평균과 그대로 비교하면 항상 작게 나옵니다. 그래서 <b>경과율 반영 예상치</b>(현재 거래대금 ÷ 봉 경과 비율)를 함께 표시해 같은 기준으로 비교할 수 있게 했습니다.<br>
-      ※ <b>OI(미결제약정)</b>와 <b>펀딩비</b>는 바이낸스 USDT 무기한 선물 데이터입니다. 가격·거래대금은 현물 기준이므로 <b>서로 다른 시장</b>이라는 점을 감안하고 보셔야 합니다. OI가 늘면서 가격이 오르면 신규 롱 유입, OI가 줄면서 가격이 오르면 숏 청산 주도로 해석하는 것이 일반적입니다. 펀딩비가 양수면 롱이 숏에게 지불(롱 쏠림), 음수면 그 반대입니다.<br>
-      ※ 표의 펀딩비 칸에 <b>★</b>가 붙은 값은 그 봉 구간에 실제 정산이 일어난 값(여러 번이면 합계)이고, 표시가 없으면 봉 시작 시점에 적용 중이던 직전 정산값입니다. 펀딩은 보통 8시간마다 정산되므로 15분·5분봉에서는 대부분 직전 값이 그대로 유지됩니다.<br>
-      ※ 바이낸스는 <b>OI 히스토리를 최근 30일치만</b> 제공합니다. 따라서 1일봉 40개 구간에서는 오래된 약 10개 봉의 OI가 비어 있으며(—), 무기한 선물이 상장되지 않은 종목은 OI·펀딩비 전체가 비어 있습니다.<br>
-      ※ <b>3층 신호 모델</b> — ①<b>구조 국면</b>: 직전 확정 스윙하이를 종가로 돌파하면 상승 구조, 스윙로우를 이탈하면 하락 구조로 보고, 구조가 없거나 구조와 반대 방향인 신호는 기각합니다. <b>돌파한 그 봉에서 즉시 전환</b>되므로 추세 초입을 놓치지 않습니다(이전 EMA 방식은 초입에선 중립으로 막고 추세가 끝난 뒤에도 같은 방향을 유지하는 문제가 있어 교체했습니다). ②<b>트리거</b>: B 거래대금 20봉 평균 배수 · C 매수비중 · D 가격 방향과 OI 증가 일치 중 설정한 개수 이상. ③<b>실행</b>: 진입은 신호봉 고가(롱)/저가(숏) 돌파, 손절은 선택한 기준(신호봉 전체 / 몸통 중간값 / ATR 배수), 목표는 손절 폭의 3배이며, 손절 폭이 상한을 넘으면 기각합니다.<br>
-      ※ <b>손절 기준 선택</b>이 필요한 이유 — 큰 움직임은 정의상 변동폭이 크기 때문에, 손절을 항상 캔들 전체 범위로 잡으면 <b>좋은 신호일수록 손절폭 상한에 걸려 기각되는 역설</b>이 생깁니다. 그래서 몸통 중간값과 ATR 기준을 추가했고, '자동'은 상한을 통과하는 것 중 가장 여유 있는 기준을 고릅니다. 그래도 기각된 자리는 <b>눌림 재진입</b> 규칙이 이후 몇 봉 안에 더 좁은 손절로 재도전합니다.<br>
-      ※ <b>파라미터 패널</b>에서 값을 바꾸면 전체 구간의 신호 건수와 기각 사유 분포가 즉시 갱신됩니다. 승률·기대값을 따지기 전에 <b>표본 건수부터 확보되는지</b> 확인하는 용도입니다.<br>
-      ※ <b>"이후 전개"</b> 칸은 그 셋업이 다음 봉에서 실제로 발동했는지, 이후 10봉 안에 손절과 목표 중 어디에 먼저 닿았는지를 기계적으로 집계한 결과입니다. 한 봉 안에서 양쪽에 모두 닿은 경우는 보수적으로 손절을 먼저 맞은 것으로 처리합니다.<br>
-      ※ <b>모든 임계값은 검증된 최적값이 아니라 임의로 정한 출발점입니다.</b> 표시되는 승률·기대값은 표본이 20건 미만이면 우연과 구분되지 않습니다. 파라미터를 조금 바꿨을 때 결과가 크게 흔들리면 과최적화 신호이니, 여러 시장 국면을 포함한 충분한 기간으로 직접 검증하셔야 합니다. 이 화면의 어떤 표시도 매매 권유가 아닙니다.<br>
-      ※ <b>신호 판정 기준</b> — 스윙 피봇은 좌우 ${'2'}개 봉보다 높은(낮은) 고점(저점)으로 정의하며, 우측 2개 봉이 지나야 확정되므로 <b>스윙H/L 표시는 해당 캔들로부터 2봉 뒤에 나타납니다</b>. <b>CHoCH/BOS</b>는 확정된 스윙 레벨을 종가로 돌파한 캔들에 붙으며, 그 캔들이 마감되는 시점에 판정되므로 다음 봉에서 대응을 검토할 수 있습니다. <b>◆ 이정표</b>는 CHoCH 전체, 그리고 거래대금이 직전 20봉 평균의 1.2배 이상 실린 BOS·반전 캔들에만 붙습니다.<br>
-      ※ 이 표시는 <b>과거 가격·거래대금에서 정해진 규칙대로 계산한 패턴 탐지 결과</b>일 뿐, 가격 예측이나 매매 권유가 아닙니다. 구조 돌파 신호는 특히 횡보 구간에서 잦은 속임수(가짜 돌파)를 냅니다. 실제 판단은 상위 타임프레임 맥락과 본인의 리스크 관리 기준에 맞춰 직접 하셔야 합니다.
+      ※ <b>거래대금</b>은 해당 봉 동안 체결된 금액(USDT)입니다. <b>매수비중</b>은 전체 거래대금 중 테이커 매수(시장가로 먼저 치고 들어온 매수)가 차지하는 비율입니다.<br>
+      ※ 현재 진행 중인 봉은 거래대금이 아직 쌓이는 중이라, <b>경과율 반영 예상치</b>(현재 거래대금 ÷ 봉 경과 비율)를 함께 표시합니다.<br>
+      ※ <b>OI(미결제약정)</b>와 <b>펀딩비</b>는 바이낸스 USDT 무기한 선물 데이터입니다. 가격·거래대금은 현물 기준이므로 서로 다른 시장의 데이터입니다. 펀딩비가 양수면 롱이 숏에게, 음수면 숏이 롱에게 지불합니다.<br>
+      ※ 펀딩비 칸에 <b>★</b>가 붙은 값은 그 봉 구간에 실제 정산된 값(여러 번이면 합계)이고, 표시가 없으면 봉 시작 시점에 적용 중이던 직전 정산값입니다.<br>
+      ※ <b>지금 보고 있는 종목은 4개 시간대 모두 최근 1000봉</b>을 불러와 이동평균선·MACD·Chop Zone을 계산하고, 표에는 그중 <b>최근 500봉</b>을 보여줍니다(5분봉 약 42시간 · 15분봉 약 5.2일 · 4시간봉 약 83일 · 1일봉 약 500일). 다른 종목은 요약 카드용으로 120봉만 불러옵니다. 바이낸스는 <b>OI 히스토리를 최근 30일, 최대 500개까지만</b> 제공하므로 그보다 오래된 봉의 OI는 비어 있습니다(—). 무기한 선물이 없는 종목은 OI·펀딩비 전체가 비어 있습니다.<br>
+      ※ <b>추세 지표</b>는 모두 종가 기준이며 진행 중인 봉까지 포함해 계산합니다(차트 프로그램이 실시간으로 보여주는 방식과 같음). EMA는 계산에 쓰인 과거 봉 수가 기간의 4배 미만이면 차트 값과 차이가 날 수 있어 <b>~</b>로 표시합니다(상장 기간이 짧은 종목의 1일봉 등). MACD는 12/26/9, Chop Zone은 TradingView 기본 공식(EMA34 기울기를 최근 30봉 고저 범위로 정규화한 각도, 색상 동일)입니다.
     </div>
   </div>
 
@@ -314,9 +295,15 @@ const SYMBOLS = {
   VVV:  { symbol:'VVVUSDT',  label:'VVV',  name:'베니스 토큰' },
   PUMP: { symbol:'PUMPUSDT', label:'PUMP', name:'펌프닷펀' },
   NEAR: { symbol:'NEARUSDT', label:'NEAR', name:'니어 프로토콜' },
+  ONDO: { symbol:'ONDOUSDT', label:'ONDO', name:'온도 파이낸스' },
+  TAO:  { symbol:'TAOUSDT',  label:'TAO',  name:'비트텐서' },
+  WLD:  { symbol:'WLDUSDT',  label:'WLD',  name:'월드코인' },
+  PENGU:{ symbol:'PENGUUSDT',label:'PENGU',name:'퍼지펭귄' },
+  DOGE: { symbol:'DOGEUSDT', label:'DOGE', name:'도지코인' },
 };
-const ASSET_ORDER = ['BTC','ETH','SOL','ZEC','HYPE','ENA','VVV','PUMP','NEAR'];
+const ASSET_ORDER = ['BTC','ETH','SOL','ZEC','HYPE','ENA','VVV','PUMP','NEAR','ONDO','TAO','WLD','PENGU','DOGE'];
 
+// 요약 카드용: 전 종목 × 4개 시간대를 가볍게 (20봉 평균 계산에 충분한 양)
 const TF_CONFIG = {
   '1d':  { interval:'1d',  label:'1일봉',  limit:120, chartCount:60 },
   '4h':  { interval:'4h',  label:'4시간봉', limit:120, chartCount:60 },
@@ -325,46 +312,36 @@ const TF_CONFIG = {
 };
 const TF_ORDER = ['1d','4h','15m','5m'];
 const MA_PERIOD = 20;
-const TABLE_COUNT = 40;   // 표에 보여줄 캔들 개수
-const PIVOT_LEFT = 2;     // 스윙 피봇 좌측 확인 봉 수
-const PIVOT_RIGHT = 2;    // 스윙 피봇 우측 확인 봉 수 (이만큼 지나야 확정)
 
-// ---------- 3층 신호 모델 파라미터 ----------
-// 주의: 아래 값은 검증된 최적값이 아니라 출발점이다. 화면에서 바꿔가며
-// 신호가 몇 건이나 나오는지 먼저 세어보는 용도로 쓰도록 조정 가능하게 뒀다.
-const P = {
-  BUY_LONG: 52,         // C: 롱 최소 매수비중 % (기존 55 → 실제 분포 반영해 완화)
-  BUY_SHORT: 48,        // C: 숏 최대 매수비중 %
-  VOL_MULT: 1.5,        // B: 거래대금 / 20봉 평균
-  MIN_CONDITIONS: 2,    // B·C·D 중 최소 충족 개수 (A는 1층으로 이동)
-  STOP_BASIS: 'auto',   // 손절 기준: auto | candle | body | atr
-  ATR_PERIOD: 14,
-  ATR_MULT: 1.5,
-  STOP_MAX_MULT: 1.5,   // 손절 폭 상한 = 20봉 평균 변동폭 × 이 값
-  TARGET_R: 3,          // 목표가 = 손절 폭 × 이 값
-  FOLLOW_BARS: 10,      // 과거 셋업 결과 추적 봉 수
-  PULLBACK_BARS: 3,     // 손절폭 기각 후 눌림 재진입 대기 봉 수
-  PULLBACK_ON: true,    // 눌림 재진입 규칙 사용 여부
-  HTF_CONFIRM: false,   // 상위 시간대 구조도 같은 방향일 때만 허용
-};
-
-// 상위 시간대 매핑 (HTF_CONFIRM이 켜졌을 때만 사용)
-const CONTEXT_TF = { '1d':'1d', '4h':'1d', '15m':'4h', '5m':'4h' };
+// 상세 표용: 지금 보고 있는 종목·시간대 하나만 깊게.
+// 캔들 API는 1개든 1000개든 요청 비용(weight 2)이 같지만, OI 히스토리가 최대 500개까지만
+// 제공되고 모바일에서 500행을 넘기면 30초 자동 갱신 때 렌더링이 무거워져서 500으로 맞췄다.
+const DETAIL_LIMIT = 500;  // 표에 보여줄 봉 수
+const DEEP_LIMIT = 1000;   // 지금 보는 종목은 4개 시간대 모두 1000봉 (EMA200을 차트와 같은 값으로 맞추려면 긴 과거가 필요)
+const OI_LIMIT = 500;
 
 let currentAsset = 'BTC';
 let currentTf = '1d';
-let dataCache = {};   // asset -> tf -> candles array
-let failCache = {};   // asset -> tf -> error message
-let premiumCache = {};// asset -> { markPrice, lastFundingRate, nextFundingTime }
+let dataCache = {};    // 요약용(다른 종목): asset -> tf -> candles (120봉)
+let failCache = {};    // asset -> tf -> error message
+let deepCache = {};    // 지금 보는 종목: asset -> { tfs: { tf: candles(1000봉, OI·펀딩 병합됨) }, fetchedAt }
+let deepLoading = new Set();
+let premiumCache = {}; // asset -> { markPrice, lastFundingRate, nextFundingTime }
 let chart = null;
 let volChart = null;
+let maType = (() => { try{ return localStorage.getItem('vol-ma-type') || 'EMA'; }catch(e){ return 'EMA'; } })();
 
 // ---------- Formatting ----------
-const fmtPrice = n => n == null ? '—' : '$' + n.toLocaleString('en-US', { maximumFractionDigits: n < 10 ? 4 : 2 });
+// 포맷터는 한 번만 만들어 재사용 (500행 표를 30초마다 다시 그릴 때 이게 가장 큰 비용이었음)
+const NF_P4 = new Intl.NumberFormat('en-US', { maximumFractionDigits: 4 });
+const NF_P2 = new Intl.NumberFormat('en-US', { maximumFractionDigits: 2 });
+const NF_P0 = new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 });
+const DF_DAY = new Intl.DateTimeFormat('ko-KR', { year:'2-digit', month:'2-digit', day:'2-digit' });
+const DF_MIN = new Intl.DateTimeFormat('ko-KR', { month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit', hour12:false });
+const fmtPrice = n => n == null ? '—' : '$' + (n < 10 ? NF_P4 : NF_P2).format(n);
 const fmtPct = n => n == null ? '—' : n.toFixed(2) + '%';
-const fmtAbs = n => n == null ? '—' : '$' + n.toLocaleString('en-US', { maximumFractionDigits: n < 10 ? 4 : 0 });
+const fmtAbs = n => n == null ? '—' : '$' + (n < 10 ? NF_P4 : NF_P0).format(n);
 
-// 거래대금은 자릿수가 크므로 K/M/B로 축약
 function fmtCompact(n){
   if(n == null || isNaN(n)) return '—';
   const abs = Math.abs(n);
@@ -375,7 +352,6 @@ function fmtCompact(n){
 }
 const fmtMoney = n => (n == null || isNaN(n)) ? '—' : '$' + fmtCompact(n);
 
-// 펀딩비는 0.0001(=0.01%) 수준의 작은 값이라 소수점 4자리까지 표시
 function fmtFunding(rate){
   if(rate == null || isNaN(rate)) return '—';
   const pct = rate * 100;
@@ -391,16 +367,11 @@ function fmtCountdown(ms){
   const m = Math.floor((ms % 3600000) / 60000);
   return `${h}시간 ${m}분 후`;
 }
-
 function fmtTime(ts, tf){
-  const d = new Date(ts);
-  if(tf === '1d'){
-    return d.toLocaleDateString('ko-KR', { year:'2-digit', month:'2-digit', day:'2-digit' });
-  }
-  return d.toLocaleString('ko-KR', { month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit', hour12:false });
+  return (tf === '1d' ? DF_DAY : DF_MIN).format(new Date(ts));
 }
 
-// ---------- Chart.js loader (CDN mirrors, no ad-blocker single point of failure) ----------
+// ---------- Chart.js loader ----------
 function loadScript(url){
   return new Promise((resolve, reject) => {
     const s = document.createElement('script');
@@ -426,21 +397,21 @@ async function ensureChartJs(){
 }
 
 // ---------- Fetch ----------
-function fetchWithTimeout(url, ms = 8000){
+function fetchWithTimeout(url, ms = 10000){
   const controller = new AbortController();
   const id = setTimeout(() => controller.abort(), ms);
   return fetch(url, { signal: controller.signal }).finally(() => clearTimeout(id));
 }
 
-async function fetchKlines(asset, tf){
+async function fetchKlines(asset, tf, limit){
   const cfg = TF_CONFIG[tf];
   const sym = SYMBOLS[asset].symbol;
-  const url = `https://api.binance.com/api/v3/klines?symbol=${sym}&interval=${cfg.interval}&limit=${cfg.limit}`;
+  const url = `https://api.binance.com/api/v3/klines?symbol=${sym}&interval=${cfg.interval}&limit=${limit}`;
   let res;
   try{
     res = await fetchWithTimeout(url);
   }catch(e){
-    if(e.name === 'AbortError') throw new Error('요청 타임아웃 (8초)');
+    if(e.name === 'AbortError') throw new Error('요청 타임아웃');
     throw new Error('요청 실패: ' + e.message);
   }
   if(!res.ok){
@@ -449,50 +420,41 @@ async function fetchKlines(asset, tf){
   }
   const raw = await res.json();
   if(!Array.isArray(raw) || !raw.length) throw new Error('빈 응답');
-  // kline 배열 구조:
   // [0]openTime [1]open [2]high [3]low [4]close [5]volume
-  // [6]closeTime [7]quoteVolume(USDT 거래대금) [8]trades [9]takerBuyBase [10]takerBuyQuote(테이커 매수 대금)
+  // [6]closeTime [7]quoteVolume [8]trades [9]takerBuyBase [10]takerBuyQuote
   return raw.map(k => {
     const open = parseFloat(k[1]), high = parseFloat(k[2]), low = parseFloat(k[3]), close = parseFloat(k[4]);
     const rangeAbs = high - low;
-    const rangePct = open ? (rangeAbs / open) * 100 : 0;
-    const upAbs = high - open;
-    const downAbs = open - low;
-    const upPct = open ? (upAbs / open) * 100 : 0;
-    const downPct = open ? (downAbs / open) * 100 : 0;
-
-    const quoteVolume = parseFloat(k[7]);      // USDT 거래대금
-    const trades = parseInt(k[8], 10);         // 체결 건수
-    const takerBuyQuote = parseFloat(k[10]);   // 테이커 매수 거래대금
-    const buyRatio = quoteVolume ? (takerBuyQuote / quoteVolume) * 100 : null;
-
+    const quoteVolume = parseFloat(k[7]);
+    const takerBuyQuote = parseFloat(k[10]);
     return {
       openTime:k[0], closeTime:k[6], open, high, low, close,
-      rangeAbs, rangePct, upAbs, downAbs, upPct, downPct,
-      quoteVolume, trades, takerBuyQuote, buyRatio,
+      rangeAbs,
+      rangePct: open ? (rangeAbs / open) * 100 : 0,
+      upAbs: high - open, downAbs: open - low,
+      upPct: open ? ((high - open) / open) * 100 : 0,
+      downPct: open ? ((open - low) / open) * 100 : 0,
+      quoteVolume,
+      trades: parseInt(k[8], 10),
+      takerBuyQuote,
+      buyRatio: quoteVolume ? (takerBuyQuote / quoteVolume) * 100 : null,
+      oi:null, oiValue:null, oiDeltaPct:null,
+      fundingSettled:null, fundingCount:0, fundingPrevailing:null,
     };
   });
 }
 
-// ---------- 선물 데이터: 미결제약정(OI) · 펀딩비 ----------
-// 주의: OI 히스토리는 바이낸스가 최근 30일치만 제공하므로,
-// 1일봉처럼 기간이 긴 타임프레임에서는 오래된 봉의 OI가 비어 있을 수 있다.
+// ---------- 선물 데이터 (상세 조회 시에만 호출) ----------
 async function fetchOpenInterest(asset, tf){
   const sym = SYMBOLS[asset].symbol;
-  const period = TF_CONFIG[tf].interval;   // 5m/15m/4h/1d 모두 OI API가 지원하는 period
-  const url = `https://fapi.binance.com/futures/data/openInterestHist?symbol=${sym}&period=${period}&limit=200`;
+  const url = `https://fapi.binance.com/futures/data/openInterestHist?symbol=${sym}&period=${TF_CONFIG[tf].interval}&limit=${OI_LIMIT}`;
   const res = await fetchWithTimeout(url);
   if(!res.ok) throw new Error(`OI 응답 오류: ${res.status}`);
   const raw = await res.json();
   if(!Array.isArray(raw)) throw new Error('OI 형식 오류');
-  const map = new Map();
-  raw.forEach(r => {
-    map.set(Number(r.timestamp), {
-      oi: parseFloat(r.sumOpenInterest),
-      oiValue: parseFloat(r.sumOpenInterestValue),
-    });
-  });
-  return map;
+  return raw
+    .map(r => ({ ts:Number(r.timestamp), oi:parseFloat(r.sumOpenInterest), oiValue:parseFloat(r.sumOpenInterestValue) }))
+    .sort((a,b) => a.ts - b.ts);
 }
 
 async function fetchFundingHistory(asset){
@@ -503,14 +465,13 @@ async function fetchFundingHistory(asset){
   const raw = await res.json();
   if(!Array.isArray(raw)) throw new Error('펀딩비 형식 오류');
   return raw
-    .map(r => ({ time: Number(r.fundingTime), rate: parseFloat(r.fundingRate) }))
+    .map(r => ({ time:Number(r.fundingTime), rate:parseFloat(r.fundingRate) }))
     .sort((a,b) => a.time - b.time);
 }
 
 async function fetchPremiumIndex(asset){
   const sym = SYMBOLS[asset].symbol;
-  const url = `https://fapi.binance.com/fapi/v1/premiumIndex?symbol=${sym}`;
-  const res = await fetchWithTimeout(url);
+  const res = await fetchWithTimeout(`https://fapi.binance.com/fapi/v1/premiumIndex?symbol=${sym}`);
   if(!res.ok) throw new Error(`premiumIndex 응답 오류: ${res.status}`);
   const d = await res.json();
   return {
@@ -520,46 +481,46 @@ async function fetchPremiumIndex(asset){
   };
 }
 
-// 캔들 배열에 OI·펀딩비를 시간 기준으로 병합한다.
-function mergeFuturesData(candles, oiMap, fundingList){
-  candles.forEach((c, i) => {
-    // --- OI: 캔들 시작 시각과 같은 타임스탬프의 스냅샷을 우선 사용 ---
-    let rec = oiMap ? oiMap.get(c.openTime) : null;
-    if(!rec && oiMap){
-      // 정확히 일치하지 않으면 봉 구간 안에 들어오는 가장 마지막 스냅샷 사용
-      let best = null;
-      for(const [ts, v] of oiMap){
-        if(ts >= c.openTime && ts <= c.closeTime){
-          if(!best || ts > best.ts) best = { ts, v };
-        }
+// 캔들에 OI·펀딩비를 시간 기준으로 병합한다.
+// 캔들·OI·펀딩 모두 시간순 정렬이므로 포인터를 앞으로만 움직여 한 번에 훑는다 (500봉에서도 가벼움).
+function mergeFuturesData(candles, oiList, fundingList){
+  // --- OI ---
+  if(oiList && oiList.length){
+    const exact = new Map(oiList.map(r => [r.ts, r]));
+    let p = 0;
+    candles.forEach(c => {
+      let rec = exact.get(c.openTime) || null;
+      if(!rec){
+        // 정확히 일치하지 않으면 봉 구간 안의 가장 마지막 스냅샷
+        while(p < oiList.length && oiList[p].ts < c.openTime) p++;
+        let q = p, last = null;
+        while(q < oiList.length && oiList[q].ts <= c.closeTime){ last = oiList[q]; q++; }
+        rec = last;
       }
-      rec = best ? best.v : null;
-    }
-    c.oi = rec ? rec.oi : null;
-    c.oiValue = rec ? rec.oiValue : null;
-
-    // --- 펀딩비 ---
-    if(fundingList && fundingList.length){
-      // 이 봉 구간 안에서 실제로 정산된 펀딩 (1일봉이면 보통 3회)
-      const settled = fundingList.filter(f => f.time >= c.openTime && f.time <= c.closeTime);
-      c.fundingSettled = settled.length ? settled.reduce((s,f)=>s+f.rate, 0) : null;
-      c.fundingCount = settled.length;
-      // 봉 시작 시점에 적용되고 있던 직전 정산 펀딩비
-      let prevailing = null;
-      for(let k = fundingList.length - 1; k >= 0; k--){
-        if(fundingList[k].time <= c.openTime){ prevailing = fundingList[k].rate; break; }
-      }
-      c.fundingPrevailing = prevailing;
-    } else {
-      c.fundingSettled = null; c.fundingCount = 0; c.fundingPrevailing = null;
-    }
-  });
-
-  // OI 변화율 (직전 봉 대비)
+      c.oi = rec ? rec.oi : null;
+      c.oiValue = rec ? rec.oiValue : null;
+    });
+  }
   candles.forEach((c, i) => {
     const prev = i > 0 ? candles[i-1] : null;
     c.oiDeltaPct = (prev && prev.oiValue && c.oiValue) ? ((c.oiValue - prev.oiValue) / prev.oiValue) * 100 : null;
   });
+
+  // --- 펀딩비 ---
+  if(fundingList && fundingList.length){
+    let k = 0;
+    candles.forEach(c => {
+      while(k < fundingList.length && fundingList[k].time < c.openTime) k++;
+      // 봉 시작 시점에 적용 중이던 직전 정산값
+      if(k < fundingList.length && fundingList[k].time === c.openTime) c.fundingPrevailing = fundingList[k].rate;
+      else c.fundingPrevailing = k > 0 ? fundingList[k-1].rate : null;
+      // 봉 구간 안에서 실제 정산된 값
+      let j = k, sum = 0, cnt = 0;
+      while(j < fundingList.length && fundingList[j].time <= c.closeTime){ sum += fundingList[j].rate; cnt++; j++; }
+      c.fundingSettled = cnt ? sum : null;
+      c.fundingCount = cnt;
+    });
+  }
 }
 
 // ---------- Calc ----------
@@ -571,10 +532,9 @@ function rollingMA(values, period){
   });
 }
 
-// 마감된 최근 20개 캔들(현재 진행 중인 마지막 봉 제외) 기준 평균
+// 마감된 최근 20개 캔들(진행 중인 마지막 봉 제외) 기준 평균
 function closedMA(candles){
-  const closed = candles.slice(0, -1);
-  const last20 = closed.slice(-MA_PERIOD);
+  const last20 = candles.slice(0, -1).slice(-MA_PERIOD);
   if(!last20.length){
     return { pct:null, abs:null, upPct:null, upAbs:null, downPct:null, downAbs:null,
              quoteVolume:null, trades:null, buyRatio:null, n:0 };
@@ -590,408 +550,28 @@ function closedMA(candles){
   };
 }
 
-// 진행 중인 봉이 얼마나 경과했는지 (0~1). 마감된 봉이면 1.
 function elapsedRatio(candle){
   const span = candle.closeTime - candle.openTime;
   if(span <= 0) return 1;
   const elapsed = Date.now() - candle.openTime;
   if(elapsed >= span) return 1;
-  return Math.max(elapsed / span, 0.001); // 0으로 나누는 것 방지
+  return Math.max(elapsed / span, 0.001);
 }
 
-// ---------- 1층: 구조 기반 국면 ----------
-// 기존 EMA 교차 방식은 후행성 때문에 추세 초입을 항상 놓치고, 추세가 끝난 뒤에도
-// 한동안 같은 방향을 유지하는 문제가 있었다. 그래서 국면 판정 자체를
-// "직전 확정 스윙 레벨을 종가로 돌파했는가"로 바꿨다.
-// 돌파 캔들 그 자리에서 국면이 즉시 전환되므로 초입을 놓치지 않는다.
-
-// ATR (손절 기준 옵션용)
-function atrSeries(candles, period){
-  const tr = candles.map((c, i) => {
-    if(i === 0) return c.high - c.low;
-    const pc = candles[i-1].close;
-    return Math.max(c.high - c.low, Math.abs(c.high - pc), Math.abs(c.low - pc));
-  });
-  const out = [];
-  let prev = null;
-  tr.forEach((v, i) => {
-    if(i < period){ 
-      const slice = tr.slice(0, i+1);
-      prev = slice.reduce((a,b)=>a+b,0) / slice.length;
-    } else {
-      prev = (prev * (period - 1) + v) / period;
-    }
-    out.push(prev);
-  });
-  return out;
-}
-
-const REGIME_LABEL = { 1:'상승 구조', '-1':'하락 구조', 0:'구조 미형성' };
-
-// 현재 보고 있는 종목·시간대에 대한 상위 시간대 캔들
-function getContextCandles(){
-  const ctxTf = CONTEXT_TF[currentTf];
-  const cache = dataCache[currentAsset] || {};
-  return cache[ctxTf] || null;
-}
-
-// 상위 시간대의 구조 국면 배열을 만든다 (HTF_CONFIRM용)
-function structureRegimes(candles){
-  if(!candles || candles.length < PIVOT_LEFT + PIVOT_RIGHT + 2) return null;
-  const n = candles.length, L = PIVOT_LEFT, R = PIVOT_RIGHT;
-  const isPH = new Array(n).fill(false), isPL = new Array(n).fill(false);
-  for(let i = L; i < n - R; i++){
-    let ph = true, pl = true;
-    for(let j = i - L; j <= i + R; j++){
-      if(j === i) continue;
-      if(candles[j].high >= candles[i].high) ph = false;
-      if(candles[j].low  <= candles[i].low)  pl = false;
-    }
-    isPH[i] = ph; isPL[i] = pl;
-  }
-  const out = new Array(n).fill(0);
-  let regime = 0, sh = null, sl = null;
-  for(let i = 0; i < n; i++){
-    const ci = i - R;
-    if(ci >= 0){
-      if(isPH[ci]) sh = candles[ci].high;
-      if(isPL[ci]) sl = candles[ci].low;
-    }
-    if(sh != null && candles[i].close > sh){ regime = 1; sh = null; }
-    else if(sl != null && candles[i].close < sl){ regime = -1; sl = null; }
-    out[i] = regime;
-  }
-  return out;
-}
-
-function htfRegimeAt(ctxCandles, regimes, ts){
-  if(!ctxCandles || !regimes) return null;
-  for(let i = ctxCandles.length - 1; i >= 0; i--){
-    if(ctxCandles[i].closeTime <= ts) return regimes[i];
-  }
-  return null;
-}
-
-// ---------- 추세 전환 신호 판정 ----------
-// 각 캔들에 대해, 그 캔들 시점까지의 정보만으로 판단 가능한 신호를 태깅한다.
-// (스윙 피봇은 구조상 우측 PIVOT_RIGHT개 봉이 지나야 확정되므로, 확정된 이후에만 돌파 판단에 사용)
-function computeSignals(candles, ctxCandles){
-  const n = candles.length;
-  const L = PIVOT_LEFT, R = PIVOT_RIGHT;
-  const htfRegimes = P.HTF_CONFIRM ? structureRegimes(ctxCandles) : null;
-  const atr = atrSeries(candles, P.ATR_PERIOD);
-
-  // 1) 프랙탈 스윙 하이/로우 탐지
-  const isPivotHigh = new Array(n).fill(false);
-  const isPivotLow  = new Array(n).fill(false);
-  for(let i = L; i < n - R; i++){
-    let ph = true, pl = true;
-    for(let j = i - L; j <= i + R; j++){
-      if(j === i) continue;
-      if(candles[j].high >= candles[i].high) ph = false;
-      if(candles[j].low  <= candles[i].low)  pl = false;
-    }
-    isPivotHigh[i] = ph;
-    isPivotLow[i]  = pl;
-  }
-
-  const out = candles.map(() => ({ tags:[], milestone:false, dir:null, setup:null, regime:0 }));
-
-  let trend = 0;              // 1 상승구조, -1 하락구조, 0 미형성 (= 1층 국면)
-  let lastSwingHigh = null;   // { idx, price }
-  let lastSwingLow  = null;
-  let pendingPullback = null; // 손절폭 기각 후 눌림 재진입 대기 상태
-
-  for(let i = 0; i < n; i++){
-    const c = candles[i];
-    const sig = out[i];
-
-    // 이 시점에서 확정 가능한 스윙 반영 (i-R 캔들의 피봇 여부는 i에서 확정됨)
-    const ci = i - R;
-    if(ci >= 0){
-      if(isPivotHigh[ci]) lastSwingHigh = { idx:ci, price:candles[ci].high };
-      if(isPivotLow[ci])  lastSwingLow  = { idx:ci, price:candles[ci].low  };
-    }
-
-    // 직전 20봉 기준 평균 (현재 봉 제외)
-    const prev = candles.slice(Math.max(0, i - MA_PERIOD), i);
-    const avgRange = prev.length ? prev.reduce((s,x)=>s+x.rangePct,0)/prev.length : null;
-    const avgVol   = prev.length ? prev.reduce((s,x)=>s+x.quoteVolume,0)/prev.length : null;
-    const rangeMult = avgRange ? c.rangePct / avgRange : null;
-    const volMult   = avgVol   ? c.quoteVolume / avgVol : null;
-    const expanded  = (rangeMult != null && rangeMult >= 1.5) && (volMult != null && volMult >= 1.5);
-    const volBacked = volMult != null && volMult >= 1.2;
-
-    // 2) 구조 돌파 판정 (종가 기준)
-    let broke = 0;
-    if(lastSwingHigh && c.close > lastSwingHigh.price){
-      broke = 1;
-      lastSwingHigh = null;  // 이미 깨진 레벨은 재사용하지 않음
-    } else if(lastSwingLow && c.close < lastSwingLow.price){
-      broke = -1;
-      lastSwingLow = null;
-    }
-
-    let structureBreak = false;   // 조건 A
-    if(broke === 1){
-      structureBreak = true;
-      if(trend === -1){
-        sig.tags.push({ label:'CHoCH↑', cls:'strong', desc:'하락 구조에서 상승으로 전환' });
-        sig.milestone = true; sig.dir = 'up';
-      } else {
-        sig.tags.push({ label:'BOS↑', cls:'up', desc:'상승 구조 돌파 (추세 지속)' });
-        if(volBacked){ sig.milestone = true; sig.dir = 'up'; }
-      }
-      trend = 1;
-    } else if(broke === -1){
-      structureBreak = true;
-      if(trend === 1){
-        sig.tags.push({ label:'CHoCH↓', cls:'strong-down', desc:'상승 구조에서 하락으로 전환' });
-        sig.milestone = true; sig.dir = 'down';
-      } else {
-        sig.tags.push({ label:'BOS↓', cls:'down', desc:'하락 구조 돌파 (추세 지속)' });
-        if(volBacked){ sig.milestone = true; sig.dir = 'down'; }
-      }
-      trend = -1;
-    }
-
-    // 3) 반전 캔들 패턴
-    const body = Math.abs(c.close - c.open);
-    const upperWick = c.high - Math.max(c.open, c.close);
-    const lowerWick = Math.min(c.open, c.close) - c.low;
-    const range = c.rangeAbs || 1;
-    const closePos = (c.close - c.low) / range;   // 0=저가마감, 1=고가마감
-    let reversalDir = null;
-
-    const p = i > 0 ? candles[i-1] : null;
-    if(p){
-      const pBear = p.close < p.open, pBull = p.close > p.open;
-      const cBull = c.close > c.open, cBear = c.close < c.open;
-      if(pBear && cBull && c.close >= p.open && c.open <= p.close){
-        sig.tags.push({ label:'상승인걸핑', cls:'up', desc:'직전 음봉을 감싸는 양봉' });
-        reversalDir = 'up';
-        if(volBacked){ sig.milestone = true; sig.dir = sig.dir || 'up'; }
-      }
-      if(pBull && cBear && c.close <= p.open && c.open >= p.close){
-        sig.tags.push({ label:'하락인걸핑', cls:'down', desc:'직전 양봉을 감싸는 음봉' });
-        reversalDir = 'down';
-        if(volBacked){ sig.milestone = true; sig.dir = sig.dir || 'down'; }
-      }
-    }
-    if(body > 0 && lowerWick >= body * 2 && lowerWick >= upperWick * 2 && closePos >= 0.6){
-      sig.tags.push({ label:'핀바↑', cls:'up', desc:'아래꼬리로 매도 거부' });
-      reversalDir = reversalDir || 'up';
-      if(volBacked){ sig.milestone = true; sig.dir = sig.dir || 'up'; }
-    }
-    if(body > 0 && upperWick >= body * 2 && upperWick >= lowerWick * 2 && closePos <= 0.4){
-      sig.tags.push({ label:'핀바↓', cls:'down', desc:'위꼬리로 매수 거부' });
-      reversalDir = reversalDir || 'down';
-      if(volBacked){ sig.milestone = true; sig.dir = sig.dir || 'down'; }
-    }
-
-    // 4) 변동성·거래대금 동시 확장
-    if(expanded){
-      sig.tags.push({
-        label:`확장 ${rangeMult.toFixed(1)}×`, cls:'neutral',
-        desc:`변동폭 ${rangeMult.toFixed(1)}× · 거래대금 ${volMult.toFixed(1)}×`
-      });
-    }
-
-    // 5) 확정된 스윙 지점 표시 (이 봉이 피봇이었음이 지금 확정된 경우)
-    if(ci >= 0){
-      if(isPivotHigh[ci]) out[ci].tags.push({ label:'스윙H', cls:'neutral', desc:'국소 고점 (확정)' });
-      if(isPivotLow[ci])  out[ci].tags.push({ label:'스윙L', cls:'neutral', desc:'국소 저점 (확정)' });
-    }
-
-    // ===== 1층: 구조 기반 국면 — 돌파한 그 봉에서 즉시 전환된다 =====
-    sig.regime = trend;
-    const htfOk = !P.HTF_CONFIRM || (() => {
-      const hr = htfRegimeAt(ctxCandles, htfRegimes, c.openTime);
-      return hr == null ? false : true; // 방향 일치 여부는 buildSetup에서 판단
-    })();
-    const htfRegime = P.HTF_CONFIRM ? htfRegimeAt(ctxCandles, htfRegimes, c.openTime) : null;
-
-    // ===== 2층: B·C·D 중 MIN_CONDITIONS 이상 =====
-    const candDir = (broke === 1) ? 'up' : (broke === -1) ? 'down' : reversalDir;
-    sig.setup = buildSetup({
-      c, i, candDir, volMult, avgRange, regime: trend, htfRegime,
-      atrVal: atr[i], isPullback: false,
-    });
-
-    // ===== 눌림 재진입 =====
-    // 큰 캔들은 손절 폭이 커서 3층에서 기각되는데, 그 다음 눌림에서
-    // 더 좁은 손절로 같은 방향을 다시 노리는 규칙.
-    if(P.PULLBACK_ON){
-      if(pendingPullback && i > pendingPullback.idx && i <= pendingPullback.idx + P.PULLBACK_BARS){
-        const pb = pendingPullback;
-        const inRange = pb.dir === 'up'
-          ? (c.low <= pb.mid && trend === 1)
-          : (c.high >= pb.mid && trend === -1);
-        const closedRight = pb.dir === 'up' ? c.close > c.open : c.close < c.open;
-        if(inRange && closedRight && (!sig.setup || !sig.setup.qualified)){
-          const pbSetup = buildSetup({
-            c, i, candDir: pb.dir, volMult, avgRange, regime: trend, htfRegime,
-            atrVal: atr[i], isPullback: true,
-          });
-          if(pbSetup && pbSetup.qualified){
-            sig.setup = pbSetup;
-            sig.tags.push({ label:'눌림재진입', cls:'strong', desc:`${pb.idx+1}번째 전 큰 캔들 신호의 눌림 재진입` });
-            pendingPullback = null;
-          }
-        }
-      }
-      if(pendingPullback && i > pendingPullback.idx + P.PULLBACK_BARS) pendingPullback = null;
-      // 손절폭 때문에 기각된 셋업이면 눌림 대기 상태로 전환
-      if(sig.setup && sig.setup.status === 'rejected_stop'){
-        pendingPullback = { idx:i, dir:sig.setup.dir, mid:(c.high + c.low) / 2 };
-      }
-    }
-  }
-
-  // ================= 3층 결과 추적: 이후 봉에서 실제로 발동/손절/목표 도달했는지 =================
-  for(let i = 0; i < n; i++){
-    const s = out[i].setup;
-    if(!s || !s.qualified) continue;
-    evaluateOutcome(candles, i, s);
-  }
-
-  return out;
-}
-
-// 2층(B·C·D) + 3층(진입·손절·목표) 산출
-function buildSetup({ c, i, candDir, volMult, avgRange, regime, htfRegime, atrVal, isPullback }){
-  if(!candDir) return null;
-  const wantLong = candDir === 'up';
-
-  // --- 2층 조건 (A는 1층으로 올라갔으므로 B·C·D 셋만 본다) ---
-  const B = volMult != null && volMult >= P.VOL_MULT;
-  const C = c.buyRatio != null && (wantLong ? c.buyRatio >= P.BUY_LONG : c.buyRatio <= P.BUY_SHORT);
-  const priceAligned = wantLong ? (c.close > c.open) : (c.close < c.open);
-  const D = c.oiDeltaPct != null && c.oiDeltaPct > 0 && priceAligned;
-  const oiUnknown = c.oiDeltaPct == null;
-  const met = [B,C,D].filter(Boolean).length;
-  const detail = { B, C, D, oiUnknown, met, volMult, buyRatio:c.buyRatio, oiDeltaPct:c.oiDeltaPct };
-
-  // --- 1층: 구조 국면이 방향과 일치해야 한다 ---
-  const regimeOk = wantLong ? regime === 1 : regime === -1;
-  const htfOk = !P.HTF_CONFIRM || (wantLong ? htfRegime === 1 : htfRegime === -1);
-
-  // --- 3층: 손절 기준별 후보 산출 ---
-  const entry = wantLong ? c.high : c.low;
-  const bodyMid = (c.open + c.close) / 2;
-  const cands = [];
-  const push = (key, label, stop) => {
-    if(stop == null || isNaN(stop)) return;
-    if(wantLong ? stop >= entry : stop <= entry) return;   // 방향상 불가능한 손절 제외
-    const w = Math.abs(entry - stop) / entry * 100;
-    cands.push({ key, label, stop, width:w });
-  };
-  push('candle', '신호봉 전체', wantLong ? c.low : c.high);
-  push('body',   '몸통 중간값', bodyMid);
-  if(atrVal != null) push('atr', `ATR×${P.ATR_MULT}`, wantLong ? c.close - atrVal*P.ATR_MULT : c.close + atrVal*P.ATR_MULT);
-
-  const stopCap = avgRange != null ? avgRange * P.STOP_MAX_MULT : null;
-  let chosen = null;
-  if(P.STOP_BASIS === 'auto'){
-    // 넓은 것부터 시도해 상한 안에 들어오는 첫 번째를 쓴다 (가능한 한 여유 있는 손절 선호)
-    const order = ['candle','body','atr'];
-    for(const k of order){
-      const cd = cands.find(x => x.key === k);
-      if(cd && (stopCap == null || cd.width <= stopCap)){ chosen = cd; break; }
-    }
-    if(!chosen) chosen = cands.reduce((a,b) => (!a || b.width < a.width) ? b : a, null);
-  } else {
-    chosen = cands.find(x => x.key === P.STOP_BASIS) || cands[0];
-  }
-  if(!chosen) return null;
-
-  const stop = chosen.stop;
-  const stopWidthPct = chosen.width;
-  const stopTooWide = (stopCap != null) ? stopWidthPct > stopCap : false;
-  const target = wantLong
-    ? entry + (entry - stop) * P.TARGET_R
-    : entry - (stop - entry) * P.TARGET_R;
-
-  // --- 최종 판정 ---
-  let status, statusLabel, action, cls;
-  const pbTag = isPullback ? '눌림 재진입 · ' : '';
-  if(!regimeOk){
-    status = 'rejected_regime';
-    statusLabel = regime === 0 ? '관망 (구조 미형성)' : '관망 (구조 역행)';
-    action = regime === 0
-      ? '아직 어느 쪽으로도 스윙 레벨이 돌파되지 않아 방향이 정해지지 않았습니다. 구조가 잡힐 때까지 진입 준비 없이 대기하는 구간입니다.'
-      : `현재 구조는 ${REGIME_LABEL[regime]}인데 반대 방향 신호입니다. 구조를 거스르는 자리이므로 받지 않습니다.`;
-    cls = 'wait';
-  } else if(!htfOk){
-    status = 'rejected_htf';
-    statusLabel = '관망 (상위 구조 불일치)';
-    action = '같은 시간대 구조는 맞지만 상위 시간대 구조가 반대입니다. 상위 확인 옵션이 켜져 있어 기각합니다.';
-    cls = 'wait';
-  } else if(met < P.MIN_CONDITIONS){
-    status = 'rejected_conditions';
-    statusLabel = `조건 미달 (${met}/3)`;
-    action = `구조와 방향은 맞지만 뒷받침하는 근거가 ${met}개뿐입니다(${P.MIN_CONDITIONS}개 이상 필요). 관찰만 하고 진입 준비는 하지 않는 자리입니다.`;
-    cls = 'wait';
-  } else if(stopTooWide){
-    status = 'rejected_stop';
-    statusLabel = '기각 (손절 폭 과대)';
-    action = `조건 ${met}개를 충족했지만 가장 좁은 손절 기준으로도 폭이 ${stopWidthPct.toFixed(2)}%로 허용치 ${stopCap.toFixed(2)}%를 넘습니다. 이 자리는 포기하고, ${P.PULLBACK_ON ? `이후 ${P.PULLBACK_BARS}봉 안에 눌림이 나오면 더 좁은 손절로 재진입을 노립니다.` : '진입하지 않습니다.'}`;
-    cls = 'reject';
-  } else {
-    status = 'qualified';
-    statusLabel = `${pbTag}${wantLong ? '매수' : '매도'} 준비 (${met}/3)`;
-    action = wantLong
-      ? `다음 봉에서 ${fmtPrice(entry)}(이 봉 고가) 돌파 시 진입, 손절 ${fmtPrice(stop)} — ${chosen.label} 기준, 폭 ${stopWidthPct.toFixed(2)}%. 돌파 없이 봉이 끝나면 신호 소멸로 보고 진입하지 않습니다.`
-      : `다음 봉에서 ${fmtPrice(entry)}(이 봉 저가) 이탈 시 진입, 손절 ${fmtPrice(stop)} — ${chosen.label} 기준, 폭 ${stopWidthPct.toFixed(2)}%. 이탈 없이 봉이 끝나면 신호 소멸로 보고 진입하지 않습니다.`;
-    cls = wantLong ? 'long' : 'short';
-  }
-
-  return {
-    dir: candDir, qualified: status === 'qualified', isPullback: !!isPullback,
-    status, statusLabel, action, cls, detail,
-    entry, stop, target, stopWidthPct, stopCap, stopTooWide, regime,
-    stopBasis: chosen.key, stopBasisLabel: chosen.label,
-    outcome: null,
-  };
-}
-
-// 셋업 이후 실제 전개 추적 (발동 / 손절 / 목표 / 진행중)
-function evaluateOutcome(candles, i, s){
-  const long = s.dir === 'up';
-  let triggered = false, triggerIdx = null;
-
-  const end = Math.min(candles.length - 1, i + P.FOLLOW_BARS);
-  for(let j = i + 1; j <= end; j++){
-    const b = candles[j];
-    if(!triggered){
-      // 다음 봉에서만 발동 여부를 본다 (원안: 다음 봉에서 확인)
-      if(j === i + 1){
-        if(long ? b.high > s.entry : b.low < s.entry){ triggered = true; triggerIdx = j; }
-        else { s.outcome = { state:'expired', label:'소멸 (미발동)' }; return; }
-      }
-    }
-    if(triggered){
-      const hitStop   = long ? b.low  <= s.stop   : b.high >= s.stop;
-      const hitTarget = long ? b.high >= s.target : b.low  <= s.target;
-      // 같은 봉에서 둘 다 닿으면 보수적으로 손절 우선으로 본다
-      if(hitStop){ s.outcome = { state:'stopped', label:`손절 (−1R, ${j-i}봉 후)` }; return; }
-      if(hitTarget){ s.outcome = { state:'target', label:`목표 도달 (+${P.TARGET_R}R, ${j-i}봉 후)` }; return; }
-    }
-  }
-  if(!triggered && i + 1 > candles.length - 1){
-    s.outcome = { state:'pending', label:'다음 봉 대기 중' };
-  } else if(triggered){
-    s.outcome = { state:'running', label:`진입 후 진행 중 (${P.FOLLOW_BARS}봉 내 미결)` };
-  } else {
-    s.outcome = { state:'pending', label:'다음 봉 대기 중' };
-  }
+// 지금 보는 종목의 1000봉이 있으면 그걸, 없으면 요약용 120봉을 쓴다
+function getCandles(asset, tf){
+  const d = deepCache[asset] && deepCache[asset].tfs[tf];
+  if(d) return { candles:d, detailed:true };
+  const s = (dataCache[asset] || {})[tf];
+  return { candles:s || null, detailed:false };
 }
 
 // ---------- Asset tabs ----------
 function renderAssetTabs(){
   const el = document.getElementById('assetTabs');
   el.innerHTML = ASSET_ORDER.map(asset => {
-    const hasAny = dataCache[asset] && Object.keys(dataCache[asset]).length > 0;
+    const hasAny = (dataCache[asset] && Object.keys(dataCache[asset]).length > 0)
+                || (deepCache[asset] && Object.keys(deepCache[asset].tfs).length > 0);
     const attempted = failCache[asset] && Object.keys(failCache[asset]).length === TF_ORDER.length && !hasAny;
     return `<div class="asset-tab ${asset===currentAsset?'active':''} ${attempted?'no-data':''}" data-asset="${asset}">
       ${SYMBOLS[asset].label}${attempted ? ' (데이터 없음)' : ''}
@@ -1005,9 +585,8 @@ function renderAssetTabs(){
 // ---------- Summary grid ----------
 function renderSummary(){
   const grid = document.getElementById('summaryGrid');
-  const assetCache = dataCache[currentAsset] || {};
   grid.innerHTML = TF_ORDER.map(tf => {
-    const candles = assetCache[tf];
+    const candles = getCandles(currentAsset, tf).candles;
     const cfg = TF_CONFIG[tf];
     if(!candles){
       const errMsg = (failCache[currentAsset] || {})[tf];
@@ -1019,14 +598,12 @@ function renderSummary(){
     const current = candles[candles.length - 1];
     const ma = closedMA(candles);
     const ratio = ma.pct ? current.rangePct / ma.pct : null;
-    let badgeClass = 'mid', badgeText = '평균 수준';
+    let badgeClass = 'mid', badgeText = '—';
     if(ratio != null){
-      if(ratio >= 1.3){ badgeClass = 'hi'; }
-      else if(ratio <= 0.7){ badgeClass = 'lo'; }
+      if(ratio >= 1.3) badgeClass = 'hi';
+      else if(ratio <= 0.7) badgeClass = 'lo';
       badgeText = `변동폭 ${ratio.toFixed(1)}×`;
     }
-
-    // 거래대금은 경과율을 반영한 예상치로 비교해야 공정함
     const er = elapsedRatio(current);
     const projVol = current.quoteVolume / er;
     const volRatio = ma.quoteVolume ? projVol / ma.quoteVolume : null;
@@ -1058,197 +635,242 @@ function renderSummary(){
   grid.querySelectorAll('.sum-card').forEach(card => {
     card.addEventListener('click', () => {
       const tf = card.dataset.tf;
-      if(!assetCache[tf]) return;
+      if(!getCandles(currentAsset, tf).candles) return;
       switchTab(tf);
     });
   });
 }
 
-// ---------- 현재 상태 · 실행 계획 패널 ----------
-function renderPlaybook(tf, candles, signals){
-  const el = document.getElementById('playbook');
+// ---------- 추세 지표 계산 (이평선 · MACD · Chop Zone) ----------
+// 모두 진행 중인 봉까지 포함해 계산한다 (차트 프로그램이 실시간으로 보여주는 값과 같은 방식).
+const MA_LIST = [8, 21, 50, 100, 200];
+
+// SMA로 시작값을 잡는 EMA. 앞쪽은 null
+function emaSeries(values, period){
+  const out = new Array(values.length).fill(null);
+  if(values.length < period) return out;
+  const k = 2 / (period + 1);
+  let prev = 0;
+  for(let i = 0; i < period; i++) prev += values[i];
+  prev /= period;
+  out[period - 1] = prev;
+  for(let i = period; i < values.length; i++){ prev = values[i] * k + prev * (1 - k); out[i] = prev; }
+  return out;
+}
+function smaLast(values, period){
+  if(values.length < period) return null;
+  let sum = 0;
+  for(let i = values.length - period; i < values.length; i++) sum += values[i];
+  return sum / period;
+}
+
+function computeMA(candles){
+  const closes = candles.map(c => c.close);
+  const price = closes[closes.length - 1];
+  const list = MA_LIST.map(p => {
+    const v = maType === 'SMA' ? smaLast(closes, p) : emaSeries(closes, p)[closes.length - 1];
+    // EMA는 과거가 기간의 4배 이상은 있어야 차트 값과 거의 같아진다
+    const approx = v != null && maType === 'EMA' && closes.length < p * 4;
+    return { p, v, approx };
+  });
+  const avail = list.filter(x => x.v != null);
+  let up = 0, down = 0;
+  for(let i = 0; i < avail.length - 1; i++){
+    if(avail[i].v > avail[i+1].v) up++;
+    else if(avail[i].v < avail[i+1].v) down++;
+  }
+  const pairs = Math.max(0, avail.length - 1);
+  let order = 'mix', label = `혼조 (정 ${up}/${pairs})`;
+  if(pairs > 0 && up === pairs){ order = 'up'; label = `정배열 ${up}/${pairs}`; }
+  else if(pairs > 0 && down === pairs){ order = 'down'; label = `역배열 ${down}/${pairs}`; }
+  const above = avail.filter(x => price > x.v).length;
+  const missing = list.filter(x => x.v == null).map(x => x.p);
+  return { list, order, label, above, total: avail.length, missing, price };
+}
+
+function computeMACD(candles){
+  const closes = candles.map(c => c.close);
+  const f = emaSeries(closes, 12), sl = emaSeries(closes, 26);
+  const macd = closes.map((_, i) => (f[i] != null && sl[i] != null) ? f[i] - sl[i] : null);
+  const start = macd.findIndex(v => v != null);
+  if(start < 0) return null;
+  const sig = emaSeries(macd.slice(start), 9);
+  const signal = macd.map((_, i) => i < start ? null : sig[i - start]);
+  const n = closes.length - 1;
+  if(signal[n] == null || signal[n-1] == null) return null;
+  const hist = i => macd[i] - signal[i];
+  const m = macd[n], s = signal[n], h = hist(n), hPrev = hist(n - 1);
+
+  // 가장 최근 MACD-시그널 교차
+  let cross = null;
+  for(let i = n; i > start + 9 && i > n - 200; i--){
+    if(signal[i-1] == null) break;
+    const a = hist(i), b = hist(i - 1);
+    if(a >= 0 && b < 0){ cross = { type:'골든크로스', ago:n - i }; break; }
+    if(a < 0 && b >= 0){ cross = { type:'데드크로스', ago:n - i }; break; }
+  }
+
+  const aboveSig = m > s, aboveZero = m > 0;
+  let head, cls;
+  if(aboveSig && aboveZero){ head = '상승 추세 · 0선 위'; cls = 'up'; }
+  else if(aboveSig && !aboveZero){ head = '상승 전환 시도 · 0선 아래'; cls = 'up'; }
+  else if(!aboveSig && aboveZero){ head = '하락 전환 시도 · 0선 위'; cls = 'down'; }
+  else { head = '하락 추세 · 0선 아래'; cls = 'down'; }
+
+  let mom;
+  if(h >= 0) mom = h > hPrev ? '상승 모멘텀 확대' : '상승 모멘텀 둔화';
+  else       mom = h < hPrev ? '하락 모멘텀 확대' : '하락 모멘텀 둔화';
+
+  return { m, s, h, hPrev, aboveSig, aboveZero, head, cls, mom, cross };
+}
+
+// TradingView 기본 Chop Zone 공식: EMA34의 기울기를 최근 30봉 가격 범위로 정규화한 각도
+const CZ_ZONES = [
+  { min: 5,     label:'강한 상승',  color:'#34dddd', side: 1 },
+  { min: 3.57,  label:'상승',       color:'#006400', side: 1 },
+  { min: 2.14,  label:'완만한 상승', color:'#98fb98', side: 1 },
+  { min: 0.71,  label:'약한 상승',  color:'#00ff00', side: 1 },
+];
+const CZ_NEG = [
+  { max: -5,    label:'강한 하락',  color:'#8B0000', side:-1 },
+  { max: -3.57, label:'하락',       color:'#ff0000', side:-1 },
+  { max: -2.14, label:'완만한 하락', color:'#ff9800', side:-1 },
+  { max: -0.71, label:'약한 하락',  color:'#ffc04c', side:-1 },
+];
+const CZ_CHOP = { label:'횡보 (Chop)', color:'#ffff00', side:0 };  // 색상은 TradingView 원본과 동일
+function czZone(a){
+  for(const z of CZ_ZONES) if(a >= z.min) return z;
+  for(const z of CZ_NEG) if(a <= z.max) return z;
+  return CZ_CHOP;
+}
+
+function computeChop(candles, stripLen = 30){
   const n = candles.length;
-  const cur = signals[n-1];
-  const ctxTf = CONTEXT_TF[tf];
-  const regime = cur.regime;
-  const regimeTxt = regime == null ? '판정 불가 (상위 시간대 데이터 부족)' : REGIME_LABEL[regime];
-  const regimeCls = regime === 1 ? 'long' : regime === -1 ? 'short' : 'wait';
-
-  // 가장 최근에 조건을 통과한 셋업 찾기 (현재 봉 포함, 최대 10봉 이내)
-  let recent = null;
-  for(let i = n - 1; i >= Math.max(0, n - 10); i--){
-    if(signals[i].setup && signals[i].setup.qualified){ recent = { i, s: signals[i].setup, c: candles[i] }; break; }
+  const closes = candles.map(c => c.close);
+  const ema = emaSeries(closes, 34);
+  const out = [];
+  for(let i = Math.max(1, n - stripLen); i < n; i++){
+    if(ema[i] == null || ema[i-1] == null || i < 29) continue;
+    let hh = -Infinity, ll = Infinity;
+    for(let j = i - 29; j <= i; j++){ if(candles[j].high > hh) hh = candles[j].high; if(candles[j].low < ll) ll = candles[j].low; }
+    if(hh <= ll) continue;
+    const span = 25 / (hh - ll) * ll;
+    const avg = (candles[i].high + candles[i].low + candles[i].close) / 3;
+    const y2 = (ema[i-1] - ema[i]) / avg * span;
+    const hyp = Math.sqrt(1 + y2 * y2);
+    const a1 = Math.round(180 * Math.acos(1 / hyp) / Math.PI);
+    const angle = y2 > 0 ? -a1 : a1;
+    out.push({ angle, zone: czZone(angle) });
   }
+  if(!out.length) return null;
+  const cur = out[out.length - 1];
+  const cnt = { up:0, chop:0, down:0 };
+  out.forEach(o => { if(o.zone.side > 0) cnt.up++; else if(o.zone.side < 0) cnt.down++; else cnt.chop++; });
+  return { strip: out, cur, cnt };
+}
 
-  // 최근 40봉 셋업 통계
-  const from = Math.max(0, n - TABLE_COUNT);
-  let nQual = 0, nExpired = 0, nStopped = 0, nTarget = 0, nRunning = 0;
-  for(let i = from; i < n; i++){
-    const s = signals[i].setup;
-    if(!s || !s.qualified) continue;
-    nQual++;
-    const st = s.outcome && s.outcome.state;
-    if(st === 'expired') nExpired++;
-    else if(st === 'stopped') nStopped++;
-    else if(st === 'target') nTarget++;
-    else nRunning++;
-  }
+function computeIndicators(candles){
+  if(!candles || candles.length < 30) return null;
+  return { ma: computeMA(candles), macd: computeMACD(candles), chop: computeChop(candles), n: candles.length };
+}
 
-  // 전체 구간 통계 (표본을 최대한 확보해서 파라미터 영향을 보기 위함)
-  let allCand = 0, allQual = 0;
-  const allRej = { regime:0, htf:0, cond:0, stop:0 };
-  const allOut = { target:0, stopped:0, expired:0, running:0 };
-  for(let i = 0; i < n; i++){
-    const s = signals[i].setup;
-    if(!s) continue;
-    allCand++;
-    if(s.qualified){
-      allQual++;
-      const st = s.outcome && s.outcome.state;
-      if(st === 'target') allOut.target++;
-      else if(st === 'stopped') allOut.stopped++;
-      else if(st === 'expired') allOut.expired++;
-      else allOut.running++;
-    } else if(s.status === 'rejected_regime') allRej.regime++;
-    else if(s.status === 'rejected_htf') allRej.htf++;
-    else if(s.status === 'rejected_conditions') allRej.cond++;
-    else if(s.status === 'rejected_stop') allRej.stop++;
-  }
+function renderIndicators(){
+  const grid = document.getElementById('indGrid');
+  document.querySelectorAll('#maTypeSeg button').forEach(b => b.classList.toggle('on', b.dataset.ma === maType));
+  grid.innerHTML = TF_ORDER.map(tf => {
+    const { candles, detailed } = getCandles(currentAsset, tf);
+    const cfg = TF_CONFIG[tf];
+    const ind = computeIndicators(candles);
+    if(!ind){
+      return `<div class="ind-card" data-tf="${tf}"><div class="tf-label">${cfg.label}</div><div class="sum-empty">불러오는 중...</div></div>`;
+    }
+    const { ma, macd, chop } = ind;
+    const maRows = ma.list.map(x => {
+      const mark = x.v == null ? '<span style="color:var(--text-faint)">·</span>'
+        : ma.price > x.v ? '<span class="c-up">▲</span>' : '<span class="c-down">▼</span>';
+      return `<div class="ma-row"><span>${x.p}</span><span>${x.v == null ? '—' : (x.approx ? '~' : '') + fmtPrice(x.v)}</span>${mark}</div>`;
+    }).join('');
+    const maNote = !detailed && deepLoading.has(currentAsset) ? '1000봉 불러오는 중'
+      : ma.missing.length ? `${ma.missing.join('/')} 표본 부족` : '';
 
-  let planHtml;
-  if(recent){
-    const s = recent.s;
-    const isCur = recent.i === n - 1;
-    const rr = s.stopWidthPct != null ? `손절 폭 ${s.stopWidthPct.toFixed(2)}% · 목표 ${P.TARGET_R}R` : '';
-    planHtml = `
-      <div class="pb-plan ${s.cls}">
-        <div class="pb-status">${s.dir === 'up' ? '🟢' : '🔴'} ${s.statusLabel}
-          <span class="pb-when">${fmtTime(recent.c.openTime, tf)} 봉${isCur ? ' (현재 진행 중)' : ` · ${n-1-recent.i}봉 전`}</span>
+    const macdHtml = macd ? `
+        <div class="ind-line ${macd.cls === 'up' ? 'c-up' : 'c-down'}">${macd.head}</div>
+        <div class="chips">
+          <span class="pill ${macd.aboveZero ? 'up' : 'down'}">0선 ${macd.aboveZero ? '위' : '아래'}</span>
+          <span class="pill ${macd.aboveSig ? 'up' : 'down'}">시그널 ${macd.aboveSig ? '위' : '아래'}</span>
+          <span class="pill ${macd.h >= 0 ? 'up' : 'down'}">${macd.mom}</span>
         </div>
-        <div class="pb-levels">
-          <div><span>진입</span><b>${fmtPrice(s.entry)}</b><small>${s.dir==='up'?'고가 돌파 시':'저가 이탈 시'}</small></div>
-          <div><span>손절</span><b style="color:var(--down)">${fmtPrice(s.stop)}</b><small>${s.dir==='up'?'이 봉 저가':'이 봉 고가'}</small></div>
-          <div><span>목표</span><b style="color:var(--up)">${fmtPrice(s.target)}</b><small>${rr}</small></div>
+        <div class="ind-sub">${macd.cross ? `최근 ${macd.cross.type}: ${macd.cross.ago === 0 ? '현재 봉' : macd.cross.ago + '봉 전'}` : '최근 교차 없음'}</div>`
+      : '<div class="ind-sub">데이터 부족</div>';
+
+    const chopHtml = chop ? `
+        <div class="ind-line" style="color:${chop.cur.zone.side > 0 ? 'var(--up)' : chop.cur.zone.side < 0 ? 'var(--down)' : '#E6C200'}"><i style="display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:5px;background:${chop.cur.zone.color}"></i>${chop.cur.zone.label} <span class="ind-sub">(${chop.cur.angle > 0 ? '+' : ''}${chop.cur.angle}°)</span></div>
+        <div class="cz-strip">${chop.strip.map(o => `<i style="background:${o.zone.color}" title="${o.zone.label} ${o.angle}°"></i>`).join('')}</div>
+        <div class="ind-sub">최근 ${chop.strip.length}봉 · 상승계열 ${chop.cnt.up} · 횡보 ${chop.cnt.chop} · 하락계열 ${chop.cnt.down}</div>`
+      : '<div class="ind-sub">데이터 부족</div>';
+
+    return `
+      <div class="ind-card ${tf === currentTf ? 'active' : ''}" data-tf="${tf}">
+        <div class="tf-label">${cfg.label}<span class="pill ${ma.order}">${ma.label}</span></div>
+        <div class="ind-sec">
+          <div class="ind-k"><span>이평선 (${maType})</span><span>현재가가 ${ma.total}개 중 ${ma.above}개 위</span></div>
+          ${maRows}
+          ${maNote ? `<div class="ind-sub" style="margin-top:3px;">${maNote}</div>` : ''}
         </div>
-        <div class="pb-action">${s.action}</div>
-        <div class="pb-cond">
-          조건 ${s.detail.met}/3 (구조돌파는 1층에서 이미 확인) —
-          <span class="${s.detail.B?'ok':'no'}">B 거래대금 ${s.detail.volMult!=null?s.detail.volMult.toFixed(1)+'×':'—'}</span>
-          <span class="${s.detail.C?'ok':'no'}">C 매수비중 ${fmtPct(s.detail.buyRatio)}</span>
-          <span class="${s.detail.D?'ok':'no'}">D OI ${s.detail.oiUnknown?'데이터없음':fmtSignedPct(s.detail.oiDeltaPct)}</span>
-          <span class="ok">손절기준 ${s.stopBasisLabel}</span>
+        <div class="ind-sec">
+          <div class="ind-k"><span>MACD 12/26/9</span></div>
+          ${macdHtml}
         </div>
-        ${!isCur && s.outcome ? `<div class="pb-outcome">이후 전개: <b>${s.outcome.label}</b></div>` : ''}
+        <div class="ind-sec">
+          <div class="ind-k"><span>Chop Zone</span></div>
+          ${chopHtml}
+        </div>
       </div>`;
-  } else {
-    const curSetup = cur.setup;
-    const why = curSetup ? curSetup.action
-      : '현재 봉에서는 방향을 제시하는 신호(구조 돌파 또는 반전 캔들)가 나오지 않았습니다.';
-    planHtml = `
-      <div class="pb-plan wait">
-        <div class="pb-status">⚪ 진입 준비 대상 없음
-          <span class="pb-when">최근 10봉 내 조건 통과 셋업 없음</span>
-        </div>
-        <div class="pb-action">${why}</div>
-      </div>`;
-  }
+  }).join('');
 
-  el.innerHTML = `
-    <div class="pb-head">
-      <div class="pb-title">실행 계획</div>
-      <div class="pb-regime ${regimeCls}">1층 구조 국면 · <b>${regimeTxt}</b>${P.HTF_CONFIRM ? ` (상위 ${TF_CONFIG[ctxTf].label} 확인)` : ''}</div>
-    </div>
-    <div class="pb-params">
-      <label>손절 기준
-        <select data-p="STOP_BASIS">
-          <option value="auto">자동 (상한 통과하는 가장 넓은 것)</option>
-          <option value="candle">신호봉 전체</option>
-          <option value="body">몸통 중간값</option>
-          <option value="atr">ATR × ${P.ATR_MULT}</option>
-        </select>
-      </label>
-      <label>매수비중 롱 <input type="number" data-p="BUY_LONG" step="0.5" min="40" max="70"></label>
-      <label>숏 <input type="number" data-p="BUY_SHORT" step="0.5" min="30" max="60"></label>
-      <label>거래대금 배수 <input type="number" data-p="VOL_MULT" step="0.1" min="1" max="5"></label>
-      <label>최소 조건
-        <select data-p="MIN_CONDITIONS"><option value="1">1/3</option><option value="2">2/3</option><option value="3">3/3</option></select>
-      </label>
-      <label>손절폭 상한 <input type="number" data-p="STOP_MAX_MULT" step="0.1" min="0.5" max="5"></label>
-      <label><input type="checkbox" data-p="PULLBACK_ON"> 눌림 재진입</label>
-      <label><input type="checkbox" data-p="HTF_CONFIRM"> 상위 구조 확인</label>
-    </div>
-    ${planHtml}
-    <div class="pb-stats">
-      <b>전체 ${n}봉 기준</b> — 방향 후보 ${allCand}건 중 조건 통과 <b>${allQual}건</b>
-      (구조 기각 ${allRej.regime} · 상위구조 기각 ${allRej.htf} · 조건 미달 ${allRej.cond} · 손절폭 기각 ${allRej.stop})
-      <br>결과: 목표 도달 ${allOut.target} · 손절 ${allOut.stopped} · 미발동 소멸 ${allOut.expired} · 진행/미결 ${allOut.running}
-      ${allOut.target + allOut.stopped > 0 ? ` → 결정된 ${allOut.target+allOut.stopped}건 중 승률 ${(allOut.target/(allOut.target+allOut.stopped)*100).toFixed(0)}%, 기대값 ${(((allOut.target*P.TARGET_R) - allOut.stopped)/(allOut.target+allOut.stopped)).toFixed(2)}R` : ''}
-      <br>최근 ${TABLE_COUNT}봉 기준 조건 통과 ${nQual}건
-      <span class="pb-warn">표본이 20건 미만이면 위 승률·기대값은 우연과 구분되지 않습니다. 파라미터를 조금 바꿨을 때 결과가 크게 흔들리면 과최적화 신호입니다. 임계값은 모두 검증되지 않은 임의값이며, 이 화면은 매매 권유가 아닙니다.</span>
-    </div>`;
-
-  // 파라미터 컨트롤 초기값 주입 및 변경 반영
-  el.querySelectorAll('[data-p]').forEach(inp => {
-    const key = inp.dataset.p;
-    if(inp.type === 'checkbox') inp.checked = !!P[key];
-    else inp.value = P[key];
-    inp.addEventListener('change', () => {
-      if(inp.type === 'checkbox') P[key] = inp.checked;
-      else if(inp.tagName === 'SELECT') P[key] = isNaN(Number(inp.value)) ? inp.value : Number(inp.value);
-      else P[key] = parseFloat(inp.value);
-      renderDetail(currentTf);
+  grid.querySelectorAll('.ind-card').forEach(card => {
+    card.addEventListener('click', () => {
+      if(getCandles(currentAsset, card.dataset.tf).candles) switchTab(card.dataset.tf);
     });
   });
 }
 
-// ---------- Detail panel ----------
+document.getElementById('maTypeSeg').addEventListener('click', e => {
+  const b = e.target.closest('button');
+  if(!b) return;
+  maType = b.dataset.ma;
+  try{ localStorage.setItem('vol-ma-type', maType); }catch(err){}
+  renderIndicators();
+});
+
+// ---------- Detail: stat boxes ----------
 function renderStatRow(tf, candles){
   const current = candles[candles.length - 1];
   const ma = closedMA(candles);
   const ratio = ma.pct ? current.rangePct / ma.pct : null;
-
   const er = elapsedRatio(current);
   const projVol = current.quoteVolume / er;
   const volRatio = ma.quoteVolume ? projVol / ma.quoteVolume : null;
   const buyDelta = (current.buyRatio != null && ma.buyRatio != null) ? current.buyRatio - ma.buyRatio : null;
 
-  // --- OI 파생값 ---
-  const closed20 = candles.slice(0, -1).slice(-MA_PERIOD);
-  const oiVals = closed20.map(c => c.oiValue).filter(v => v != null);
+  // OI
+  const oiVals = candles.slice(0, -1).slice(-MA_PERIOD).map(c => c.oiValue).filter(v => v != null);
   const oi20 = oiVals.length ? oiVals.reduce((a,b)=>a+b,0) / oiVals.length : null;
-
-  // 20봉 전 OI 대비 현재 OI 변화율
-  const oiSeries = candles.map(c => c.oiValue);
-  let oiChange20 = null;
-  const curOi = current.oiValue;
   const refIdx = candles.length - 1 - MA_PERIOD;
-  if(curOi != null && refIdx >= 0 && oiSeries[refIdx] != null){
-    oiChange20 = ((curOi - oiSeries[refIdx]) / oiSeries[refIdx]) * 100;
-  }
+  const refOi = refIdx >= 0 ? candles[refIdx].oiValue : null;
+  const oiChange20 = (current.oiValue != null && refOi != null) ? ((current.oiValue - refOi) / refOi) * 100 : null;
 
-  // OI 변화와 가격 방향을 함께 해석
-  const priceUp = current.close >= current.open;
-  let oiInterp = '선물 데이터 없음';
-  if(oiChange20 != null){
-    if(oiChange20 >= 2 && priceUp)       oiInterp = '가격↑ + OI↑ → 신규 롱 유입 (추세 강화)';
-    else if(oiChange20 >= 2 && !priceUp) oiInterp = '가격↓ + OI↑ → 신규 숏 유입 (하방 압력)';
-    else if(oiChange20 <= -2 && priceUp) oiInterp = '가격↑ + OI↓ → 숏 청산 주도 (되돌림 성격)';
-    else if(oiChange20 <= -2 && !priceUp)oiInterp = '가격↓ + OI↓ → 롱 청산 주도 (포지션 정리)';
-    else                                 oiInterp = 'OI 큰 변화 없음 (포지션 정체)';
-  }
-
-  // --- 펀딩비 ---
+  // 펀딩비
   const prem = premiumCache[currentAsset];
   const curFunding = prem ? prem.lastFundingRate : current.fundingPrevailing;
   let fundingNote = '선물 데이터 없음';
   if(curFunding != null){
-    const side = curFunding >= 0 ? '롱이 숏에게 지불 (롱 우위)' : '숏이 롱에게 지불 (숏 우위)';
+    const side = curFunding >= 0 ? '롱 → 숏 지불' : '숏 → 롱 지불';
     const nextIn = prem && prem.nextFundingTime ? fmtCountdown(prem.nextFundingTime - Date.now()) : null;
     fundingNote = `${side}${nextIn ? ' · 다음 정산 ' + nextIn : ''}`;
   }
 
-  const statRow = document.getElementById('statRow');
-  statRow.innerHTML = `
+  document.getElementById('statRow').innerHTML = `
     <div class="stat-box">
       <div class="k">현재가</div>
       <div class="v">${fmtPrice(current.close)}</div>
@@ -1266,8 +888,8 @@ function renderStatRow(tf, candles){
     </div>
     <div class="stat-box">
       <div class="k">변동폭 평균 대비 배율</div>
-      <div class="v" style="color:${ratio>=1.3?'var(--down)':ratio<=0.7?'var(--up)':'var(--text)'}">${ratio!=null?ratio.toFixed(2)+'×':'—'}</div>
-      <div class="v2">${ratio>=1.3?'평소보다 변동성 확대':ratio<=0.7?'평소보다 변동성 축소':'평균 범위 내'}</div>
+      <div class="v">${ratio!=null?ratio.toFixed(2)+'×':'—'}</div>
+      <div class="v2">현재 변동폭 ÷ 20봉 평균</div>
     </div>
     <div class="stat-box">
       <div class="k">시가 대비 상승폭 (▲)</div>
@@ -1292,13 +914,13 @@ function renderStatRow(tf, candles){
     </div>
     <div class="stat-box">
       <div class="k">거래대금 평균 대비 배율 (경과율 보정)</div>
-      <div class="v" style="color:${volRatio>=1.3?'var(--down)':volRatio<=0.7?'var(--up)':'var(--text)'}">${volRatio!=null?volRatio.toFixed(2)+'×':'—'}</div>
-      <div class="v2">이 페이스면 ${fmtMoney(projVol)} 예상${volRatio>=1.3?' · 거래 폭증':volRatio<=0.7?' · 거래 한산':' · 평소 수준'}</div>
+      <div class="v">${volRatio!=null?volRatio.toFixed(2)+'×':'—'}</div>
+      <div class="v2">경과율 반영 예상치 ${fmtMoney(projVol)}</div>
     </div>
     <div class="stat-box">
       <div class="k">매수비중 (테이커 매수 / 전체)</div>
-      <div class="v" style="color:${current.buyRatio>=50?'var(--up)':'var(--down)'}">${fmtPct(current.buyRatio)}</div>
-      <div class="v2">20봉 평균 ${fmtPct(ma.buyRatio)}${buyDelta!=null?` · 평균 대비 ${buyDelta>=0?'+':''}${buyDelta.toFixed(2)}%p`:''}</div>
+      <div class="v">${fmtPct(current.buyRatio)}</div>
+      <div class="v2">20봉 평균 ${fmtPct(ma.buyRatio)}${buyDelta!=null?` · 차이 ${buyDelta>=0?'+':''}${buyDelta.toFixed(2)}%p`:''}</div>
     </div>
     <div class="stat-box">
       <div class="k">체결 건수</div>
@@ -1308,7 +930,7 @@ function renderStatRow(tf, candles){
     <div class="stat-box">
       <div class="k">평균 체결 규모</div>
       <div class="v">${current.trades ? fmtMoney(current.quoteVolume / current.trades) : '—'}</div>
-      <div class="v2">20봉 평균 ${ma.trades ? fmtMoney(ma.quoteVolume / ma.trades) : '—'} · 클수록 대형 주문 우위</div>
+      <div class="v2">20봉 평균 ${ma.trades ? fmtMoney(ma.quoteVolume / ma.trades) : '—'}</div>
     </div>
 
     <div class="stat-box">
@@ -1317,77 +939,70 @@ function renderStatRow(tf, candles){
       <div class="v2">${current.oi != null ? fmtCompact(current.oi) + ' ' + SYMBOLS[currentAsset].label : '선물 데이터 없음'}${oi20 != null ? ` · 20봉 평균 ${fmtMoney(oi20)}` : ''}</div>
     </div>
     <div class="stat-box">
-      <div class="k">OI 변화 (최근 20봉)</div>
-      <div class="v" style="color:${oiChange20==null?'var(--text)':oiChange20>=0?'var(--up)':'var(--down)'}">${fmtSignedPct(oiChange20)}</div>
-      <div class="v2">${oiInterp}</div>
+      <div class="k">OI 변화 (20봉 전 대비)</div>
+      <div class="v">${fmtSignedPct(oiChange20)}</div>
+      <div class="v2">20봉 전 OI ${fmtMoney(refOi)}</div>
     </div>
     <div class="stat-box">
       <div class="k">펀딩비 (현재)</div>
-      <div class="v" style="color:${curFunding==null?'var(--text)':curFunding>=0?'var(--up)':'var(--down)'}">${fmtFunding(curFunding)}</div>
+      <div class="v">${fmtFunding(curFunding)}</div>
       <div class="v2">${fundingNote}</div>
     </div>`;
 }
 
-function renderTable(tf, candles){
-  const signals = computeSignals(candles, getContextCandles());
-  renderPlaybook(tf, candles, signals);
-  const startIdx = Math.max(0, candles.length - TABLE_COUNT);
+// ---------- Detail: table ----------
+// 상위 5% 값을 막대 100%로 잡는다 (최댓값 기준이면 급등 봉 하나 때문에 나머지 막대가 전부 짧아진다)
+function p95(values){
+  const v = values.filter(x => x != null && isFinite(x)).sort((a,b) => a - b);
+  if(!v.length) return null;
+  return v[Math.min(v.length - 1, Math.floor(v.length * 0.95))];
+}
+function barW(v, max){
+  if(v == null || !max) return '0%';
+  return Math.min(100, (v / max) * 100).toFixed(0) + '%';
+}
+const dayKey = ts => { const d = new Date(ts); return d.getFullYear()*10000 + (d.getMonth()+1)*100 + d.getDate(); };
+const signCls = v => v == null ? '' : v >= 0 ? 'c-up' : 'c-down';
+
+function renderTable(tf, allCandles, detailed){
+  const candles = allCandles.slice(-DETAIL_LIMIT);
+  const loading = deepLoading.has(currentAsset) && !detailed;
+  document.getElementById('tableTitle').textContent =
+    `최근 캔들 상세 (${candles.length}개)` + (loading ? ` — ${DETAIL_LIMIT}봉 불러오는 중…` : '');
+
+  const rMax = p95(candles.map(c => c.rangePct));
+  const vMax = p95(candles.map(c => c.quoteVolume));
+  const intraday = tf !== '1d';
+
   const rows = [];
-  for(let i = candles.length - 1; i >= startIdx; i--){
-    rows.push({ c: candles[i], sig: signals[i], isCurrent: i === candles.length - 1 });
+  for(let i = candles.length - 1; i >= 0; i--){
+    const c = candles[i];
+    const isCurrent = i === candles.length - 1;
+    // 최신순으로 그리므로, 바로 위(더 최근) 봉과 날짜가 다르면 이 행 위에 구분선
+    const sepAbove = intraday && i < candles.length - 1 && dayKey(c.openTime) !== dayKey(candles[i+1].openTime);
+    const bull = c.close >= c.open;
+    const buyDev = c.buyRatio == null ? null : c.buyRatio - 50;
+    const buyW = buyDev == null ? '0%' : Math.min(100, Math.abs(buyDev) / 15 * 100).toFixed(0) + '%';
+    const fundVal = c.fundingCount ? c.fundingSettled : c.fundingPrevailing;
+    rows.push(
+`<tr class="${isCurrent ? 'current-row' : ''}${sepAbove ? ' day-start' : ''}">`+
+`<td class="${bull ? 'bull' : 'bear'}">${fmtTime(c.openTime, tf)}${isCurrent?' (진행중)':''}</td>`+
+`<td>${fmtPrice(c.open)}</td><td>${fmtPrice(c.high)}</td><td>${fmtPrice(c.low)}</td>`+
+`<td class="${bull ? 'c-up' : 'c-down'}">${fmtPrice(c.close)}</td>`+
+`<td>${fmtAbs(c.rangeAbs)}</td>`+
+`<td class="pct-cell bar bar-range" style="--w:${barW(c.rangePct, rMax)}">${fmtPct(c.rangePct)}</td>`+
+`<td class="c-up">${fmtPct(c.upPct)}</td><td class="c-down">${fmtPct(c.downPct)}</td>`+
+`<td class="bar bar-vol" style="--w:${barW(c.quoteVolume, vMax)}">${fmtMoney(c.quoteVolume)}</td>`+
+`<td class="bar ${buyDev != null && buyDev >= 0 ? 'bar-buy-up' : 'bar-buy-down'}" style="--w:${buyW}">${fmtPct(c.buyRatio)}</td>`+
+`<td style="color:var(--oi)">${fmtMoney(c.oiValue)}</td>`+
+`<td class="${signCls(c.oiDeltaPct)}">${fmtSignedPct(c.oiDeltaPct)}</td>`+
+`<td class="${signCls(fundVal)}">${c.fundingCount ? `<b>${fmtFunding(c.fundingSettled)}</b>★${c.fundingCount>1?c.fundingCount:''}` : fmtFunding(c.fundingPrevailing)}</td>`+
+`</tr>`);
   }
-
-  const body = document.getElementById('tableBody');
-  body.innerHTML = rows.map(({ c, sig, isCurrent }) => {
-    const cls = [
-      isCurrent ? 'current-row' : '',
-      sig.milestone ? 'milestone' : '',
-      sig.milestone && sig.dir === 'down' ? 'bear' : '',
-    ].filter(Boolean).join(' ');
-    const badges = sig.tags.length
-      ? sig.tags.map(t => `<span class="sig ${t.cls}" title="${t.desc}">${t.label}</span>`).join('')
-      : '<span style="color:var(--text-faint)">—</span>';
-
-    const rg = sig.regime;
-    const regimeBadge = rg == null ? '<span style="color:var(--text-faint)">—</span>'
-      : `<span class="sig ${rg===1?'up':rg===-1?'down':'neutral'}">${REGIME_LABEL[rg]}</span>`;
-
-    const s = sig.setup;
-    const actionBadge = !s ? '<span style="color:var(--text-faint)">—</span>'
-      : `<span class="sig act-${s.cls}" title="${s.action.replace(/"/g,'&quot;')}">${s.statusLabel}</span>`;
-
-    const oc = s && s.outcome;
-    const ocCls = !oc ? 'neutral'
-      : oc.state === 'target' ? 'up' : oc.state === 'stopped' ? 'down' : 'neutral';
-    const outcomeBadge = oc ? `<span class="sig ${ocCls}">${oc.label}</span>`
-      : '<span style="color:var(--text-faint)">—</span>';
-    return `
-    <tr class="${cls}">
-      <td>${sig.milestone ? '◆ ' : ''}${fmtTime(c.openTime, tf)}${isCurrent?' (진행중)':''}</td>
-      <td>${fmtPrice(c.open)}</td>
-      <td>${fmtPrice(c.high)}</td>
-      <td>${fmtPrice(c.low)}</td>
-      <td>${fmtPrice(c.close)}</td>
-      <td>${fmtAbs(c.rangeAbs)}</td>
-      <td class="pct-cell">${fmtPct(c.rangePct)}</td>
-      <td style="color:var(--up)">${fmtPct(c.upPct)}</td>
-      <td style="color:var(--down)">${fmtPct(c.downPct)}</td>
-      <td style="color:var(--vol)">${fmtMoney(c.quoteVolume)}</td>
-      <td style="color:${c.buyRatio>=50?'var(--up)':'var(--down)'}">${fmtPct(c.buyRatio)}</td>
-      <td style="color:var(--oi)">${fmtMoney(c.oiValue)}</td>
-      <td style="color:${c.oiDeltaPct==null?'var(--text-faint)':c.oiDeltaPct>=0?'var(--up)':'var(--down)'}">${fmtSignedPct(c.oiDeltaPct)}</td>
-      <td style="color:${c.fundingPrevailing==null?'var(--text-faint)':c.fundingPrevailing>=0?'var(--up)':'var(--down)'}">${
-        c.fundingCount ? `<b>${fmtFunding(c.fundingSettled)}</b>★${c.fundingCount>1?c.fundingCount:''}` : fmtFunding(c.fundingPrevailing)
-      }</td>
-      <td class="sig-cell">${badges}</td>
-      <td class="sig-cell">${regimeBadge}</td>
-      <td class="sig-cell">${actionBadge}</td>
-      <td class="sig-cell">${outcomeBadge}</td>
-    </tr>`;
-  }).join('');
+  document.getElementById('tableBody').innerHTML = rows.join('');
 }
 
-// 막대 + 20봉 평균선 차트 공통 생성기 (변동폭·거래대금 둘 다 사용)
+// ---------- Charts ----------
 function buildBarMaChart(canvasId, existing, labels, barData, maData, opts){
   const ctx = document.getElementById(canvasId).getContext('2d');
   if(existing) existing.destroy();
@@ -1395,37 +1010,19 @@ function buildBarMaChart(canvasId, existing, labels, barData, maData, opts){
     data: {
       labels,
       datasets: [
-        {
-          type: 'bar',
-          label: opts.barLabel,
-          data: barData,
-          backgroundColor: opts.barColor,
-          borderRadius: 2,
-          order: 2,
-        },
-        {
-          type: 'line',
-          label: opts.maLabel,
-          data: maData,
-          borderColor: '#F97316',
-          borderWidth: 2,
-          pointRadius: 0,
-          tension: 0.15,
-          fill: false,
-          order: 1,
-        },
+        { type:'bar', label:opts.barLabel, data:barData, backgroundColor:opts.barColor, borderRadius:2, order:2 },
+        { type:'line', label:opts.maLabel, data:maData, borderColor:'#F97316', borderWidth:2, pointRadius:0, tension:0.15, fill:false, order:1 },
       ],
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
+      animation: false,
       interaction: { mode:'index', intersect:false },
       plugins: {
         legend: { display:false },
         tooltip: {
-          backgroundColor: '#181828',
-          borderColor: '#2a2a3c',
-          borderWidth: 1,
+          backgroundColor:'#181828', borderColor:'#2a2a3c', borderWidth:1,
           callbacks: {
             title: (items) => labels[items[0].dataIndex] || '',
             label: (item) => item.dataset.label + ': ' + opts.fmt(item.parsed.y),
@@ -1433,15 +1030,8 @@ function buildBarMaChart(canvasId, existing, labels, barData, maData, opts){
         },
       },
       scales: {
-        x: {
-          ticks: { color:'#5A6272', font:{ size:9 }, maxRotation:0, autoSkip:true, maxTicksLimit:8 },
-          grid: { display:false },
-        },
-        y: {
-          ticks: { color:'#5A6272', font:{ size:10 }, callback:v => opts.axisFmt(v) },
-          grid: { color:'#232A36' },
-          beginAtZero: true,
-        },
+        x: { ticks:{ color:'#5A6272', font:{ size:9 }, maxRotation:0, autoSkip:true, maxTicksLimit:8 }, grid:{ display:false } },
+        y: { ticks:{ color:'#5A6272', font:{ size:10 }, callback:v => opts.axisFmt(v) }, grid:{ color:'#232A36' }, beginAtZero:true },
       },
     },
   });
@@ -1456,50 +1046,37 @@ async function renderChartFor(tf, candles){
     await ensureChartJs();
   }catch(e){
     [[statusEl, canvas], [volStatusEl, volCanvas]].forEach(([s, c]) => {
-      s.style.display = 'block';
-      s.classList.add('err');
+      s.style.display = 'block'; s.classList.add('err');
       s.textContent = '차트 로드 실패: ' + e.message;
       c.style.display = 'none';
     });
     return;
   }
-  const cfg = TF_CONFIG[tf];
-  const sliceN = cfg.chartCount;
+  const sliceN = TF_CONFIG[tf].chartCount;
   const chartCandles = candles.slice(-sliceN);
   const labels = chartCandles.map(c => fmtTime(c.openTime, tf));
 
-  // --- 변동폭 차트 ---
   const maRangeAll = rollingMA(candles.map(c => c.rangePct), MA_PERIOD);
   statusEl.style.display = 'none';
   canvas.style.display = 'block';
   chart = buildBarMaChart('chart', chart, labels,
     chartCandles.map((c,i) => ({ x:i, y:c.rangePct })),
     maRangeAll.slice(-sliceN).map((v,i) => ({ x:i, y:v })),
-    {
-      barLabel: '변동폭 (%)', maLabel: '20봉 평균 (%)',
-      barColor: 'rgba(61,214,196,0.55)',
-      fmt: v => v.toFixed(2) + '%',
-      axisFmt: v => v + '%',
-    });
+    { barLabel:'변동폭 (%)', maLabel:'20봉 평균 (%)', barColor:'rgba(61,214,196,0.55)',
+      fmt:v => v.toFixed(2) + '%', axisFmt:v => v + '%' });
 
-  // --- 거래대금 차트 ---
   const maVolAll = rollingMA(candles.map(c => c.quoteVolume), MA_PERIOD);
   volStatusEl.style.display = 'none';
   volCanvas.style.display = 'block';
   volChart = buildBarMaChart('volChart', volChart, labels,
     chartCandles.map((c,i) => ({ x:i, y:c.quoteVolume })),
     maVolAll.slice(-sliceN).map((v,i) => ({ x:i, y:v })),
-    {
-      barLabel: '거래대금', maLabel: '20봉 평균 거래대금',
-      barColor: 'rgba(129,140,248,0.55)',
-      fmt: v => '$' + fmtCompact(v),
-      axisFmt: v => '$' + fmtCompact(v),
-    });
+    { barLabel:'거래대금', maLabel:'20봉 평균 거래대금', barColor:'rgba(129,140,248,0.55)',
+      fmt:v => '$' + fmtCompact(v), axisFmt:v => '$' + fmtCompact(v) });
 }
 
 function renderDetail(tf){
-  const assetCache = dataCache[currentAsset] || {};
-  const candles = assetCache[tf];
+  const { candles, detailed } = getCandles(currentAsset, tf);
   const statusEl = document.getElementById('chartStatus');
   const volStatusEl = document.getElementById('volChartStatus');
   const canvas = document.getElementById('chart');
@@ -1510,14 +1087,13 @@ function renderDetail(tf){
     const errMsg = (failCache[currentAsset] || {})[tf];
     document.getElementById('chartTitle').textContent = `${label} ${TF_CONFIG[tf].label} 변동폭 추이`;
     document.getElementById('volChartTitle').textContent = `${label} ${TF_CONFIG[tf].label} 거래대금 추이`;
+    document.getElementById('tableTitle').textContent = '최근 캔들 상세';
     document.getElementById('statRow').innerHTML = `<div class="stat-box" style="grid-column:1/-1;"><div class="k">데이터 없음</div><div class="v2" style="margin-top:6px;">${errMsg || '불러오는 중...'}</div></div>`;
     document.getElementById('tableBody').innerHTML = '';
     if(chart){ chart.destroy(); chart = null; }
     if(volChart){ volChart.destroy(); volChart = null; }
     [[statusEl, canvas], [volStatusEl, volCanvas]].forEach(([s, c]) => {
-      c.style.display = 'none';
-      s.style.display = 'block';
-      s.classList.add('err');
+      c.style.display = 'none'; s.style.display = 'block'; s.classList.add('err');
       s.textContent = errMsg || '불러오는 중...';
     });
     return;
@@ -1527,19 +1103,102 @@ function renderDetail(tf){
   document.getElementById('chartTitle').textContent = `${label} ${TF_CONFIG[tf].label} 변동폭 추이 (최근 ${TF_CONFIG[tf].chartCount}봉)`;
   document.getElementById('volChartTitle').textContent = `${label} ${TF_CONFIG[tf].label} 거래대금 추이 (최근 ${TF_CONFIG[tf].chartCount}봉)`;
   renderStatRow(tf, candles);
-  renderTable(tf, candles);
+  renderTable(tf, candles, detailed);
   renderChartFor(tf, candles);
+}
+
+// ---------- 지금 보는 종목 깊게 로딩 (4개 시간대 × 1000봉 + OI 4세트 + 펀딩 + 프리미엄) ----------
+// 한 번 받아두면 시간대 탭을 바꿔도 추가 요청 없이 바로 그린다.
+async function loadAssetDeep(asset){
+  deepLoading.add(asset);
+  const [kRes, oiRes, fRes, pRes] = await Promise.all([
+    Promise.allSettled(TF_ORDER.map(tf => fetchKlines(asset, tf, DEEP_LIMIT))),
+    Promise.allSettled(TF_ORDER.map(tf => fetchOpenInterest(asset, tf))),
+    fetchFundingHistory(asset).then(v => v, () => null),
+    fetchPremiumIndex(asset).then(v => v, () => null),
+  ]);
+
+  const prev = deepCache[asset] ? deepCache[asset].tfs : {};
+  const tfs = {};
+  let futuresOk = false;
+  if(!failCache[asset]) failCache[asset] = {};
+  TF_ORDER.forEach((tf, i) => {
+    if(kRes[i].status === 'fulfilled'){
+      const candles = kRes[i].value;
+      const oi = oiRes[i].status === 'fulfilled' ? oiRes[i].value : null;
+      if(oi) futuresOk = true;
+      mergeFuturesData(candles, oi, fRes);
+      tfs[tf] = candles;
+      delete failCache[asset][tf];
+    } else {
+      if(prev[tf]) tfs[tf] = prev[tf];   // 일시적 실패면 직전 데이터 유지
+      else failCache[asset][tf] = kRes[i].reason && kRes[i].reason.message ? kRes[i].reason.message : String(kRes[i].reason);
+    }
+  });
+  deepCache[asset] = { tfs, fetchedAt: Date.now() };
+  premiumCache[asset] = pRes;
+  deepLoading.delete(asset);
+
+  // 불러오는 동안 다른 종목으로 옮겨갔다면 화면은 건드리지 않는다
+  if(asset === currentAsset){
+    renderAssetTabs();
+    renderSummary();
+    renderIndicators();
+    renderDetail(currentTf);
+  }
+  return { futuresOk };
+}
+
+// ---------- 분석 요청용 프롬프트 템플릿 ----------
+// "표 데이터 복사"를 누를 때 숫자 데이터 위에 항상 붙는 페르소나 프롬프트.
+// 문구를 바꾸고 싶으면 이 함수만 수정하면 된다.
+function buildAnalysisPrompt(sym, tfLabel, candleCount){
+  const maTypeLabel = maType === 'SMA' ? '단순이동평균(SMA)' : '지수이동평균(EMA)';
+  return [
+`# Role & Objective`,
+`너는 20년 경력의 스윙 트레이더 겸 리스크 매니저다. 아래 데이터를 감정을 배제하고 통계적·기술적 관점에서 분석해 향후 방향성 시나리오를 제시해라. 확실하지 않은 부분은 "확실하지 않음"이라고 명시하고, 데이터에 없는 값을 지어내지 마라.`,
+``,
+`# 분석 기준 (반드시 아래 원칙에 따라 데이터를 해석할 것)`,
+`1. **이동평균선 8/21/50/100/200**: 아래 '추세 지표' 섹션에 대시보드가 ${maTypeLabel} 방식으로 계산한 값이 있다(시간대별 최대 ${DEEP_LIMIT}봉 기준). 이 값을 사용하고, 캔들 표(최근 ${candleCount}봉)로는 교차 확인만 해라. 값이 없거나 '~'(근사)로 표시된 이평선은 신뢰도 낮음으로 취급해라.`,
+`2. **멀티 타임프레임 확인**: 캔들 원본은 ${sym.label}(${sym.name}) ${tfLabel} 하나뿐이지만, '추세 지표' 섹션에는 1일봉·4시간봉·15분봉·5분봉의 이평선 배열·MACD·Chop Zone 요약이 모두 있다. 이 요약으로 시간대 간 방향 일치 여부를 먼저 확인하고, 캔들 원본이 없어 판단할 수 없는 부분(예: 다른 시간대의 정확한 진입 자리)은 구분해서 말해라. 내가 다른 시간대 표를 추가로 붙여넣으면 그때 통합 분석해라.`,
+`3. **거래량**: 거래대금·매수비중 컬럼으로 의미 있는 캔들(대량 매집/분산)과 가짜 돌파를 구분해라.`,
+`4. **MACD**: '추세 지표'의 12/26/9 MACD 값(0선·시그널 대비 위치, 히스토그램 방향, 최근 교차)을 사용하고, 다이버전스는 캔들 표의 고점·저점과 대조해서 확인해라.`,
+`5. **Chop zone 여부**: '추세 지표'의 Chop Zone(EMA34 기울기 각도, TradingView 기본 공식)과 캔들 표의 스윙 고점/저점 구조를 함께 보고, 지금이 추세 구간인지 횡보 구간인지 먼저 판별한 뒤 그 판단을 전제로 나머지를 해석해라.`,
+``,
+`# Output Format`,
+`---`,
+`### 1. 현재 진단`,
+`- 추세 상태 (이평선 배열 + Chop 여부)`,
+`- 거래량·모멘텀 평가 (거래대금/매수비중 + MACD)`,
+`- 주요 지지/저항 (스윙 고점·저점 기준)`,
+``,
+`### 2. 시나리오 (확률 높은 순 3개)`,
+`- 시나리오별: 발동 조건(Trigger) · 목표가 · 무효화 조건`,
+``,
+`### 3. 대응 가이드`,
+`- 진입 검토 자리, 손절 기준, 이 분석이 깨지는 절대 기준가`,
+`---`,
+``,
+`# 데이터 한계 (분석 전 반드시 확인)`,
+`- 이 데이터는 ${sym.label}(${sym.name}) ${tfLabel}, 최근 ${candleCount}개 캔들, 현물(spot) 기준이다`,
+`- OI·펀딩비는 무기한 선물(perp) 데이터라 가격과 시장이 다르다`,
+`- 이 분석은 투자 조언이 아니며 참고용 시나리오일 뿐이다`,
+``,
+`# Input Data`,
+`(아래 표 데이터)`,
+``,
+  ].join('\n');
 }
 
 // ---------- 표 데이터 텍스트로 내보내기 ----------
 function buildTableText(){
-  const assetCache = dataCache[currentAsset] || {};
-  const candles = assetCache[currentTf];
-  if(!candles) return null;
+  const got = getCandles(currentAsset, currentTf);
+  if(!got.candles) return null;
+  const detailed = got.detailed;
+  const candles = got.candles.slice(-DETAIL_LIMIT);   // 표에는 최근 500봉만 (지표는 전체 1000봉으로 계산)
 
   const sym = SYMBOLS[currentAsset];
   const tfLabel = TF_CONFIG[currentTf].label;
-  const signals = computeSignals(candles, getContextCandles());
   const current = candles[candles.length - 1];
   const ma = closedMA(candles);
   const er = elapsedRatio(current);
@@ -1548,131 +1207,95 @@ function buildTableText(){
   const rangeRatio = ma.pct ? current.rangePct / ma.pct : null;
 
   const L = [];
-  L.push(`# ${sym.label}(${sym.name}) ${tfLabel} 변동성·거래대금 데이터`);
+  L.push(buildAnalysisPrompt(sym, tfLabel, candles.length));
+  L.push(`# ${sym.label}(${sym.name}) ${tfLabel} 데이터`);
   L.push(`조회 시각: ${new Date().toLocaleString('ko-KR')} (한국시간)`);
-  L.push(`데이터 출처: Binance ${sym.symbol} klines`);
-  L.push('');
-
-  // --- 3층 모델 실행 계획 ---
-  const nC = candles.length;
-  const curSig = signals[nC-1];
-  const ctxTf = CONTEXT_TF[currentTf];
-  L.push('## 실행 계획 (3층 신호 모델)');
-  L.push(`- 1층 구조 국면: 직전 확정 스윙 레벨 돌파 기준 → **${REGIME_LABEL[curSig.regime]}**${P.HTF_CONFIRM?` (상위 ${TF_CONFIG[ctxTf].label} 확인 ON)`:''}`);
-  L.push(`- 파라미터: 매수비중 롱${P.BUY_LONG}/숏${P.BUY_SHORT} · 거래대금 ${P.VOL_MULT}배 · 최소조건 ${P.MIN_CONDITIONS}/3 · 손절기준 ${P.STOP_BASIS} · 손절폭 상한 ${P.STOP_MAX_MULT}배 · 눌림재진입 ${P.PULLBACK_ON?'ON':'OFF'}`);
-  let recent = null;
-  for(let i = nC - 1; i >= Math.max(0, nC - 10); i--){
-    if(signals[i].setup && signals[i].setup.qualified){ recent = { i, s:signals[i].setup, c:candles[i] }; break; }
-  }
-  if(recent){
-    const s = recent.s;
-    L.push(`- 최근 조건 통과 셋업: ${fmtTime(recent.c.openTime, currentTf)} 봉 (${recent.i === nC-1 ? '현재 진행 중' : (nC-1-recent.i)+'봉 전'})`);
-    L.push(`- 판정: **${s.statusLabel}** / 조건 ${s.detail.met}/3 (B거래대금 ${s.detail.B?'O':'X'} · C매수비중 ${s.detail.C?'O':'X'} · D OI ${s.detail.D?'O':'X'})`);
-    L.push(`- 진입 ${fmtPrice(s.entry)} / 손절 ${fmtPrice(s.stop)} (${s.stopBasisLabel} 기준) / 목표 ${fmtPrice(s.target)} — 손절 폭 ${s.stopWidthPct.toFixed(2)}%, 허용 ${s.stopCap!=null?s.stopCap.toFixed(2)+'%':'—'}`);
-    L.push(`- 행동: ${s.action}`);
-    if(s.outcome && recent.i !== nC-1) L.push(`- 이후 전개: ${s.outcome.label}`);
-  } else {
-    L.push('- 최근 10봉 내 조건을 통과한 셋업 없음');
-    if(curSig.setup) L.push(`- 현재 봉 판정: ${curSig.setup.statusLabel} — ${curSig.setup.action}`);
-  }
-  // 최근 40봉 성적
-  const from40 = Math.max(0, nC - TABLE_COUNT);
-  let q=0,t=0,st=0,ex=0,rn=0;
-  for(let i=from40;i<nC;i++){
-    const s=signals[i].setup; if(!s||!s.qualified) continue; q++;
-    const o=s.outcome&&s.outcome.state;
-    if(o==='target')t++; else if(o==='stopped')st++; else if(o==='expired')ex++; else rn++;
-  }
-  L.push(`- 최근 ${TABLE_COUNT}봉 조건 통과 ${q}건 (목표도달 ${t} · 손절 ${st} · 미발동소멸 ${ex} · 미결 ${rn})`);
+  L.push(`데이터 출처: Binance ${sym.symbol} 현물 klines + USDT 무기한 선물 OI·펀딩비`);
+  L.push(`캔들 수: ${candles.length}개${detailed ? '' : ' (상세 데이터 로딩 전 요약본)'}`);
   L.push('');
 
   L.push('## 현재 캔들 (진행 중)');
   L.push(`- 시가 ${fmtPrice(current.open)} / 고가 ${fmtPrice(current.high)} / 저가 ${fmtPrice(current.low)} / 현재가 ${fmtPrice(current.close)}`);
   L.push(`- 변동폭 ${fmtPct(current.rangePct)} (${fmtAbs(current.rangeAbs)}) · 시가대비 상승 ${fmtPct(current.upPct)} / 하락 ${fmtPct(current.downPct)}`);
-  L.push(`- 거래대금 ${fmtMoney(current.quoteVolume)} · 봉 경과 ${(er*100).toFixed(0)}% · 이 페이스면 마감 시 ${fmtMoney(projVol)} 예상`);
-  L.push(`- 매수비중 ${fmtPct(current.buyRatio)} (거래대금 기준 테이커 매수 비율)`);
+  L.push(`- 거래대금 ${fmtMoney(current.quoteVolume)} · 봉 경과 ${(er*100).toFixed(0)}% · 경과율 반영 예상 ${fmtMoney(projVol)}`);
+  L.push(`- 매수비중 ${fmtPct(current.buyRatio)}`);
   L.push('');
 
   L.push('## 직전 20개 마감봉 평균');
-  L.push(`- 변동폭 ${fmtPct(ma.pct)} (${fmtAbs(ma.abs)}) → 현재 봉은 평균 대비 ${rangeRatio!=null?rangeRatio.toFixed(2)+'배':'—'}`);
+  L.push(`- 변동폭 ${fmtPct(ma.pct)} (${fmtAbs(ma.abs)}) · 현재 봉 배율 ${rangeRatio!=null?rangeRatio.toFixed(2)+'×':'—'}`);
   L.push(`- 시가대비 상승 ${fmtPct(ma.upPct)} / 하락 ${fmtPct(ma.downPct)}`);
-  L.push(`- 거래대금 ${fmtMoney(ma.quoteVolume)} → 현재 봉 예상치는 평균 대비 ${volRatio!=null?volRatio.toFixed(2)+'배':'—'}`);
+  L.push(`- 거래대금 ${fmtMoney(ma.quoteVolume)} · 현재 봉 예상치 배율 ${volRatio!=null?volRatio.toFixed(2)+'×':'—'}`);
   L.push(`- 매수비중 ${fmtPct(ma.buyRatio)}`);
   L.push('');
 
-  // --- 선물 데이터 요약 ---
   const prem = premiumCache[currentAsset];
   const oiVals = candles.slice(0,-1).slice(-MA_PERIOD).map(c=>c.oiValue).filter(v=>v!=null);
   const oi20 = oiVals.length ? oiVals.reduce((a,b)=>a+b,0)/oiVals.length : null;
   const refIdx = candles.length - 1 - MA_PERIOD;
-  const oiChange20 = (current.oiValue != null && refIdx >= 0 && candles[refIdx].oiValue != null)
-    ? ((current.oiValue - candles[refIdx].oiValue) / candles[refIdx].oiValue) * 100 : null;
+  const refOi = refIdx >= 0 ? candles[refIdx].oiValue : null;
+  const oiChange20 = (current.oiValue != null && refOi != null) ? ((current.oiValue - refOi) / refOi) * 100 : null;
   const curFunding = prem ? prem.lastFundingRate : current.fundingPrevailing;
 
-  L.push('## 선물 시장 (미결제약정 · 펀딩비)');
+  // --- 4개 시간대 추세 지표 요약 ---
+  L.push(`## 추세 지표 (대시보드 계산값 · 이평선 ${maType} · 진행 중인 봉 포함)`);
+  TF_ORDER.forEach(tf => {
+    const src = getCandles(currentAsset, tf).candles;
+    const ind = computeIndicators(src);
+    L.push(`### ${TF_CONFIG[tf].label}${tf === currentTf ? ' (← 아래 캔들 표의 시간대)' : ''} — 계산 봉 수 ${src ? src.length : 0}`);
+    if(!ind){ L.push('- 데이터 부족'); return; }
+    const { ma, macd, chop } = ind;
+    const maStr = ma.list.map(x => `${x.p} ${x.v == null ? '—' : (x.approx ? '~' : '') + fmtPrice(x.v)}`).join(' / ');
+    L.push(`- 이평선: ${maStr}`);
+    L.push(`- 배열: ${ma.label} · 현재가 ${fmtPrice(ma.price)}는 ${ma.total}개 이평선 중 ${ma.above}개 위${ma.missing.length ? ` · ${ma.missing.join('/')} 표본 부족` : ''}`);
+    if(macd){
+      const d = v => (Math.abs(v) >= 1 ? v.toFixed(2) : v.toPrecision(3));
+      L.push(`- MACD: ${macd.head} · ${macd.mom} · MACD ${d(macd.m)} / 시그널 ${d(macd.s)} / 히스토그램 ${d(macd.h)} (직전 ${d(macd.hPrev)})${macd.cross ? ` · 최근 ${macd.cross.type} ${macd.cross.ago === 0 ? '현재 봉' : macd.cross.ago + '봉 전'}` : ''}`);
+    } else L.push('- MACD: 데이터 부족');
+    if(chop){
+      const recent = chop.strip.slice(-10).map(o => (o.angle > 0 ? '+' : '') + o.angle).join(', ');
+      L.push(`- Chop Zone: 현재 ${chop.cur.zone.label} (${chop.cur.angle > 0 ? '+' : ''}${chop.cur.angle}°) · 최근 ${chop.strip.length}봉 상승계열 ${chop.cnt.up} / 횡보 ${chop.cnt.chop} / 하락계열 ${chop.cnt.down} · 최근 10봉 각도(오래된→최신): ${recent}`);
+    } else L.push('- Chop Zone: 데이터 부족');
+  });
+  L.push('');
+
+  L.push('## 선물 시장');
   if(current.oiValue != null){
     L.push(`- 현재 OI ${fmtMoney(current.oiValue)} (${fmtCompact(current.oi)} ${sym.label})`);
     L.push(`- 20봉 평균 OI ${fmtMoney(oi20)} · 20봉 전 대비 ${fmtSignedPct(oiChange20)}`);
   } else {
-    L.push('- OI 데이터 없음 (해당 종목 무기한 선물 미제공이거나 30일 초과 구간)');
+    L.push('- OI 데이터 없음');
   }
   if(curFunding != null){
-    L.push(`- 현재 펀딩비 ${fmtFunding(curFunding)} (${curFunding >= 0 ? '롱이 숏에게 지불 = 롱 우위' : '숏이 롱에게 지불 = 숏 우위'})`);
+    L.push(`- 현재 펀딩비 ${fmtFunding(curFunding)}`);
     if(prem && prem.nextFundingTime) L.push(`- 다음 정산까지 ${fmtCountdown(prem.nextFundingTime - Date.now())}`);
   } else {
     L.push('- 펀딩비 데이터 없음');
   }
   L.push('');
 
-  // 이정표 캔들 요약
-  const startIdx = Math.max(0, candles.length - TABLE_COUNT);
-  const milestones = [];
-  for(let i = candles.length - 1; i >= startIdx; i--){
-    if(signals[i].milestone){
-      milestones.push(`- ${fmtTime(candles[i].openTime, currentTf)} [${signals[i].dir === 'up' ? '상승' : '하락'}] ${signals[i].tags.map(t=>t.label).join(', ')} · 종가 ${fmtPrice(candles[i].close)} · 거래대금 ${fmtMoney(candles[i].quoteVolume)}`);
-    }
-  }
-  L.push(`## 이정표 캔들 (최근 ${TABLE_COUNT}봉 중 ${milestones.length}개)`);
-  L.push(milestones.length ? milestones.join('\n') : '- 해당 구간에 이정표로 판정된 캔들 없음');
-  L.push('');
-
-  L.push(`## 최근 ${TABLE_COUNT}개 캔들 (최신순)`);
-  L.push('| 시간 | 시가 | 고가 | 저가 | 종가 | 변동폭% | 상승% | 하락% | 거래대금 | 매수비중 | OI | OI변화% | 펀딩비 | 신호 | 국면 | 액션 판정 | 이후 전개 |');
-  L.push('|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|');
-  for(let i = candles.length - 1; i >= startIdx; i--){
-    const c = candles[i], s = signals[i];
+  L.push(`## 캔들 ${candles.length}개 (최신순)`);
+  L.push('| 시간 | 시가 | 고가 | 저가 | 종가 | 변동폭% | 상승% | 하락% | 거래대금 | 매수비중 | OI | OI변화% | 펀딩비 |');
+  L.push('|---|---|---|---|---|---|---|---|---|---|---|---|---|');
+  for(let i = candles.length - 1; i >= 0; i--){
+    const c = candles[i];
     const isCur = i === candles.length - 1;
-    const tags = s.tags.length ? s.tags.map(t=>t.label).join(' ') : '-';
-    const mark = s.milestone ? '◆ ' : '';
-    const fund = c.fundingCount
-      ? `${fmtFunding(c.fundingSettled)}(정산${c.fundingCount})`
-      : fmtFunding(c.fundingPrevailing);
-    L.push(`| ${mark}${fmtTime(c.openTime, currentTf)}${isCur?' (진행중)':''} | ${fmtPrice(c.open)} | ${fmtPrice(c.high)} | ${fmtPrice(c.low)} | ${fmtPrice(c.close)} | ${c.rangePct.toFixed(2)} | ${c.upPct.toFixed(2)} | ${c.downPct.toFixed(2)} | ${fmtMoney(c.quoteVolume)} | ${c.buyRatio!=null?c.buyRatio.toFixed(1):'—'} | ${fmtMoney(c.oiValue)} | ${c.oiDeltaPct!=null?c.oiDeltaPct.toFixed(2):'—'} | ${fund} | ${tags} | ${s.regime==null?'—':REGIME_LABEL[s.regime]} | ${s.setup?s.setup.statusLabel:'—'} | ${s.setup&&s.setup.outcome?s.setup.outcome.label:'—'} |`);
+    const fund = c.fundingCount ? `${fmtFunding(c.fundingSettled)}(정산${c.fundingCount})` : fmtFunding(c.fundingPrevailing);
+    L.push(`| ${fmtTime(c.openTime, currentTf)}${isCur?' (진행중)':''} | ${fmtPrice(c.open)} | ${fmtPrice(c.high)} | ${fmtPrice(c.low)} | ${fmtPrice(c.close)} | ${c.rangePct.toFixed(2)} | ${c.upPct.toFixed(2)} | ${c.downPct.toFixed(2)} | ${fmtMoney(c.quoteVolume)} | ${c.buyRatio!=null?c.buyRatio.toFixed(1):'—'} | ${fmtMoney(c.oiValue)} | ${c.oiDeltaPct!=null?c.oiDeltaPct.toFixed(2):'—'} | ${fund} |`);
   }
   L.push('');
 
   L.push('## 용어 정의');
   L.push('- 변동폭% = (고가−저가) ÷ 시가 × 100');
-  L.push('- 상승% = (고가−시가) ÷ 시가 × 100, 하락% = (시가−저가) ÷ 시가 × 100 (둘의 합 = 변동폭%)');
+  L.push('- 상승% = (고가−시가) ÷ 시가 × 100, 하락% = (시가−저가) ÷ 시가 × 100');
   L.push('- 거래대금 = 해당 봉의 USDT 체결 금액, 매수비중 = 테이커 매수 대금 ÷ 전체 거래대금 × 100');
-  L.push('- 스윙H/L: 좌우 2봉보다 높은 고점 / 낮은 저점 (우측 2봉 마감 후 확정)');
-  L.push('- BOS: 직전 확정 스윙 레벨을 같은 방향으로 종가 돌파 (추세 지속)');
-  L.push('- CHoCH: 반대 방향으로 스윙 레벨을 종가 돌파 (시장 구조 전환)');
-  L.push('- 인걸핑/핀바: 반전 캔들 패턴, 확장 N×: 변동폭·거래대금 동시 급증 배수');
-  L.push('- ◆ 이정표: CHoCH 전체 + 거래대금이 직전 20봉 평균의 1.2배 이상 실린 BOS·반전 캔들');
-  L.push('- OI = 바이낸스 USDT 무기한 선물 미결제약정 총액(USD). OI변화%는 직전 봉 대비 증감');
-  L.push('- 펀딩비 = 무기한 선물 자금조달비율. 양수면 롱이 숏에게 지불(롱 우위), 음수면 반대');
-  L.push('- 펀딩비 칸의 "(정산N)"은 그 봉 구간에 실제 정산이 N회 있었고 그 합계라는 뜻. 표기 없으면 해당 봉 시작 시점에 적용 중이던 직전 정산값');
-  L.push('- 주의: 가격·거래대금은 현물(spot), OI·펀딩비는 무기한 선물(perp) 데이터라 시장이 다름');
-  L.push('- 주의: 바이낸스 OI 히스토리는 최근 30일치만 제공되므로 1일봉의 오래된 구간은 OI가 비어 있음');
-  L.push('');
-  L.push('## 3층 신호 모델 규칙');
-  L.push('- 1층 구조 국면: 직전 확정 스윙하이를 종가로 돌파하면 상승 구조, 스윙로우를 이탈하면 하락 구조. 돌파한 그 봉에서 즉시 전환되므로 추세 초입을 놓치지 않음. 구조 미형성이거나 구조와 반대 방향인 신호는 기각');
-  L.push(`- 2층 트리거: B 거래대금 ≥ 20봉 평균 ${P.VOL_MULT}배 · C 매수비중 롱 ${P.BUY_LONG}% 이상 / 숏 ${P.BUY_SHORT}% 이하 · D 가격 방향과 OI 증가 일치. 이 중 ${P.MIN_CONDITIONS}개 이상 충족해야 셋업 성립 (구조돌파는 1층으로 이동)`);
-  L.push(`- 3층 실행: 진입=신호봉 고가(롱)/저가(숏) 돌파. 손절 기준은 '${P.STOP_BASIS}' — 신호봉 전체 / 몸통 중간값 / ATR×${P.ATR_MULT} 중 선택하며 auto는 상한을 통과하는 가장 여유 있는 것을 자동 선택. 목표=손절폭×${P.TARGET_R}. 손절폭 > 20봉 평균 변동폭×${P.STOP_MAX_MULT}이면 기각`);
-  L.push(`- 눌림 재진입: ${P.PULLBACK_ON?`손절폭 과대로 기각된 뒤 ${P.PULLBACK_BARS}봉 안에 신호봉 중간값까지 눌리고 방향에 맞게 마감하면 더 좁은 손절로 재진입 셋업 생성`:'사용 안 함'}`);
-  L.push(`- 이후 전개: 진입 발동 후 ${P.FOLLOW_BARS}봉 내 손절/목표 도달 여부. 같은 봉에 둘 다 닿으면 보수적으로 손절 우선으로 집계`);
-  L.push('- 중요: 위 임계값들은 검증된 최적값이 아니라 임의로 정한 출발점입니다. 표본이 적으면 성적은 우연일 수 있고, 이 표시는 매매 권유가 아닙니다');
+  L.push('- OI = 바이낸스 USDT 무기한 선물 미결제약정 총액(USD), OI변화% = 직전 봉 대비');
+  L.push('- 펀딩비: 양수면 롱이 숏에게, 음수면 숏이 롱에게 지불. "(정산N)"은 그 봉 구간에 N회 정산된 합계, 표기 없으면 봉 시작 시점의 직전 정산값');
+  L.push('- 가격·거래대금은 현물, OI·펀딩비는 무기한 선물 데이터');
+  L.push('- 바이낸스 OI 히스토리는 최근 30일·최대 500개까지만 제공되어 그보다 오래된 봉은 OI가 비어 있음');
+  L.push(`- 이평선: ${maType === 'SMA' ? 'SMA(단순이동평균)' : 'EMA(지수이동평균, SMA로 시작값 설정)'}, 종가 기준. "~" 표시는 계산 봉 수가 기간의 4배 미만이라 차트 값과 차이가 있을 수 있는 근사값`);
+  L.push('- 배열: 8>21>50>100>200 순서면 정배열, 반대면 역배열, 그 외 혼조 (n/m = 인접 이평선 쌍 중 순서가 맞는 쌍 수)');
+  L.push('- MACD: EMA12−EMA26, 시그널 = MACD의 EMA9, 히스토그램 = MACD−시그널');
+  L.push('- Chop Zone: EMA34의 봉간 변화를 최근 30봉 고저 범위로 정규화한 각도(°). ±0.71° 이내 횡보, 그 이상 양수는 상승계열(0.71/2.14/3.57/5° 경계), 음수는 하락계열');
 
   return L.join('\n');
 }
@@ -1691,7 +1314,6 @@ async function copyTableData(btn, thenOpenClaude){
     await navigator.clipboard.writeText(text);
     flashBtn(btn, '복사됨 ✓');
   }catch(e){
-    // 클립보드 API가 막힌 환경(로컬 file:// 등) 대비 폴백
     const ta = document.createElement('textarea');
     ta.value = text;
     ta.style.position = 'fixed';
@@ -1713,13 +1335,18 @@ function switchTab(tf){
   currentTf = tf;
   document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tf === tf));
   document.querySelectorAll('.sum-card').forEach(c => c.classList.toggle('active', c.dataset.tf === tf));
-  renderDetail(tf);
+  document.querySelectorAll('.ind-card').forEach(c => c.classList.toggle('active', c.dataset.tf === tf));
+  renderDetail(tf);   // 현재 종목은 4개 시간대를 이미 받아둬서 추가 요청 없음
 }
 function switchAsset(asset){
+  const prevAsset = currentAsset;
   currentAsset = asset;
+  if(prevAsset !== asset) delete deepCache[prevAsset];  // 안 보는 종목의 1000봉은 메모리에서 비운다
   document.querySelectorAll('.asset-tab').forEach(t => t.classList.toggle('active', t.dataset.asset === asset));
   renderSummary();
+  renderIndicators();
   renderDetail(currentTf);
+  loadAssetDeep(asset);
 }
 document.getElementById('tfTabs').addEventListener('click', e => {
   const tab = e.target.closest('.tab');
@@ -1728,69 +1355,58 @@ document.getElementById('tfTabs').addEventListener('click', e => {
 });
 
 // ---------- Refresh all ----------
+// 요약 카드용 가벼운 캔들(전 종목) + 지금 보고 있는 종목의 상세 데이터(1세트)만 가져온다.
+let refreshing = false;
 async function refreshAll(){
+  if(refreshing) return;       // 이전 갱신이 안 끝났으면 겹쳐서 쏘지 않는다
+  refreshing = true;
   const btn = document.getElementById('refreshBtn');
   const status = document.getElementById('refreshStatus');
   btn.disabled = true;
   btn.textContent = '🔄 불러오는 중...';
-  status.textContent = `${ASSET_ORDER.length}개 종목 × ${TF_ORDER.length}개 타임프레임 데이터 불러오는 중...`;
+  const focus = currentAsset;
+  status.textContent = `${ASSET_ORDER.length - 1}개 종목 요약 + ${SYMBOLS[focus].label} 4개 시간대 상세 불러오는 중...`;
 
+  // 지금 보는 종목은 loadAssetDeep이 따로 받으므로 요약 요청에서 뺀다
   const combos = [];
-  ASSET_ORDER.forEach(asset => TF_ORDER.forEach(tf => combos.push({ asset, tf })));
+  ASSET_ORDER.filter(a => a !== focus).forEach(asset => TF_ORDER.forEach(tf => combos.push({ asset, tf })));
 
-  // 1단계: 현물 klines + 선물 OI/펀딩비를 동시에 요청
-  const [klineResults, oiResults, fundingResults, premiumResults] = await Promise.all([
-    Promise.allSettled(combos.map(c => fetchKlines(c.asset, c.tf))),
-    Promise.allSettled(combos.map(c => fetchOpenInterest(c.asset, c.tf))),
-    Promise.allSettled(ASSET_ORDER.map(a => fetchFundingHistory(a))),
-    Promise.allSettled(ASSET_ORDER.map(a => fetchPremiumIndex(a))),
+  const [klineResults, detail] = await Promise.all([
+    Promise.allSettled(combos.map(c => fetchKlines(c.asset, c.tf, TF_CONFIG[c.tf].limit))),
+    loadAssetDeep(focus),
   ]);
-
-  // 선물 데이터 정리 (실패해도 현물 데이터는 그대로 살린다)
-  const fundingByAsset = {};
-  ASSET_ORDER.forEach((a, i) => {
-    fundingByAsset[a] = fundingResults[i].status === 'fulfilled' ? fundingResults[i].value : null;
-    premiumCache[a] = premiumResults[i].status === 'fulfilled' ? premiumResults[i].value : null;
-  });
-
-  const failedSummary = [];
-  let futuresMissing = 0;
 
   klineResults.forEach((r, i) => {
     const { asset, tf } = combos[i];
     if(!dataCache[asset]) dataCache[asset] = {};
     if(!failCache[asset]) failCache[asset] = {};
     if(r.status === 'fulfilled'){
-      const candles = r.value;
-      const oiMap = oiResults[i].status === 'fulfilled' ? oiResults[i].value : null;
-      if(!oiMap) futuresMissing++;
-      mergeFuturesData(candles, oiMap, fundingByAsset[asset]);
-      dataCache[asset][tf] = candles;
+      dataCache[asset][tf] = r.value;
       delete failCache[asset][tf];
     } else {
       failCache[asset][tf] = r.reason && r.reason.message ? r.reason.message : String(r.reason);
-      console.error(asset, tf, r.reason);
     }
   });
 
+  const failedSummary = [];
   ASSET_ORDER.forEach(asset => {
     const failedTfs = Object.keys(failCache[asset] || {});
-    if(failedTfs.length){
-      failedSummary.push(`${SYMBOLS[asset].label}(${failedTfs.map(tf=>TF_CONFIG[tf].label).join(',')})`);
-    }
+    if(failedTfs.length) failedSummary.push(`${SYMBOLS[asset].label}(${failedTfs.map(tf=>TF_CONFIG[tf].label).join(',')})`);
   });
 
   renderAssetTabs();
   renderSummary();
+  renderIndicators();
   renderDetail(currentTf);
 
   btn.disabled = false;
   btn.textContent = '🔄 새로고침';
   const now = new Date().toLocaleTimeString('ko-KR');
-  const futNote = futuresMissing ? ` · 선물(OI) 미제공 ${futuresMissing}건` : '';
+  const futNote = detail && !detail.futuresOk ? ` · ${SYMBOLS[currentAsset].label} 선물(OI) 미제공` : '';
   status.textContent = failedSummary.length
     ? `${now} · 일부 실패: ${failedSummary.join(', ')}${futNote}`
     : `${now} · 전체 갱신 완료${futNote}`;
+  refreshing = false;
 }
 document.getElementById('refreshBtn').addEventListener('click', refreshAll);
 
@@ -1812,6 +1428,7 @@ applyTheme(localStorage.getItem('vol-dash-theme') || 'dark');
 
 // ---------- Init ----------
 renderAssetTabs();
+renderIndicators();
 refreshAll();
 </script>
 </body>
