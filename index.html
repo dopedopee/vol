@@ -175,6 +175,8 @@
   .copy-btn:hover{ border-color:var(--accent); }
   .copy-btn.primary{ background:var(--accent); color:#03231e; border-color:var(--accent); }
   .copy-btn:disabled{ opacity:0.5; cursor:not-allowed; }
+  .copy-opt{ display:flex; align-items:center; gap:5px; font-size:11px; color:var(--text-faint); }
+  .copy-opt select{ background:var(--bg-elev2); border:1px solid var(--border); color:var(--text); border-radius:6px; padding:4px 6px; font-size:11px; }
 
   .disclaimer{ font-size:10.5px; color:var(--text-faint); line-height:1.6; margin-top:20px; padding-top:14px; border-top:1px solid var(--border); }
 
@@ -254,8 +256,17 @@
     <div class="panel-head">
       <div class="panel-title" id="tableTitle">최근 캔들 상세</div>
       <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
-        <button class="copy-btn" id="copyTableBtn" title="숫자 데이터 + 분석 요청 프롬프트가 함께 복사됩니다">📋 표 데이터 복사 (분석 프롬프트 포함)</button>
-        <button class="copy-btn primary" id="askClaudeBtn">Claude에게 분석 요청</button>
+        <label class="copy-opt">시간대별
+          <select id="multiRowsSel">
+            <option value="500">500봉</option>
+            <option value="300">300봉</option>
+            <option value="200">200봉</option>
+            <option value="100">100봉</option>
+          </select>
+        </label>
+        <button class="copy-btn" id="copyTableBtn" title="1일·4시간·15분·5분봉 캔들 + 추세 지표 + 분석 프롬프트가 함께 복사됩니다">📋 4개 시간대 표 복사 (분석 프롬프트 포함)</button>
+        <button class="copy-btn" id="copySingleBtn" title="지금 보고 있는 시간대의 표만, 기존 형식으로 복사합니다">현재 시간대만</button>
+        <button class="copy-btn primary" id="askClaudeBtn" title="4개 시간대 표를 복사한 뒤 Claude 새 대화를 엽니다">Claude에게 분석 요청</button>
       </div>
     </div>
     <div class="table-legend">
@@ -1183,15 +1194,23 @@ async function loadAssetDeep(asset){
 // ---------- 분석 요청용 프롬프트 템플릿 ----------
 // "표 데이터 복사"를 누를 때 숫자 데이터 위에 항상 붙는 페르소나 프롬프트.
 // 문구를 바꾸고 싶으면 이 함수만 수정하면 된다.
-function buildAnalysisPrompt(sym, tfLabel, candleCount){
+// multi=true 이면 4개 시간대 캔들 원본이 모두 들어간 경우의 문구를 쓴다.
+function buildAnalysisPrompt(sym, tfLabel, candleCount, multi = false){
   const maTypeLabel = maType === 'SMA' ? '단순이동평균(SMA)' : '지수이동평균(EMA)';
+  const tableScope = multi ? `시간대별 최근 ${candleCount}봉` : `최근 ${candleCount}봉`;
+  const mtfLine = multi
+    ? `2. **멀티 타임프레임 확인**: 1일봉·4시간봉·15분봉·5분봉 네 시간대의 캔들 원본(각 최근 ${candleCount}봉)과 추세 지표 요약이 모두 있다. 상위 시간대(1일·4시간)로 큰 추세와 주요 지지·저항을 먼저 정하고, 하위 시간대(15분·5분)로 진입 자리를 판단해라. 시간대 간 방향이 엇갈리면 어느 시간대가 어느 쪽을 가리키는지 명시하고, 엇갈림 자체를 시나리오에 반영해라.`
+    : `2. **멀티 타임프레임 확인**: 캔들 원본은 ${sym.label}(${sym.name}) ${tfLabel} 하나뿐이지만, '추세 지표' 섹션에는 1일봉·4시간봉·15분봉·5분봉의 이평선 배열·MACD·Chop Zone 요약이 모두 있다. 이 요약으로 시간대 간 방향 일치 여부를 먼저 확인하고, 캔들 원본이 없어 판단할 수 없는 부분(예: 다른 시간대의 정확한 진입 자리)은 구분해서 말해라. 내가 다른 시간대 표를 추가로 붙여넣으면 그때 통합 분석해라.`;
+  const scopeLine = multi
+    ? `- 이 데이터는 ${sym.label}(${sym.name}) 1일봉·4시간봉·15분봉·5분봉, 시간대별 최근 ${candleCount}개 캔들, 현물(spot) 기준이다`
+    : `- 이 데이터는 ${sym.label}(${sym.name}) ${tfLabel}, 최근 ${candleCount}개 캔들, 현물(spot) 기준이다`;
   return [
 `# Role & Objective`,
 `너는 20년 경력의 스윙 트레이더 겸 리스크 매니저다. 아래 데이터를 감정을 배제하고 통계적·기술적 관점에서 분석해 향후 방향성 시나리오를 제시해라. 확실하지 않은 부분은 "확실하지 않음"이라고 명시하고, 데이터에 없는 값을 지어내지 마라.`,
 ``,
 `# 분석 기준 (반드시 아래 원칙에 따라 데이터를 해석할 것)`,
-`1. **이동평균선 8/21/50/100/200**: 아래 '추세 지표' 섹션에 대시보드가 ${maTypeLabel} 방식으로 계산한 값과, 인접한 이평선 사이의 간격(%)이 함께 있다(시간대별 최대 ${DEEP_LIMIT}봉 기준). 이 값을 사용하고, 캔들 표(최근 ${candleCount}봉)로는 교차 확인만 해라. 값이 없거나 '~'(근사)로 표시된 이평선은 신뢰도 낮음으로 취급해라. 간격이 넓게 벌어진 구간은 되돌림(수렴) 가능성을, 간격이 음수(역전)인 구간은 배열이 아직 정리되지 않았음을 뜻하니 시나리오에 반영해라.`,
-`2. **멀티 타임프레임 확인**: 캔들 원본은 ${sym.label}(${sym.name}) ${tfLabel} 하나뿐이지만, '추세 지표' 섹션에는 1일봉·4시간봉·15분봉·5분봉의 이평선 배열·MACD·Chop Zone 요약이 모두 있다. 이 요약으로 시간대 간 방향 일치 여부를 먼저 확인하고, 캔들 원본이 없어 판단할 수 없는 부분(예: 다른 시간대의 정확한 진입 자리)은 구분해서 말해라. 내가 다른 시간대 표를 추가로 붙여넣으면 그때 통합 분석해라.`,
+`1. **이동평균선 8/21/50/100/200**: 아래 '추세 지표' 섹션에 대시보드가 ${maTypeLabel} 방식으로 계산한 값과, 인접한 이평선 사이의 간격(%)이 함께 있다(시간대별 최대 ${DEEP_LIMIT}봉 기준). 이 값을 사용하고, 캔들 표(${tableScope})로는 교차 확인만 해라. 값이 없거나 '~'(근사)로 표시된 이평선은 신뢰도 낮음으로 취급해라. 간격이 넓게 벌어진 구간은 되돌림(수렴) 가능성을, 간격이 음수(역전)인 구간은 배열이 아직 정리되지 않았음을 뜻하니 시나리오에 반영해라.`,
+mtfLine,
 `3. **거래량**: 거래대금·매수비중 컬럼으로 의미 있는 캔들(대량 매집/분산)과 가짜 돌파를 구분해라.`,
 `4. **MACD**: '추세 지표'의 12/26/9 MACD 값(0선·시그널 대비 위치, 히스토그램 방향, 최근 교차)을 사용하고, 다이버전스는 캔들 표의 고점·저점과 대조해서 확인해라.`,
 `5. **Chop zone 여부**: '추세 지표'의 Chop Zone(EMA34 기울기 각도, TradingView 기본 공식)과 캔들 표의 스윙 고점/저점 구조를 함께 보고, 지금이 추세 구간인지 횡보 구간인지 먼저 판별한 뒤 그 판단을 전제로 나머지를 해석해라.`,
@@ -1211,7 +1230,7 @@ function buildAnalysisPrompt(sym, tfLabel, candleCount){
 `---`,
 ``,
 `# 데이터 한계 (분석 전 반드시 확인)`,
-`- 이 데이터는 ${sym.label}(${sym.name}) ${tfLabel}, 최근 ${candleCount}개 캔들, 현물(spot) 기준이다`,
+scopeLine,
 `- OI·펀딩비는 무기한 선물(perp) 데이터라 가격과 시장이 다르다`,
 `- 이 분석은 투자 조언이 아니며 참고용 시나리오일 뿐이다`,
 ``,
@@ -1219,6 +1238,43 @@ function buildAnalysisPrompt(sym, tfLabel, candleCount){
 `(아래 표 데이터)`,
 ``,
   ].join('\n');
+}
+
+// 4개 시간대 추세 지표 요약 (두 복사 방식 공용). markTf 가 null 이면 표시 없음
+function pushIndicatorSummary(L, markTf){
+  L.push(`## 추세 지표 (대시보드 계산값 · 이평선 ${maType} · 진행 중인 봉 포함)`);
+  TF_ORDER.forEach(tf => {
+    const src = getCandles(currentAsset, tf).candles;
+    const ind = computeIndicators(src);
+    L.push(`### ${TF_CONFIG[tf].label}${tf === markTf ? ' (← 아래 캔들 표의 시간대)' : ''} — 계산 봉 수 ${src ? src.length : 0}`);
+    if(!ind){ L.push('- 데이터 부족'); return; }
+    const { ma, macd, chop } = ind;
+    const maStr = ma.list.map(x => `${x.p} ${x.v == null ? '—' : (x.approx ? '~' : '') + fmtPrice(x.v)}`).join(' / ');
+    L.push(`- 이평선: ${maStr}`);
+    const gapPairs = ['8→21','21→50','50→100','100→200'];
+    const gapStr = ma.gaps.map((g, i) => g == null ? `${gapPairs[i]} —` : `${gapPairs[i]} ${g>=0?'+':''}${g.toFixed(2)}%${g<0?'(역전)':''}`).join(' / ');
+    L.push(`- 이평선 간격(짧은 기간 기준 %, 음수=순서 역전): ${gapStr}`);
+    L.push(`- 값이 큰 순서: ${ma.orderPeriods.join('-')}${ma.missing.length ? ` (${ma.missing.join('/')} 없음)` : ''} (정상 정배열이면 8-21-50-100-200)`);
+    L.push(`- 배열: ${ma.label} · 현재가 ${fmtPrice(ma.price)}는 ${ma.total}개 이평선 중 ${ma.above}개 위${ma.missing.length ? ` · ${ma.missing.join('/')} 표본 부족` : ''}`);
+    if(macd){
+      const d = v => (Math.abs(v) >= 1 ? v.toFixed(2) : v.toPrecision(3));
+      L.push(`- MACD: ${macd.head} · ${macd.mom} · MACD ${d(macd.m)} / 시그널 ${d(macd.s)} / 히스토그램 ${d(macd.h)} (직전 ${d(macd.hPrev)})${macd.cross ? ` · 최근 ${macd.cross.type} ${macd.cross.ago === 0 ? '현재 봉' : macd.cross.ago + '봉 전'}` : ''}`);
+    } else L.push('- MACD: 데이터 부족');
+    if(chop){
+      const recent = chop.strip.slice(-10).map(o => (o.angle > 0 ? '+' : '') + o.angle).join(', ');
+      L.push(`- Chop Zone: 현재 ${chop.cur.zone.label} (${chop.cur.angle > 0 ? '+' : ''}${chop.cur.angle}°) · 최근 ${chop.strip.length}봉 상승계열 ${chop.cnt.up} / 횡보 ${chop.cnt.chop} / 하락계열 ${chop.cnt.down} · 최근 10봉 각도(오래된→최신): ${recent}`);
+    } else L.push('- Chop Zone: 데이터 부족');
+  });
+  L.push('');
+}
+
+// 추세 지표 용어 정의 (두 복사 방식 공용)
+function pushIndicatorDefs(L){
+  L.push(`- 이평선: ${maType === 'SMA' ? 'SMA(단순이동평균)' : 'EMA(지수이동평균, SMA로 시작값 설정)'}, 종가 기준. "~" 표시는 계산 봉 수가 기간의 4배 미만이라 차트 값과 차이가 있을 수 있는 근사값`);
+  L.push('- 배열: 8>21>50>100>200 순서면 정배열, 반대면 역배열, 그 외 혼조 (n/m = 인접 이평선 쌍 중 순서가 맞는 쌍 수)');
+  L.push('- 이평선 간격 = (짧은 기간 이평선 값 − 긴 기간 이평선 값) ÷ 긴 기간 이평선 값 × 100. 값이 클수록 두 이평선이 멀리 벌어진 것이고, 시장에서는 벌어진 이평선이 다시 좁혀지는(수렴) 조정이 나올 확률이 커진다고 봄. 음수는 순서 자체가 뒤집힌 구간');
+  L.push('- MACD: EMA12−EMA26, 시그널 = MACD의 EMA9, 히스토그램 = MACD−시그널');
+  L.push('- Chop Zone: EMA34의 봉간 변화를 최근 30봉 고저 범위로 정규화한 각도(°). ±0.71° 이내 횡보, 그 이상 양수는 상승계열(0.71/2.14/3.57/5° 경계), 음수는 하락계열');
 }
 
 // ---------- 표 데이터 텍스트로 내보내기 ----------
@@ -1268,30 +1324,7 @@ function buildTableText(){
   const curFunding = prem ? prem.lastFundingRate : current.fundingPrevailing;
 
   // --- 4개 시간대 추세 지표 요약 ---
-  L.push(`## 추세 지표 (대시보드 계산값 · 이평선 ${maType} · 진행 중인 봉 포함)`);
-  TF_ORDER.forEach(tf => {
-    const src = getCandles(currentAsset, tf).candles;
-    const ind = computeIndicators(src);
-    L.push(`### ${TF_CONFIG[tf].label}${tf === currentTf ? ' (← 아래 캔들 표의 시간대)' : ''} — 계산 봉 수 ${src ? src.length : 0}`);
-    if(!ind){ L.push('- 데이터 부족'); return; }
-    const { ma, macd, chop } = ind;
-    const maStr = ma.list.map(x => `${x.p} ${x.v == null ? '—' : (x.approx ? '~' : '') + fmtPrice(x.v)}`).join(' / ');
-    L.push(`- 이평선: ${maStr}`);
-    const gapPairs = ['8→21','21→50','50→100','100→200'];
-    const gapStr = ma.gaps.map((g, i) => g == null ? `${gapPairs[i]} —` : `${gapPairs[i]} ${g>=0?'+':''}${g.toFixed(2)}%${g<0?'(역전)':''}`).join(' / ');
-    L.push(`- 이평선 간격(짧은 기간 기준 %, 음수=순서 역전): ${gapStr}`);
-    L.push(`- 값이 큰 순서: ${ma.orderPeriods.join('-')}${ma.missing.length ? ` (${ma.missing.join('/')} 없음)` : ''} (정상 정배열이면 8-21-50-100-200)`);
-    L.push(`- 배열: ${ma.label} · 현재가 ${fmtPrice(ma.price)}는 ${ma.total}개 이평선 중 ${ma.above}개 위${ma.missing.length ? ` · ${ma.missing.join('/')} 표본 부족` : ''}`);
-    if(macd){
-      const d = v => (Math.abs(v) >= 1 ? v.toFixed(2) : v.toPrecision(3));
-      L.push(`- MACD: ${macd.head} · ${macd.mom} · MACD ${d(macd.m)} / 시그널 ${d(macd.s)} / 히스토그램 ${d(macd.h)} (직전 ${d(macd.hPrev)})${macd.cross ? ` · 최근 ${macd.cross.type} ${macd.cross.ago === 0 ? '현재 봉' : macd.cross.ago + '봉 전'}` : ''}`);
-    } else L.push('- MACD: 데이터 부족');
-    if(chop){
-      const recent = chop.strip.slice(-10).map(o => (o.angle > 0 ? '+' : '') + o.angle).join(', ');
-      L.push(`- Chop Zone: 현재 ${chop.cur.zone.label} (${chop.cur.angle > 0 ? '+' : ''}${chop.cur.angle}°) · 최근 ${chop.strip.length}봉 상승계열 ${chop.cnt.up} / 횡보 ${chop.cnt.chop} / 하락계열 ${chop.cnt.down} · 최근 10봉 각도(오래된→최신): ${recent}`);
-    } else L.push('- Chop Zone: 데이터 부족');
-  });
-  L.push('');
+  pushIndicatorSummary(L, currentTf);
 
   L.push('## 선물 시장');
   if(current.oiValue != null){
@@ -1327,12 +1360,94 @@ function buildTableText(){
   L.push('- 펀딩비: 양수면 롱이 숏에게, 음수면 숏이 롱에게 지불. "(정산N)"은 그 봉 구간에 N회 정산된 합계, 표기 없으면 봉 시작 시점의 직전 정산값');
   L.push('- 가격·거래대금은 현물, OI·펀딩비는 무기한 선물 데이터');
   L.push('- 바이낸스 OI 히스토리는 최근 30일·최대 500개까지만 제공되어 그보다 오래된 봉은 OI가 비어 있음');
-  L.push(`- 이평선: ${maType === 'SMA' ? 'SMA(단순이동평균)' : 'EMA(지수이동평균, SMA로 시작값 설정)'}, 종가 기준. "~" 표시는 계산 봉 수가 기간의 4배 미만이라 차트 값과 차이가 있을 수 있는 근사값`);
-  L.push('- 배열: 8>21>50>100>200 순서면 정배열, 반대면 역배열, 그 외 혼조 (n/m = 인접 이평선 쌍 중 순서가 맞는 쌍 수)');
-  L.push('- 이평선 간격 = (짧은 기간 이평선 값 − 긴 기간 이평선 값) ÷ 긴 기간 이평선 값 × 100. 값이 클수록 두 이평선이 멀리 벌어진 것이고, 시장에서는 벌어진 이평선이 다시 좁혀지는(수렴) 조정이 나올 확률이 커진다고 봄. 음수는 순서 자체가 뒤집힌 구간');
-  L.push('- MACD: EMA12−EMA26, 시그널 = MACD의 EMA9, 히스토그램 = MACD−시그널');
-  L.push('- Chop Zone: EMA34의 봉간 변화를 최근 30봉 고저 범위로 정규화한 각도(°). ±0.71° 이내 횡보, 그 이상 양수는 상승계열(0.71/2.14/3.57/5° 경계), 음수는 하락계열');
+  pushIndicatorDefs(L);
 
+  return L.join('\n');
+}
+
+// ---------- 4개 시간대 전체 복사 ----------
+// 행 수가 많아지므로 표는 압축 CSV로 쓴다: 시가·고가·저가·종가로 다시 계산할 수 있는 칸
+// (변동폭 $, 상승%, 하락%)과 $·천 단위 쉼표를 빼서 행당 길이를 절반 가까이 줄였다.
+let multiRows = (() => { try{ return parseInt(localStorage.getItem('vol-multi-rows'), 10) || 500; }catch(e){ return 500; } })();
+
+const numPlain = n => {
+  if(n == null || isNaN(n)) return '';
+  const a = Math.abs(n);
+  if(a >= 1000) return n.toFixed(2);
+  if(a >= 1) return n.toFixed(4).replace(/0+$/, '').replace(/\.$/, '');
+  return n.toPrecision(5);
+};
+const pad2 = x => String(x).padStart(2, '0');
+function csvTime(ts, tf){
+  const d = new Date(ts);
+  if(tf === '1d') return `${String(d.getFullYear()).slice(2)}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`;
+  return `${pad2(d.getMonth()+1)}-${pad2(d.getDate())} ${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
+}
+
+function buildMultiTableText(rowsPerTf){
+  const sym = SYMBOLS[currentAsset];
+  const avail = TF_ORDER.filter(tf => getCandles(currentAsset, tf).candles);
+  if(!avail.length) return null;
+
+  const L = [];
+  L.push(buildAnalysisPrompt(sym, '', rowsPerTf, true));
+  L.push(`# ${sym.label}(${sym.name}) 4개 시간대 데이터`);
+  L.push(`조회 시각: ${new Date().toLocaleString('ko-KR')} (한국시간, 캔들 시간도 한국시간)`);
+  L.push(`데이터 출처: Binance ${sym.symbol} 현물 klines + USDT 무기한 선물 OI·펀딩비`);
+  L.push('');
+
+  pushIndicatorSummary(L, null);
+
+  // 선물 시장 (현재값)
+  const prem = premiumCache[currentAsset];
+  L.push('## 선물 시장 (현재)');
+  if(prem && prem.lastFundingRate != null){
+    L.push(`- 현재 펀딩비 ${fmtFunding(prem.lastFundingRate)}${prem.nextFundingTime ? ` · 다음 정산까지 ${fmtCountdown(prem.nextFundingTime - Date.now())}` : ''}`);
+  } else {
+    L.push('- 펀딩비 데이터 없음');
+  }
+  L.push('');
+
+  // 시간대별: 현재 봉 요약 + 20봉 평균 + CSV
+  TF_ORDER.forEach(tf => {
+    const got = getCandles(currentAsset, tf);
+    L.push(`## ${TF_CONFIG[tf].label} 캔들`);
+    if(!got.candles){ L.push('- 데이터 없음'); L.push(''); return; }
+    const candles = got.candles.slice(-rowsPerTf);
+    const cur = candles[candles.length - 1];
+    const ma = closedMA(candles);
+    const er = elapsedRatio(cur);
+    L.push(`- 캔들 ${candles.length}개${got.detailed ? '' : ' (상세 로딩 전 요약본)'} · 현재 봉 경과 ${(er*100).toFixed(0)}% (마지막 행은 진행 중인 봉)`);
+    L.push(`- 직전 20봉 평균: 변동폭 ${fmtPct(ma.pct)} · 거래대금 ${fmtMoney(ma.quoteVolume)} · 매수비중 ${fmtPct(ma.buyRatio)}`);
+    L.push(`- 현재 봉: 변동폭 ${fmtPct(cur.rangePct)} · 거래대금 ${fmtMoney(cur.quoteVolume)} (경과율 반영 예상 ${fmtMoney(cur.quoteVolume / er)}) · 매수비중 ${fmtPct(cur.buyRatio)}`);
+    L.push('```csv');
+    L.push('time,open,high,low,close,range%,vol,buy%,oi,oi%,fund%');
+    // 오래된 → 최신 순 (시계열 분석에 자연스러운 방향)
+    for(let i = 0; i < candles.length; i++){
+      const c = candles[i];
+      const fund = c.fundingCount ? (c.fundingSettled*100).toFixed(4) + '*' : (c.fundingPrevailing != null ? (c.fundingPrevailing*100).toFixed(4) : '');
+      L.push([
+        csvTime(c.openTime, tf),
+        numPlain(c.open), numPlain(c.high), numPlain(c.low), numPlain(c.close),
+        c.rangePct.toFixed(2),
+        fmtCompact(c.quoteVolume),
+        c.buyRatio != null ? c.buyRatio.toFixed(1) : '',
+        c.oiValue != null ? fmtCompact(c.oiValue) : '',
+        c.oiDeltaPct != null ? c.oiDeltaPct.toFixed(2) : '',
+        fund,
+      ].join(','));
+    }
+    L.push('```');
+    L.push('');
+  });
+
+  L.push('## 용어 정의');
+  L.push('- CSV 열: time(봉 시작 시각, 한국시간) · open/high/low/close(USDT) · range%=(고가−저가)÷시가×100 · vol=거래대금(USDT, K/M/B 축약) · buy%=테이커 매수 대금÷전체 거래대금×100 · oi=무기한 선물 미결제약정(USD) · oi%=직전 봉 대비 OI 변화 · fund%=펀딩비(%). 빈 칸은 데이터 없음');
+  L.push('- CSV는 오래된 봉 → 최신 봉 순서이며 각 표의 마지막 행은 아직 마감되지 않은 진행 중인 봉');
+  L.push('- fund% 뒤의 *는 그 봉 구간에 실제 정산된 값(여러 번이면 합계), 없으면 봉 시작 시점에 적용 중이던 직전 정산값');
+  L.push('- 시가 대비 상승률 = (high−open)÷open, 하락률 = (open−low)÷open 은 필요하면 CSV에서 직접 계산');
+  L.push('- 가격·거래대금은 현물, OI·펀딩비는 무기한 선물 데이터. 바이낸스 OI 히스토리는 최근 30일·최대 500개까지만 제공되어 오래된 봉은 oi가 비어 있음');
+  pushIndicatorDefs(L);
   return L.join('\n');
 }
 
@@ -1343,12 +1458,13 @@ function flashBtn(btn, msg){
   setTimeout(() => { btn.textContent = old; btn.disabled = false; }, 1600);
 }
 
-async function copyTableData(btn, thenOpenClaude){
-  const text = buildTableText();
+async function copyTableData(btn, thenOpenClaude, multi = true){
+  const text = multi ? buildMultiTableText(multiRows) : buildTableText();
   if(!text){ flashBtn(btn, '데이터 없음'); return; }
+  const kb = (new Blob([text]).size / 1024).toFixed(0);
   try{
     await navigator.clipboard.writeText(text);
-    flashBtn(btn, '복사됨 ✓');
+    flashBtn(btn, `복사됨 ✓ (${kb}KB)`);
   }catch(e){
     const ta = document.createElement('textarea');
     ta.value = text;
@@ -1356,15 +1472,24 @@ async function copyTableData(btn, thenOpenClaude){
     ta.style.opacity = '0';
     document.body.appendChild(ta);
     ta.select();
-    try{ document.execCommand('copy'); flashBtn(btn, '복사됨 ✓'); }
+    try{ document.execCommand('copy'); flashBtn(btn, `복사됨 ✓ (${kb}KB)`); }
     catch(e2){ flashBtn(btn, '복사 실패'); }
     document.body.removeChild(ta);
   }
   if(thenOpenClaude) window.open('https://claude.ai/new', '_blank');
 }
 
-document.getElementById('copyTableBtn').addEventListener('click', e => copyTableData(e.currentTarget, false));
-document.getElementById('askClaudeBtn').addEventListener('click', e => copyTableData(e.currentTarget, true));
+document.getElementById('copyTableBtn').addEventListener('click', e => copyTableData(e.currentTarget, false, true));
+document.getElementById('copySingleBtn').addEventListener('click', e => copyTableData(e.currentTarget, false, false));
+document.getElementById('askClaudeBtn').addEventListener('click', e => copyTableData(e.currentTarget, true, true));
+(() => {
+  const sel = document.getElementById('multiRowsSel');
+  sel.value = String(multiRows);
+  sel.addEventListener('change', () => {
+    multiRows = parseInt(sel.value, 10) || 500;
+    try{ localStorage.setItem('vol-multi-rows', String(multiRows)); }catch(err){}
+  });
+})();
 
 // ---------- Tabs / Asset switching ----------
 function switchTab(tf){
