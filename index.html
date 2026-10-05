@@ -284,6 +284,13 @@
   .sim-detail th, .sim-detail td{ position:static; text-align:left; white-space:normal; }
   .sim-detail td:first-child{ background:transparent; border-left:none; color:var(--accent); }
   .sim-detail .copy-btn{ margin-top:8px; }
+  .sim-stat{ margin:8px 0 6px; overflow-x:auto; }
+  .sim-stat table{ min-width:0; width:100%; font-size:11px; }
+  .sim-stat th, .sim-stat td{ position:static; text-align:right; white-space:nowrap; padding:3px 6px; }
+  .sim-stat th:first-child, .sim-stat td:first-child{ text-align:left; background:transparent; border-left:none; }
+  .sim-stat tr.grp td{ text-align:left; color:var(--accent); border-top:1px solid var(--accent-dim); padding-top:5px; }
+  .sim-stat tr.grp b{ color:#fff; }
+  .sim-fwd{ font-size:11px; margin:4px 0 0; color:var(--text-dim); }
   tr.flash td, tr.flash td:first-child{ background-color:#4a3305 !important; }
   .pill.flat{ color:#E6C200; border-color:#E6C200; }
   .ind-card.hot-up{ box-shadow:inset 0 0 0 1px var(--up); }
@@ -429,7 +436,7 @@
       ※ 펀딩비 칸에 <b>★</b>가 붙은 값은 그 봉 구간에 실제 정산된 값(여러 번이면 합계)이고, 표시가 없으면 봉 시작 시점에 적용 중이던 직전 정산값입니다.<br>
       ※ <b>지금 보고 있는 종목은 5개 시간대 모두 최근 1000봉</b>을 불러와 이동평균선·MACD·Chop Zone을 계산하고, 표에는 그중 <b>최근 500봉</b>을 보여줍니다(5분봉 약 42시간 · 15분봉 약 5.2일 · 1시간봉 약 21일 · 4시간봉 약 83일 · 1일봉 약 500일). 다른 종목은 요약 카드용으로 120봉만 불러옵니다. 바이낸스는 <b>OI 히스토리를 최근 30일, 최대 500개까지만</b> 제공하므로 그보다 오래된 봉의 OI는 비어 있습니다(—). 무기한 선물이 없는 종목은 OI·펀딩비 전체가 비어 있습니다.<br>
       ※ 상단에 고정된 <b>BTC 띠</b>는 어떤 종목을 보든 비트코인의 가격과 5개 시간대 이평선 배열·MACD·Chop Zone을 보여주는 시장 기준선입니다(누르면 BTC로 이동). 다른 종목을 볼 때도 BTC는 1000봉으로 받아 지표 정확도를 유지합니다. 색은 상승 빨강·하락 파랑이며, Chop Zone 색 띠만 TradingView 원본 색을 그대로 씁니다.<br>
-      ※ <b>지금과 가장 비슷했던 과거 봉</b>은 예측이 아니라 조회입니다. 선택한 시간대의 최근 500봉 각각에 대해 지표 12가지(이평 배열 · 가격과 이평 위치 · 이평 간격과 21이평 거리 · MACD 0선/시그널/히스토그램 방향 · MACD 강도 · Chop Zone 각도 · 20봉 평균 대비 변동폭 · 20봉 평균 대비 거래대금 · 매수비중 · 캔들 몸통 · OI 변화 · 펀딩비)가 지금 봉과 얼마나 같은지 0~100%로 매기고 평균을 냅니다. 숫자 지표는 이 500봉 안에서 보통 흔들리는 폭(표준편차)의 2배 이상 차이 나면 0%로 봅니다. 모든 값은 그 봉까지의 데이터로만 계산하며, 이평선은 위 EMA/SMA 선택을 따릅니다.<br>
+      ※ <b>지금과 가장 비슷했던 과거 봉</b>은 예측이 아니라 조회입니다. 선택한 시간대의 최근 500봉 각각에 대해 지표 12가지(이평 배열 · 가격과 이평 위치 · 이평 간격과 21이평 거리 · MACD 0선/시그널/히스토그램 방향 · MACD 강도 · Chop Zone 각도 · 20봉 평균 대비 변동폭 · 20봉 평균 대비 거래대금 · 매수비중 · 캔들 몸통 · OI 변화 · 펀딩비)가 지금 봉과 얼마나 같은지 0~100%로 매기고 평균을 냅니다. 숫자 지표는 이 500봉 안에서 보통 흔들리는 폭(표준편차)의 2배 이상 차이 나면 0%로 봅니다. 모든 값은 그 봉까지의 데이터로만 계산하며, 이평선은 위 EMA/SMA 선택을 따릅니다. 표시된 각 유사 봉 옆의 <b>직후 3봉·5봉 이내 최대 상승/하락</b>은 그 봉 종가 대비 이후 봉들의 최고가·최저가 비율이고, 요약 표의 평균·중앙값·가장 컸던 값은 <b>화면에 표시된 상위 10개 중</b> 유사도 80% 이상(또는 70% 이상)인 봉만 집계한 것입니다(전체 해당 봉이 아님).<br>
       ※ <b>추세 지표</b>는 모두 종가 기준이며 진행 중인 봉까지 포함해 계산합니다(차트 프로그램이 실시간으로 보여주는 방식과 같음). EMA는 계산에 쓰인 과거 봉 수가 기간의 4배 미만이면 차트 값과 차이가 날 수 있어 <b>~</b>로 표시합니다(상장 기간이 짧은 종목의 1일봉 등). MACD는 12/26/9, Chop Zone은 TradingView 기본 공식(EMA34 기울기를 최근 30봉 고저 범위로 정규화한 각도, 색상 동일)입니다.
     </div>
   </div>
@@ -1127,6 +1134,26 @@ function simStates(candles){
   return S;
 }
 
+// 유사 봉의 종가에서 진입했다고 보고, 직후 k봉 안의 최고가·최저가가 종가 대비 몇 %인지 (표시된 상위 봉에만 적용)
+// 상위 봉은 직전 12봉을 제외해 뽑으므로 직후 5봉은 모두 마감된 봉이다.
+const SIM_FWD = [3, 5];
+function simForward(candles, i, k){
+  const e = candles[i].close; let hi = -Infinity, lo = Infinity;
+  for(let j = i + 1; j <= i + k && j < candles.length; j++){ if(candles[j].high > hi) hi = candles[j].high; if(candles[j].low < lo) lo = candles[j].low; }
+  return { up:(hi - e) / e * 100, dn:(lo - e) / e * 100 };
+}
+function simGroupStats(items){
+  if(!items.length) return null;
+  const avg = a => a.reduce((x, y) => x + y, 0) / a.length;
+  const med = a => { const q = a.slice().sort((x, y) => x - y), h = q.length >> 1; return q.length % 2 ? q[h] : (q[h-1] + q[h]) / 2; };
+  const g = { n:items.length };
+  [['f3','up'], ['f3','dn'], ['f5','up'], ['f5','dn']].forEach(([key, f]) => {
+    const a = items.map(m => m[key][f]);
+    g[key + f] = { avg:avg(a), med:med(a), ext: f === 'up' ? Math.max(...a) : Math.min(...a) };
+  });
+  return g;
+}
+
 function computeSimilar(candles){
   if(!candles || candles.length < 300) return null;
   const hit = simCache.get(candles);
@@ -1172,10 +1199,36 @@ function computeSimilar(candles){
   const r = {
     maType, n, now, S, window: n - start, total: scored.length,
     c80: countAt(0.8), c70: countAt(0.7),
-    top: top.map(s => ({ i:s.i, sim:s.sim, fs:s.fs, t:candles[s.i].openTime, close:candles[s.i].close })),
+    top: top.map(s => ({ i:s.i, sim:s.sim, fs:s.fs, t:candles[s.i].openTime, close:candles[s.i].close,
+                         f3:simForward(candles, s.i, 3), f5:simForward(candles, s.i, 5) })),
   };
+  r.g80 = simGroupStats(r.top.filter(m => m.sim >= 0.8));
+  r.g70 = simGroupStats(r.top.filter(m => m.sim >= 0.7));
   simCache.set(candles, r);
   return r;
+}
+
+const TF_MIN = { '1d':1440, '4h':240, '1h':60, '15m':15, '5m':5 };
+const spanTxt = min => min >= 1440 ? `${+(min / 1440).toFixed(1)}일` : min >= 60 ? `${Math.floor(min / 60)}시간${min % 60 ? ' ' + (min % 60) + '분' : ''}` : `${min}분`;
+const upDn = (u, d) => `<span class="c-up">▲${fmtSignedPct(u)}</span> <span class="c-down">▼${fmtSignedPct(d)}</span>`;
+function simFwdLine(m, tf){
+  const mi = TF_MIN[tf];
+  return `<div class="sim-fwd">직후 3봉(${spanTxt(mi * 3)}) ${upDn(m.f3.up, m.f3.dn)} · 5봉(${spanTxt(mi * 5)}) ${upDn(m.f5.up, m.f5.dn)}</div>`;
+}
+function simStatTable(r, tf){
+  const mi = TF_MIN[tf];
+  const grp = (label, g) => g
+    ? `<tr class="grp"><td colspan="5">${label} — 표시된 ${r.top.length}개 중 <b>${g.n}개</b></td></tr>` +
+      [['평균','avg'], ['중앙값','med'], ['가장 컸던 값','ext']].map(([nm, k]) =>
+        `<tr><td>${nm}</td><td class="c-up">${fmtSignedPct(g.f3up[k])}</td><td class="c-down">${fmtSignedPct(g.f3dn[k])}</td><td class="c-up">${fmtSignedPct(g.f5up[k])}</td><td class="c-down">${fmtSignedPct(g.f5dn[k])}</td></tr>`).join('')
+    : `<tr class="grp"><td colspan="5">${label} — 표시된 ${r.top.length}개 중 해당하는 봉 없음</td></tr>`;
+  return `<div class="sim-stat">
+    <div class="ind-k"><span>유사 봉 직후의 최대 움직임 — 그 봉 종가 대비 · 최고가/최저가 기준 · 표시된 상위 ${r.top.length}개 봉만 집계</span></div>
+    <table>
+      <tr><th></th><th colspan="2">직후 3봉(${spanTxt(mi * 3)}) 이내</th><th colspan="2">직후 5봉(${spanTxt(mi * 5)}) 이내</th></tr>
+      <tr><th></th><th>최대 상승</th><th>최대 하락</th><th>최대 상승</th><th>최대 하락</th></tr>
+      ${grp('유사도 80% 이상', r.g80)}${grp('유사도 70% 이상 (80%+ 포함)', r.g70)}
+    </table></div>`;
 }
 
 function renderAnalog(){
@@ -1199,13 +1252,14 @@ function renderAnalog(){
       </table><button class="copy-btn" data-goto="${m.t}">아래 표에서 이 봉 보기</button></div>`;
     return `<div class="sim-row" data-t="${m.t}">
       <div class="sim-head"><b>#${k + 1}</b><span>${fmtTime(m.t, tf)}</span><span class="sim-pct">유사도 ${pct0(m.sim)}</span><span class="muted">${r.n - 1 - m.i}봉 전 · 종가 ${fmtPrice(m.close)}</span><span class="sim-caret">${open === m.t ? '▾' : '▸'}</span></div>
-      <div class="chips">${chips}</div>${detail}
+      <div class="chips">${chips}</div>${simFwdLine(m, tf)}${detail}
     </div>`;
   }).join('');
   grid.innerHTML = `
     <div class="ind-card" style="grid-column:1/-1">
       <div class="tf-label">${title}<span class="pill mix">최근 ${r.window}봉</span></div>
       <div class="sim-count">최근 ${r.window}봉 중 유사도 80% 이상 <b>${r.c80.bars}봉</b> (${r.c80.runs}개 구간) · 70% 이상 <b>${r.c70.bars}봉</b> (${r.c70.runs}개 구간)</div>
+      ${simStatTable(r, tf)}
       <div class="ind-sub">비교 지표 ${SIM_FAM.length}가지(${SIM_FAM.map(f => f.name).join(' · ')})를 각각 0~100%로 매겨 평균 · 값이 없는 지표는 빼고 평균 · 지금 봉은 진행 중이라 변동폭·거래대금을 경과율로 환산 · 직전 ${SIM.EXCL}봉은 지금과 당연히 비슷해서 제외 · 같은 구간이 여러 번 뽑히지 않게 ${SIM.GAP}봉 이상 떨어진 봉만</div>
       <div class="ind-sub">✓ 거의 같음(80%+) · ≈ 비슷(50~80%) · ✗ 다름 — 줄을 누르면 지금과 그때의 값을 나란히 보여줍니다</div>
       ${rows || '<div class="sum-empty">비교할 봉이 없음</div>'}
@@ -1233,7 +1287,13 @@ function pushAnalogSummary(L, asset){
   TF_ORDER.forEach(tf => {
     const r = computeSimilar(getCandles(asset, tf).candles);
     if(!r){ L.push(`- ${TF_CONFIG[tf].label}: 계산 불가`); return; }
-    L.push(`- ${TF_CONFIG[tf].label}: 유사도 80% 이상 ${r.c80.bars}봉(${r.c80.runs}구간) · 70% 이상 ${r.c70.bars}봉(${r.c70.runs}구간) · 가장 비슷한 순: ${r.top.slice(0, 5).map(m => `${csvTime(m.t, tf)} ${pct0(m.sim)}`).join(', ')}`);
+    const f = v => fmtSignedPct(v), mi = TF_MIN[tf];
+    L.push(`- ${TF_CONFIG[tf].label}: 유사도 80% 이상 ${r.c80.bars}봉(${r.c80.runs}구간) · 70% 이상 ${r.c70.bars}봉(${r.c70.runs}구간)`);
+    const gl = (nm, g) => g
+      ? `  · ${nm}(표시된 상위 ${r.top.length}개 중 ${g.n}개) 직후 3봉(${spanTxt(mi * 3)}) 최대상승 평균 ${f(g.f3up.avg)}·중앙값 ${f(g.f3up.med)}·최대 ${f(g.f3up.ext)} / 최대하락 평균 ${f(g.f3dn.avg)}·중앙값 ${f(g.f3dn.med)}·최대 ${f(g.f3dn.ext)} ; 5봉(${spanTxt(mi * 5)}) 최대상승 평균 ${f(g.f5up.avg)}·중앙값 ${f(g.f5up.med)}·최대 ${f(g.f5up.ext)} / 최대하락 평균 ${f(g.f5dn.avg)}·중앙값 ${f(g.f5dn.med)}·최대 ${f(g.f5dn.ext)}`
+      : `  · ${nm}: 표시된 상위 ${r.top.length}개 중 해당 봉 없음`;
+    L.push(gl('유사도 80% 이상', r.g80)); L.push(gl('유사도 70% 이상', r.g70));
+    L.push(`  · 가장 비슷한 순 (시각 유사도 | 직후 3봉 최대상승/최대하락 ; 5봉 최대상승/최대하락): ` + r.top.map(m => `${csvTime(m.t, tf)} ${pct0(m.sim)} | ${f(m.f3.up)}/${f(m.f3.dn)} ; ${f(m.f5.up)}/${f(m.f5.dn)}`).join(' , '));
   });
   L.push('');
 }
@@ -1600,7 +1660,7 @@ mtfLine,
 `4. **MACD**: '추세 지표'의 12/26/9 MACD 값(0선·시그널 대비 위치, 히스토그램 방향, 최근 교차)을 사용하고, 다이버전스는 캔들 표의 고점·저점과 대조해서 확인해라.`,
 `5. **Chop zone 여부**: '추세 지표'의 Chop Zone(EMA34 기울기 각도, TradingView 기본 공식)과 캔들 표의 스윙 고점/저점 구조를 함께 보고, 지금이 추세 구간인지 횡보 구간인지 먼저 판별한 뒤 그 판단을 전제로 나머지를 해석해라.`,
 ...(sym.label !== ANCHOR ? [`6. **BTC 기준**: 비트코인이 크립토 시장 전체 추세의 기준이다. 'BTC 추세 지표 — 시장 기준' 섹션과 이 종목의 추세 지표를 시간대별로 비교해 같은 방향(동조)인지 다른 방향(디커플링)인지 먼저 판단하고, 그 결과를 시나리오와 확률에 반영해라.`] : []),
-`${sym.label !== ANCHOR ? 7 : 6}. **지금과 가장 비슷했던 과거 봉**: 대시보드가 시간대별 최근 500봉에서 지금 봉과 지표 상태(이평 배열·위치·간격, MACD 상태·강도, Chop Zone, 변동폭, 거래대금, 매수비중, 캔들 몸통, OI 변화, 펀딩비)가 가장 비슷했던 봉의 시각을 유사도 순으로 뽑았다. 그 시각을 CSV에서 찾아 그 뒤 가격이 실제로 어떻게 움직였는지 사실로 정리해라. CSV 범위 밖이면 그렇다고 말하고, 사례가 몇 개뿐이라는 점을 감안해라.`,
+`${sym.label !== ANCHOR ? 7 : 6}. **지금과 가장 비슷했던 과거 봉**: 대시보드가 시간대별 최근 500봉에서 지금 봉과 지표 상태(이평 배열·위치·간격, MACD 상태·강도, Chop Zone, 변동폭, 거래대금, 매수비중, 캔들 몸통, OI 변화, 펀딩비)가 가장 비슷했던 봉의 시각을 유사도 순으로 뽑았다. 각 유사 봉 종가 기준 직후 3봉·5봉 이내의 최대 상승률(고가)과 최대 하락률(저가)도 대시보드가 이미 계산해 두었으니 그 값을 그대로 사용하고, 더 긴 이후 움직임이 필요하면 CSV에서 그 시각을 찾아 사실로 정리해라. CSV 범위 밖이면 그렇다고 말하고, 사례가 몇 개뿐이라는 점을 감안해라.`,
 ``,
 `# Output Format`,
 `---`,
