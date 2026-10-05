@@ -278,6 +278,7 @@
   .sim-pct{ font-weight:700; color:#fff; }
   .sim-caret{ margin-left:auto; color:var(--text-faint); }
   .sim-chip{ font-size:10px; padding:1px 5px; border:1px solid var(--border); color:var(--text-dim); white-space:nowrap; }
+  .sim-htf{ border-color:var(--accent-dim); }
   .sim-ok{ color:var(--accent); margin-right:3px; } .sim-mid{ color:var(--text-dim); margin-right:3px; } .sim-no{ color:var(--text-faint); margin-right:3px; }
   .sim-detail{ margin-top:8px; overflow-x:auto; }
   .sim-detail table{ min-width:0; width:100%; font-size:11px; }
@@ -436,7 +437,7 @@
       ※ 펀딩비 칸에 <b>★</b>가 붙은 값은 그 봉 구간에 실제 정산된 값(여러 번이면 합계)이고, 표시가 없으면 봉 시작 시점에 적용 중이던 직전 정산값입니다.<br>
       ※ <b>지금 보고 있는 종목은 5개 시간대 모두 최근 1000봉</b>을 불러와 이동평균선·MACD·Chop Zone을 계산하고, 표에는 그중 <b>최근 500봉</b>을 보여줍니다(5분봉 약 42시간 · 15분봉 약 5.2일 · 1시간봉 약 21일 · 4시간봉 약 83일 · 1일봉 약 500일). 다른 종목은 요약 카드용으로 120봉만 불러옵니다. 바이낸스는 <b>OI 히스토리를 최근 30일, 최대 500개까지만</b> 제공하므로 그보다 오래된 봉의 OI는 비어 있습니다(—). 무기한 선물이 없는 종목은 OI·펀딩비 전체가 비어 있습니다.<br>
       ※ 상단에 고정된 <b>BTC 띠</b>는 어떤 종목을 보든 비트코인의 가격과 5개 시간대 이평선 배열·MACD·Chop Zone을 보여주는 시장 기준선입니다(누르면 BTC로 이동). 다른 종목을 볼 때도 BTC는 1000봉으로 받아 지표 정확도를 유지합니다. 색은 상승 빨강·하락 파랑이며, Chop Zone 색 띠만 TradingView 원본 색을 그대로 씁니다.<br>
-      ※ <b>지금과 가장 비슷했던 과거 봉</b>은 예측이 아니라 조회입니다. 선택한 시간대의 최근 500봉 각각에 대해 지표 12가지(이평 배열 · 가격과 이평 위치 · 이평 간격과 21이평 거리 · MACD 0선/시그널/히스토그램 방향 · MACD 강도 · Chop Zone 각도 · 20봉 평균 대비 변동폭 · 20봉 평균 대비 거래대금 · 매수비중 · 캔들 몸통 · OI 변화 · 펀딩비)가 지금 봉과 얼마나 같은지 0~100%로 매기고 평균을 냅니다. 숫자 지표는 이 500봉 안에서 보통 흔들리는 폭(표준편차)의 2배 이상 차이 나면 0%로 봅니다. 모든 값은 그 봉까지의 데이터로만 계산하며, 이평선은 위 EMA/SMA 선택을 따릅니다. 표시된 각 유사 봉 옆의 <b>직후 3봉·5봉 이내 최대 상승/하락</b>은 그 봉 종가 대비 이후 봉들의 최고가·최저가 비율이고, 요약 표의 평균·중앙값·가장 컸던 값은 <b>화면에 표시된 상위 10개 중</b> 유사도 80% 이상(또는 70% 이상)인 봉만 집계한 것입니다(전체 해당 봉이 아님).<br>
+      ※ <b>지금과 가장 비슷했던 과거 봉</b>은 예측이 아니라 조회입니다. 선택한 시간대의 최근 500봉 각각에 대해 지표 12가지(이평 배열 · 가격과 이평 위치 · 이평 간격과 21이평 거리 · MACD 0선/시그널/히스토그램 방향 · MACD 강도 · Chop Zone 각도 · 20봉 평균 대비 변동폭 · 20봉 평균 대비 거래대금 · 매수비중 · 캔들 몸통 · OI 변화 · 펀딩비)가 지금 봉과 얼마나 같은지 0~100%로 매기고 평균을 냅니다. 여기에 <b>선택한 시간대보다 상위 시간대</b>(5분봉이면 15분·1시간·4시간·1일)의 이평 배열 · 가격과 이평 위치 · MACD 상태 · 가격이 8/21/50/100/200 이평 대비 몇 % 위·아래인지 · 이평 사이 간격(%) 5가지씩을 더합니다(시간대당 총 비중은 선택한 시간대 지표 3가지와 같게 고정). 거리·간격은 그 상위 시간대의 최근 1000봉에서 보통 얼마나 변하는지(표준편차)를 눈금으로 비교합니다. 상위 시간대는 그 과거 시점에 <b>이미 마감된 가장 최근 봉</b> 기준이고, 지금도 진행 중인 상위 봉은 쓰지 않습니다(그래서 위 추세 지표 카드의 값과 한 봉 차이가 날 수 있음). 숫자 지표는 이 500봉 안에서 보통 흔들리는 폭(표준편차)의 2배 이상 차이 나면 0%로 봅니다. 모든 값은 그 봉까지의 데이터로만 계산하며, 이평선은 위 EMA/SMA 선택을 따릅니다. 표시된 각 유사 봉 옆의 <b>직후 3봉·5봉 이내 최대 상승/하락</b>은 그 봉 종가 대비 이후 봉들의 최고가·최저가 비율이고, 요약 표의 평균·중앙값·가장 컸던 값은 <b>화면에 표시된 상위 10개 중</b> 유사도 80% 이상(또는 70% 이상)인 봉만 집계한 것입니다(전체 해당 봉이 아님).<br>
       ※ <b>추세 지표</b>는 모두 종가 기준이며 진행 중인 봉까지 포함해 계산합니다(차트 프로그램이 실시간으로 보여주는 방식과 같음). EMA는 계산에 쓰인 과거 봉 수가 기간의 4배 미만이면 차트 값과 차이가 날 수 있어 <b>~</b>로 표시합니다(상장 기간이 짧은 종목의 1일봉 등). MACD는 12/26/9, Chop Zone은 TradingView 기본 공식(EMA34 기울기를 최근 30봉 고저 범위로 정규화한 각도, 색상 동일)입니다.
     </div>
   </div>
@@ -1093,6 +1094,8 @@ const SIM_TXT = {
   body:  v => `${v >= 0 ? '+' : ''}${v.toFixed(2)}%`,
   oi:    v => v == null ? '—' : `${v >= 0 ? '+' : ''}${v.toFixed(2)}%`,
   fund:  v => v == null ? '—' : fmtFunding(v),
+  dist:  a => MA_LIST.map((p, k) => `${p}이평 ${a[k] >= 0 ? '+' : ''}${a[k].toFixed(1)}%`).join(' · '),
+  hgaps: a => a.map(v => (v >= 0 ? '+' : '') + v.toFixed(1)).join(' / ') + '%',
 };
 
 // 봉마다 지표 상태 (그 봉까지의 데이터만 사용)
@@ -1154,12 +1157,69 @@ function simGroupStats(items){
   return g;
 }
 
-function computeSimilar(candles){
+// 상위 시간대 상태: 이평 배열 · 가격과 이평 위치 · MACD 상태 (선택한 시간대보다 위에 있는 모든 시간대)
+const HTF_FAM = [
+  { s:'align', name:'이평 배열',         type:'bin', w:0.6 },
+  { s:'pos',   name:'가격·이평 위치',    type:'bin', w:0.6 },
+  { s:'mst',   name:'MACD 상태',         type:'bin', w:0.6 },
+  { s:'dist',  name:'가격의 이평 대비 거리', type:'vec', w:0.6 },                 // 가격이 8/21/50/100/200 이평 대비 몇 % 위·아래인가
+  { s:'gaps',  name:'이평 간 간격',      type:'vec', w:0.6, src:'hgaps' },        // 8↔21 · 21↔50 · 50↔100 · 100↔200 이평 사이 몇 %인가
+];   // 시간대당 총 비중은 3으로 고정 (항목이 늘어도 상위 시간대 비중이 커지지 않게)
+const tfShort = tf => TF_CONFIG[tf].interval.toUpperCase();
+function higherTfs(tf){ return TF_ORDER.slice(0, TF_ORDER.indexOf(tf)); }
+function simFamilies(tf){
+  const fam = SIM_FAM.map(f => ({ ...f, src:f.k, w:1 }));
+  higherTfs(tf).forEach(h => HTF_FAM.forEach(x => fam.push({ k:`h.${h}.${x.s}`, src:x.src || x.s, name:`${tfShort(h)} ${x.name}`, type:x.type, w:x.w, htf:h })));
+  return fam;
+}
+// 상위 시간대 캔들 한 줄 한 줄의 상태 (그 봉까지의 데이터만 사용)
+function simHtfStates(candles){
+  const n = candles.length, cl = candles.map(c => c.close);
+  const MAs = MA_LIST.map(p => maType === 'SMA' ? smaSeries(cl, p) : emaSeries(cl, p));
+  const e12 = emaSeries(cl, 12), e26 = emaSeries(cl, 26);
+  const mac = cl.map((_, i) => e12[i] != null && e26[i] != null ? e12[i] - e26[i] : null);
+  const st = mac.findIndex(v => v != null), sg = st < 0 ? [] : emaSeries(mac.slice(st), 9);
+  const sig = mac.map((_, i) => st < 0 || i < st ? null : sg[i - st]);
+  const out = new Array(n).fill(null);
+  for(let i = 1; i < n; i++){
+    const ma = MAs.map(a => a[i]);
+    if(!ma.every(v => v != null) || sig[i] == null || sig[i-1] == null) continue;
+    const h = mac[i] - sig[i], hp = mac[i-1] - sig[i-1];
+    out[i] = { align:[0, 1, 2, 3].map(k => sgn(ma[k] - ma[k+1])), pos:ma.map(v => cl[i] > v ? 1 : 0), mst:[mac[i] > 0 ? 1 : 0, mac[i] > sig[i] ? 1 : 0, h > hp ? 1 : 0],
+      gaps:[0, 1, 2, 3].map(k => (ma[k] - ma[k+1]) / ma[k+1] * 100), dist:ma.map(v => (cl[i] - v) / v * 100) };
+  }
+  return out;
+}
+// 과거 봉마다, 그 봉이 끝난 시점에 '이미 마감된' 가장 최근 상위 봉의 상태를 붙인다 (미래 정보 없음).
+// 지금(진행 중인 마지막 봉)도 같은 규칙: 아직 진행 중인 상위 봉은 쓰지 않는다.
+function attachHtf(S, candles, tf){
+  const n = candles.length, sd = {};
+  higherTfs(tf).forEach(h => {
+    const HC = getCandles(currentAsset, h).candles;
+    if(!HC || HC.length < 250) return;
+    const HS = simHtfStates(HC); let j = -1;
+    // 거리·간격을 비교하는 눈금: 그 상위 시간대가 최근 1000봉 동안 보통 얼마나 움직였나(표준편차).
+    // 선택한 시간대 500봉 안에서 재면 상위 시간대 값은 거의 안 변해서 눈금이 너무 촘촘해진다.
+    const sdv = arr => { const v = arr.filter(x => x != null && isFinite(x)); if(v.length < 30) return null; const m = v.reduce((a, b) => a + b, 0) / v.length; return Math.sqrt(v.reduce((a, b) => a + (b - m) ** 2, 0) / v.length) || null; };
+    [['dist', 5], ['gaps', 4]].forEach(([key, dims]) => { sd[`h.${h}.${key}`] = Array.from({ length:dims }, (_, d) => sdv(HS.map(x => x ? x[key][d] : null))); });
+    for(let i = 0; i < n; i++){
+      const lim = i === n - 1 ? Date.now() : candles[i].closeTime;
+      while(j + 1 < HC.length && HC[j+1].closeTime <= lim) j++;
+      if(S[i] && j >= 0 && HS[j]) HTF_FAM.forEach(x => { S[i][`h.${h}.${x.s}`] = HS[j][x.s]; });
+    }
+  });
+  return { sd };
+}
+
+function computeSimilar(candles, tf){
   if(!candles || candles.length < 300) return null;
   const hit = simCache.get(candles);
-  if(hit && hit.maType === maType) return hit;
+  const hsNow = higherTfs(tf).map(h => getCandles(currentAsset, h).candles);
+  if(hit && hit.maType === maType && hit.hs.length === hsNow.length && hit.hs.every((a, k) => a === hsNow[k])) return hit;
   const n = candles.length, S = simStates(candles), now = S[n - 1];
   if(!now) return null;
+  const htfSd = attachHtf(S, candles, tf).sd;
+  const FAMS = simFamilies(tf);
   const start = Math.max(0, n - SIM.WINDOW), win = [];
   for(let i = start; i < n; i++) if(S[i]) win.push(i);
   if(win.length < 50) return null;
@@ -1172,14 +1232,15 @@ function computeSimilar(candles){
     return Math.sqrt(v.reduce((a, b) => a + (b - m) ** 2, 0) / v.length) || null;
   };
   const sd = {};
-  SIM_FAM.forEach(f => {
+  FAMS.forEach(f => {
+    if(f.htf){ if(f.type === 'vec') sd[f.k] = htfSd[f.k] || null; return; }
     if(f.type === 'num') sd[f.k] = sdOf(win.map(i => S[i][f.k]));
     if(f.type === 'vec') sd[f.k] = now.gaps.map((_, j) => sdOf(win.map(i => S[i].gaps[j])));
   });
   const famSim = (a, b, f) => {
     const x = a[f.k], y = b[f.k];
-    if(f.type === 'bin'){ let e = 0; x.forEach((v, j) => { if(v === y[j]) e++; }); return e / x.length; }
-    if(f.type === 'vec'){ let s = 0, k = 0; x.forEach((v, j) => { const d = sd[f.k][j]; if(d){ s += 1 - Math.min(Math.abs(v - y[j]) / (2 * d), 1); k++; } }); return k ? s / k : null; }
+    if(f.type === 'bin'){ if(!x || !y) return null; let e = 0; x.forEach((v, j) => { if(v === y[j]) e++; }); return e / x.length; }
+    if(f.type === 'vec'){ if(!x || !y || !sd[f.k]) return null; let s = 0, k = 0; x.forEach((v, j) => { const d = sd[f.k][j]; if(d){ s += 1 - Math.min(Math.abs(v - y[j]) / (2 * d), 1); k++; } }); return k ? s / k : null; }
     if(x == null || y == null || !sd[f.k]) return null;   // OI·펀딩처럼 값이 없는 봉은 그 지표만 빼고 평균
     return 1 - Math.min(Math.abs(x - y) / (2 * sd[f.k]), 1);
   };
@@ -1187,8 +1248,9 @@ function computeSimilar(candles){
   const scored = [];
   win.forEach(i => {
     if(i > n - 1 - SIM.EXCL) return;
-    const fs = SIM_FAM.map(f => famSim(now, S[i], f)), av = fs.filter(v => v != null);
-    scored.push({ i, sim: av.reduce((a, b) => a + b, 0) / av.length, fs });
+    const fs = FAMS.map(f => famSim(now, S[i], f));
+    let sw = 0, sv = 0; fs.forEach((v, j) => { if(v != null){ sw += FAMS[j].w; sv += FAMS[j].w * v; } });
+    scored.push({ i, sim: sv / sw, fs });
   });
   // 몇 개나 비슷했나 (구간 = 기준을 넘는 봉이 연속된 묶음)
   const countAt = th => { let bars = 0, runs = 0, prev = -9; scored.forEach(s => { if(s.sim >= th){ bars++; if(s.i !== prev + 1) runs++; prev = s.i; } }); return { bars, runs }; };
@@ -1197,7 +1259,7 @@ function computeSimilar(candles){
     if(top.every(t => Math.abs(t.i - s.i) >= SIM.GAP)){ top.push(s); if(top.length >= SIM.TOP) break; }
   }
   const r = {
-    maType, n, now, S, window: n - start, total: scored.length,
+    maType, n, now, S, fams: FAMS, hs: hsNow, window: n - start, total: scored.length,
     c80: countAt(0.8), c70: countAt(0.7),
     top: top.map(s => ({ i:s.i, sim:s.sim, fs:s.fs, t:candles[s.i].openTime, close:candles[s.i].close,
                          f3:simForward(candles, s.i, 3), f5:simForward(candles, s.i, 5) })),
@@ -1235,7 +1297,7 @@ function renderAnalog(){
   const grid = document.getElementById('anaGrid');
   const tf = currentTf, lab = TF_CONFIG[tf].label;
   const { candles, detailed } = getCandles(currentAsset, tf);
-  const r = detailed ? computeSimilar(candles) : null;
+  const r = detailed ? computeSimilar(candles, tf) : null;
   const title = `지금과 가장 비슷했던 과거 봉 · ${SYMBOLS[currentAsset].label} ${lab}`;
   if(!r){
     grid.innerHTML = `<div class="ind-card" style="grid-column:1/-1"><div class="tf-label">${title}</div><div class="sum-empty">${detailed ? '비교할 수 있는 과거 봉이 부족함 (상장 기간이 짧음)' : '1000봉 불러오는 중…'}</div></div>`;
@@ -1244,11 +1306,14 @@ function renderAnalog(){
   const mark = v => v == null ? '' : v >= 0.8 ? '<span class="sim-ok">✓</span>' : v >= 0.5 ? '<span class="sim-mid">≈</span>' : '<span class="sim-no">✗</span>';
   const open = simOpen[tf];
   const rows = r.top.map((m, k) => {
-    const chips = SIM_FAM.map((f, j) => m.fs[j] == null ? '' : `<span class="sim-chip">${mark(m.fs[j])}${f.name}</span>`).join('');
+    // 선택한 시간대 지표는 하나씩, 상위 시간대는 시간대마다 한 칩(그 시간대 3가지 항목의 평균)
+    const own = r.fams.map((f, j) => f.htf || m.fs[j] == null ? '' : `<span class="sim-chip">${mark(m.fs[j])}${f.name}</span>`).join('');
+    const hi = higherTfs(tf).map(h => { const v = r.fams.map((f, j) => f.htf === h ? m.fs[j] : null).filter(x => x != null); return v.length ? `<span class="sim-chip sim-htf">${mark(v.reduce((a, b) => a + b, 0) / v.length)}상위 ${tfShort(h)}</span>` : ''; }).join('');
+    const chips = own + hi;
     const detail = open !== m.t ? '' : `
       <div class="sim-detail"><table>
         <tr><th>지표</th><th>지금</th><th>그때</th><th>일치</th></tr>
-        ${SIM_FAM.map((f, j) => m.fs[j] == null ? '' : `<tr><td>${f.name}</td><td>${SIM_TXT[f.k](r.now[f.k])}</td><td>${SIM_TXT[f.k](r.S[m.i][f.k])}</td><td>${pct0(m.fs[j])}</td></tr>`).join('')}
+        ${r.fams.map((f, j) => m.fs[j] == null ? '' : `<tr><td>${f.name}</td><td>${SIM_TXT[f.src](r.now[f.k])}</td><td>${SIM_TXT[f.src](r.S[m.i][f.k])}</td><td>${pct0(m.fs[j])}</td></tr>`).join('')}
       </table><button class="copy-btn" data-goto="${m.t}">아래 표에서 이 봉 보기</button></div>`;
     return `<div class="sim-row" data-t="${m.t}">
       <div class="sim-head"><b>#${k + 1}</b><span>${fmtTime(m.t, tf)}</span><span class="sim-pct">유사도 ${pct0(m.sim)}</span><span class="muted">${r.n - 1 - m.i}봉 전 · 종가 ${fmtPrice(m.close)}</span><span class="sim-caret">${open === m.t ? '▾' : '▸'}</span></div>
@@ -1260,7 +1325,7 @@ function renderAnalog(){
       <div class="tf-label">${title}<span class="pill mix">최근 ${r.window}봉</span></div>
       <div class="sim-count">최근 ${r.window}봉 중 유사도 80% 이상 <b>${r.c80.bars}봉</b> (${r.c80.runs}개 구간) · 70% 이상 <b>${r.c70.bars}봉</b> (${r.c70.runs}개 구간)</div>
       ${simStatTable(r, tf)}
-      <div class="ind-sub">비교 지표 ${SIM_FAM.length}가지(${SIM_FAM.map(f => f.name).join(' · ')})를 각각 0~100%로 매겨 평균 · 값이 없는 지표는 빼고 평균 · 지금 봉은 진행 중이라 변동폭·거래대금을 경과율로 환산 · 직전 ${SIM.EXCL}봉은 지금과 당연히 비슷해서 제외 · 같은 구간이 여러 번 뽑히지 않게 ${SIM.GAP}봉 이상 떨어진 봉만</div>
+      <div class="ind-sub">비교 지표 ${r.fams.length}가지(${r.fams.filter(f => !f.htf).map(f => f.name).join(' · ')}${higherTfs(tf).length ? ` + 상위 시간대 ${higherTfs(tf).map(tfShort).join('·')} 각각의 이평 배열·가격과 이평 위치·MACD 상태·가격의 이평 대비 거리·이평 간 간격(그 시점에 마감된 봉 기준)` : ''})를 각각 0~100%로 매겨 평균 · 값이 없는 지표는 빼고 평균 · 지금 봉은 진행 중이라 변동폭·거래대금을 경과율로 환산 · 직전 ${SIM.EXCL}봉은 지금과 당연히 비슷해서 제외 · 같은 구간이 여러 번 뽑히지 않게 ${SIM.GAP}봉 이상 떨어진 봉만</div>
       <div class="ind-sub">✓ 거의 같음(80%+) · ≈ 비슷(50~80%) · ✗ 다름 — 줄을 누르면 지금과 그때의 값을 나란히 보여줍니다</div>
       ${rows || '<div class="sum-empty">비교할 봉이 없음</div>'}
     </div>`;
@@ -1283,9 +1348,9 @@ document.getElementById('anaGrid').addEventListener('click', e => {
 // 복사 텍스트용 요약 (지금 보는 종목만)
 function pushAnalogSummary(L, asset){
   if(asset !== currentAsset) return;
-  L.push(`## 지금과 가장 비슷했던 과거 봉 (대시보드 계산 · 시간대별 최근 ${SIM.WINDOW}봉 · 지표 ${SIM_FAM.length}가지 종합 유사도)`);
+  L.push(`## 지금과 가장 비슷했던 과거 봉 (대시보드 계산 · 시간대별 최근 ${SIM.WINDOW}봉 · 선택 시간대 지표 ${SIM_FAM.length}가지 + 상위 시간대 상태(이평 배열·가격과 이평 위치·MACD 상태·가격의 이평 대비 거리·이평 간 간격)를 종합한 유사도)`);
   TF_ORDER.forEach(tf => {
-    const r = computeSimilar(getCandles(asset, tf).candles);
+    const r = computeSimilar(getCandles(asset, tf).candles, tf);
     if(!r){ L.push(`- ${TF_CONFIG[tf].label}: 계산 불가`); return; }
     const f = v => fmtSignedPct(v), mi = TF_MIN[tf];
     L.push(`- ${TF_CONFIG[tf].label}: 유사도 80% 이상 ${r.c80.bars}봉(${r.c80.runs}구간) · 70% 이상 ${r.c70.bars}봉(${r.c70.runs}구간)`);
@@ -1660,7 +1725,7 @@ mtfLine,
 `4. **MACD**: '추세 지표'의 12/26/9 MACD 값(0선·시그널 대비 위치, 히스토그램 방향, 최근 교차)을 사용하고, 다이버전스는 캔들 표의 고점·저점과 대조해서 확인해라.`,
 `5. **Chop zone 여부**: '추세 지표'의 Chop Zone(EMA34 기울기 각도, TradingView 기본 공식)과 캔들 표의 스윙 고점/저점 구조를 함께 보고, 지금이 추세 구간인지 횡보 구간인지 먼저 판별한 뒤 그 판단을 전제로 나머지를 해석해라.`,
 ...(sym.label !== ANCHOR ? [`6. **BTC 기준**: 비트코인이 크립토 시장 전체 추세의 기준이다. 'BTC 추세 지표 — 시장 기준' 섹션과 이 종목의 추세 지표를 시간대별로 비교해 같은 방향(동조)인지 다른 방향(디커플링)인지 먼저 판단하고, 그 결과를 시나리오와 확률에 반영해라.`] : []),
-`${sym.label !== ANCHOR ? 7 : 6}. **지금과 가장 비슷했던 과거 봉**: 대시보드가 시간대별 최근 500봉에서 지금 봉과 지표 상태(이평 배열·위치·간격, MACD 상태·강도, Chop Zone, 변동폭, 거래대금, 매수비중, 캔들 몸통, OI 변화, 펀딩비)가 가장 비슷했던 봉의 시각을 유사도 순으로 뽑았다. 각 유사 봉 종가 기준 직후 3봉·5봉 이내의 최대 상승률(고가)과 최대 하락률(저가)도 대시보드가 이미 계산해 두었으니 그 값을 그대로 사용하고, 더 긴 이후 움직임이 필요하면 CSV에서 그 시각을 찾아 사실로 정리해라. CSV 범위 밖이면 그렇다고 말하고, 사례가 몇 개뿐이라는 점을 감안해라.`,
+`${sym.label !== ANCHOR ? 7 : 6}. **지금과 가장 비슷했던 과거 봉**: 대시보드가 시간대별 최근 500봉에서 지금 봉과 지표 상태(이평 배열·위치·간격, MACD 상태·강도, Chop Zone, 변동폭, 거래대금, 매수비중, 캔들 몸통, OI 변화, 펀딩비, 그리고 그 시간대보다 상위 시간대들의 이평 배열·가격과 이평 위치·MACD 상태·가격의 이평 대비 거리(%)·이평 간 간격(%))가 가장 비슷했던 봉의 시각을 유사도 순으로 뽑았다. 각 유사 봉 종가 기준 직후 3봉·5봉 이내의 최대 상승률(고가)과 최대 하락률(저가)도 대시보드가 이미 계산해 두었으니 그 값을 그대로 사용하고, 더 긴 이후 움직임이 필요하면 CSV에서 그 시각을 찾아 사실로 정리해라. CSV 범위 밖이면 그렇다고 말하고, 사례가 몇 개뿐이라는 점을 감안해라.`,
 ``,
 `# Output Format`,
 `---`,
