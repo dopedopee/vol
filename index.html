@@ -46,7 +46,7 @@
   .asset-tab.no-data{ opacity:0.4; }
 
   /* ---------- Summary grid (4 timeframes at a glance) ---------- */
-  .summary-grid{ display:grid; grid-template-columns:repeat(4, 1fr); gap:12px; margin-bottom:22px; }
+  .summary-grid{ display:grid; grid-template-columns:repeat(5, 1fr); gap:12px; margin-bottom:22px; }
   .sum-card{
     background:var(--bg-elev); border:1px solid var(--border); border-radius:var(--radius);
     padding:14px 16px; cursor:pointer; transition:border-color .12s ease;
@@ -128,7 +128,7 @@
   .seg{ display:inline-flex; border:1px solid var(--border); border-radius:7px; overflow:hidden; }
   .seg button{ background:var(--bg-elev); color:var(--text-faint); border:none; padding:5px 11px; font-size:11px; font-weight:700; cursor:pointer; }
   .seg button.on{ background:var(--accent-dim); color:var(--accent); }
-  .ind-grid{ display:grid; grid-template-columns:repeat(4, 1fr); gap:12px; margin-bottom:22px; }
+  .ind-grid{ display:grid; grid-template-columns:repeat(5, 1fr); gap:12px; margin-bottom:22px; }
   .ind-card{ background:var(--bg-elev); border:1px solid var(--border); border-radius:var(--radius); padding:12px 14px; cursor:pointer; }
   .ind-card.active{ border-color:var(--accent); }
   .ind-card .tf-label{ font-size:12px; color:var(--text-dim); font-weight:700; display:flex; justify-content:space-between; align-items:center; gap:6px; }
@@ -173,6 +173,7 @@
   @media (max-width:900px){
     .summary-grid{ grid-template-columns:repeat(2, 1fr); }
     .ind-grid{ grid-template-columns:repeat(2, 1fr); }
+    .summary-grid > :last-child:nth-child(odd), .ind-grid > :last-child:nth-child(odd){ grid-column:span 2; }   /* 5칸이라 홀수 → 마지막 칸을 넓게 */
     .stat-row{ grid-template-columns:repeat(1, 1fr); }
   }
 
@@ -197,7 +198,7 @@
   .wrap{ max-width:1280px; padding:12px 16px 48px; }
 
   /* BTC 앵커 띠: 스크롤해도 화면 맨 위에 붙어 있는 시장 기준선 */
-  .btc-strip{ position:sticky; top:0; z-index:60; display:grid; grid-template-columns:minmax(170px,1.1fr) repeat(4,1fr);
+  .btc-strip{ position:sticky; top:0; z-index:60; display:grid; grid-template-columns:minmax(170px,1.1fr) repeat(5,1fr);
     gap:1px; background:var(--border); border-top:1px solid var(--border); border-bottom:1px solid var(--accent); cursor:pointer; }
   .btc-strip > div{ background:#050505; padding:6px 10px; font-size:10.5px; line-height:1.5; min-width:0; }
   .btc-strip:hover > div{ background:#0d0a04; }
@@ -259,12 +260,31 @@
   /* 과거 유사 국면 카드 */
   .ana-row{ display:grid; grid-template-columns:28px 1fr 36px 58px; gap:6px; align-items:center; font-size:11px; line-height:1.75; }
   .ana-row span:first-child{ color:var(--text-dim); }
+  .ana-row.lead span:first-child, .ana-row.lead b{ font-weight:700; }
+  .ana-row.lead .ana-bar{ outline:1px solid var(--border); }
+  .ana-big{ font-size:19px; font-weight:700; margin:6px 0 2px; letter-spacing:.3px; }
+  .c-flat{ color:#E6C200; }
   .ana-bar{ height:8px; background:#151515; position:relative; }
   .ana-bar i{ position:absolute; left:0; top:0; bottom:0; }
   .ana-bar i.c-up{ background:var(--up); } .ana-bar i.c-down{ background:var(--down); } .ana-bar i.cz-y{ background:#E6C200; }
   .ana-row b{ text-align:right; }
   .ana-row .muted{ font-size:10px; text-align:right; }
   .cz-y{ color:#E6C200; }
+  .sim-count{ font-size:12px; margin:8px 0 4px; color:var(--text); }
+  .sim-count b{ color:var(--accent); }
+  .sim-row{ border-top:1px solid var(--border); padding:8px 0 6px; }
+  .sim-head{ display:flex; flex-wrap:wrap; align-items:baseline; gap:3px 12px; cursor:pointer; font-size:12px; }
+  .sim-head b{ color:var(--accent); min-width:26px; }
+  .sim-pct{ font-weight:700; color:#fff; }
+  .sim-caret{ margin-left:auto; color:var(--text-faint); }
+  .sim-chip{ font-size:10px; padding:1px 5px; border:1px solid var(--border); color:var(--text-dim); white-space:nowrap; }
+  .sim-ok{ color:var(--accent); margin-right:3px; } .sim-mid{ color:var(--text-dim); margin-right:3px; } .sim-no{ color:var(--text-faint); margin-right:3px; }
+  .sim-detail{ margin-top:8px; overflow-x:auto; }
+  .sim-detail table{ min-width:0; width:100%; font-size:11px; }
+  .sim-detail th, .sim-detail td{ position:static; text-align:left; white-space:normal; }
+  .sim-detail td:first-child{ background:transparent; border-left:none; color:var(--accent); }
+  .sim-detail .copy-btn{ margin-top:8px; }
+  tr.flash td, tr.flash td:first-child{ background-color:#4a3305 !important; }
   .pill.flat{ color:#E6C200; border-color:#E6C200; }
   .ind-card.hot-up{ box-shadow:inset 0 0 0 1px var(--up); }
   .ind-card.hot-down{ box-shadow:inset 0 0 0 1px var(--down); }
@@ -278,7 +298,9 @@
     .topbar{ padding:6px 10px; }
     .wrap{ padding:10px 8px 40px; }
     #refreshStatus{ padding:0 10px; }
-    .btc-strip{ grid-template-columns:repeat(4, 1fr); }
+    .btc-strip{ grid-template-columns:repeat(3, 1fr); }
+    .btc-strip > div:last-child{ grid-column:span 2; }
+    .tab{ flex:1 1 0; padding:7px 4px; font-size:11.5px; }   /* 탭 5개가 폰 폭 안에 들어오게 */
     .btc-strip > div{ padding:5px 6px; }
     .bs-head{ grid-column:1 / -1; }
     .asset-tabs{ flex-wrap:nowrap; overflow-x:auto; scrollbar-width:none; }
@@ -298,7 +320,7 @@
     <span class="dot"></span>
     <div>
       <h1><b>VOL</b>크립토 변동성 터미널</h1>
-      <small>BTC · ETH · SOL · ZEC · HYPE · ENA · VVV · PUMP · NEAR · ONDO · TAO · WLD · PENGU · DOGE — 1일 · 4시간 · 15분 · 5분 봉 기준 변동폭 · 거래대금 · 이평선 · MACD · Chop Zone</small>
+      <small>BTC · ETH · SOL · ZEC · HYPE · ENA · VVV · PUMP · NEAR · ONDO · TAO · WLD · PENGU · DOGE — 1일 · 4시간 · 1시간 · 15분 · 5분 봉 기준 변동폭 · 거래대금 · 이평선 · MACD · Chop Zone</small>
     </div>
   </div>
   <div style="display:flex; gap:8px; align-items:center;">
@@ -324,13 +346,14 @@
   <div class="ind-grid" id="indGrid"></div>
 
   <div class="ind-head">
-    <div class="t">과거 유사 국면 — 최근 500봉에서 지금과 비슷했던 순간들, 그 뒤 10봉의 결과</div>
+    <div class="t">지금과 가장 비슷했던 과거 봉 — 대시보드의 모든 지표를 종합한 유사도 순 (선택한 시간대 기준)</div>
   </div>
   <div class="ind-grid" id="anaGrid"></div>
 
   <div class="tabs" id="tfTabs">
     <div class="tab active" data-tf="1d">1일봉</div>
     <div class="tab" data-tf="4h">4시간봉</div>
+    <div class="tab" data-tf="1h">1시간봉</div>
     <div class="tab" data-tf="15m">15분봉</div>
     <div class="tab" data-tf="5m">5분봉</div>
   </div>
@@ -373,9 +396,9 @@
             <option value="100">100봉</option>
           </select>
         </label>
-        <button class="copy-btn" id="copyTableBtn" title="1일·4시간·15분·5분봉 캔들 + 추세 지표 + 분석 프롬프트가 함께 복사됩니다">📋 4개 시간대 표 복사 (분석 프롬프트 포함)</button>
+        <button class="copy-btn" id="copyTableBtn" title="1일·4시간·1시간·15분·5분봉 캔들 + 추세 지표 + 분석 프롬프트가 함께 복사됩니다">📋 5개 시간대 표 복사 (분석 프롬프트 포함)</button>
         <button class="copy-btn" id="copySingleBtn" title="지금 보고 있는 시간대의 표만, 기존 형식으로 복사합니다">현재 시간대만</button>
-        <button class="copy-btn primary" id="askClaudeBtn" title="4개 시간대 표를 복사한 뒤 Claude 새 대화를 엽니다">Claude에게 분석 요청</button>
+        <button class="copy-btn primary" id="askClaudeBtn" title="5개 시간대 표를 복사한 뒤 Claude 새 대화를 엽니다">Claude에게 분석 요청</button>
       </div>
     </div>
     <div class="table-legend">
@@ -404,9 +427,9 @@
       ※ 현재 진행 중인 봉은 거래대금이 아직 쌓이는 중이라, <b>경과율 반영 예상치</b>(현재 거래대금 ÷ 봉 경과 비율)를 함께 표시합니다.<br>
       ※ <b>OI(미결제약정)</b>와 <b>펀딩비</b>는 바이낸스 USDT 무기한 선물 데이터입니다. 가격·거래대금은 현물 기준이므로 서로 다른 시장의 데이터입니다. 펀딩비가 양수면 롱이 숏에게, 음수면 숏이 롱에게 지불합니다.<br>
       ※ 펀딩비 칸에 <b>★</b>가 붙은 값은 그 봉 구간에 실제 정산된 값(여러 번이면 합계)이고, 표시가 없으면 봉 시작 시점에 적용 중이던 직전 정산값입니다.<br>
-      ※ <b>지금 보고 있는 종목은 4개 시간대 모두 최근 1000봉</b>을 불러와 이동평균선·MACD·Chop Zone을 계산하고, 표에는 그중 <b>최근 500봉</b>을 보여줍니다(5분봉 약 42시간 · 15분봉 약 5.2일 · 4시간봉 약 83일 · 1일봉 약 500일). 다른 종목은 요약 카드용으로 120봉만 불러옵니다. 바이낸스는 <b>OI 히스토리를 최근 30일, 최대 500개까지만</b> 제공하므로 그보다 오래된 봉의 OI는 비어 있습니다(—). 무기한 선물이 없는 종목은 OI·펀딩비 전체가 비어 있습니다.<br>
-      ※ 상단에 고정된 <b>BTC 띠</b>는 어떤 종목을 보든 비트코인의 가격과 4개 시간대 이평선 배열·MACD·Chop Zone을 보여주는 시장 기준선입니다(누르면 BTC로 이동). 다른 종목을 볼 때도 BTC는 1000봉으로 받아 지표 정확도를 유지합니다. 색은 상승 빨강·하락 파랑이며, Chop Zone 색 띠만 TradingView 원본 색을 그대로 씁니다.<br>
-      ※ <b>과거 유사 국면</b>은 판단이 아니라 집계입니다. 최근 최대 500봉에서 지금과 지표 상태(EMA21 거리·이평선 배열·MACD 히스토그램과 기울기·Chop Zone 각도·10봉 수익률·50봉 범위 내 위치, 모두 ATR 기준)가 가장 비슷했던 20개 시점을 서로 5봉 이상 떨어지게 골라, 그 뒤 10봉 안에 +1.5 ATR에 먼저 닿으면 상승, −1.5 ATR에 먼저 닿으면 하락, 둘 다 안 닿거나 한 봉에서 둘 다 닿으면 횡보로 셉니다. <b>고확률</b>은 세 조건을 모두 넘을 때만 붙습니다: ① 유사 사례 20개 중 70% 이상이 같은 결과 ② 그 비율의 95% 범위 하한이 평소 비율보다 높음 ③ 이 종목·시간대에서 같은 판정이 과거에 10번 이상 나왔고 실제로 70% 이상 맞았음(<b>과거 판정 적중</b>, 각 시점에서 그때까지 알 수 있던 데이터만으로 돌려 본 결과). ①만 넘으면 '검증 미통과' 또는 '평소와 차이 불확실'로 흐리게 표시합니다. 무작위 데이터로 시험했을 때 이 조건 없이는 의미 없는 '70%'가 자주 나왔기 때문이며, 그 대가로 고확률 표시는 드뭅니다. 과거 500봉의 시장 성격이 앞으로도 같다는 보장은 없습니다. 지금 봉은 진행 중인 값으로 계산하므로 봉 마감 전에는 판정이 바뀔 수 있습니다.<br>
+      ※ <b>지금 보고 있는 종목은 5개 시간대 모두 최근 1000봉</b>을 불러와 이동평균선·MACD·Chop Zone을 계산하고, 표에는 그중 <b>최근 500봉</b>을 보여줍니다(5분봉 약 42시간 · 15분봉 약 5.2일 · 1시간봉 약 21일 · 4시간봉 약 83일 · 1일봉 약 500일). 다른 종목은 요약 카드용으로 120봉만 불러옵니다. 바이낸스는 <b>OI 히스토리를 최근 30일, 최대 500개까지만</b> 제공하므로 그보다 오래된 봉의 OI는 비어 있습니다(—). 무기한 선물이 없는 종목은 OI·펀딩비 전체가 비어 있습니다.<br>
+      ※ 상단에 고정된 <b>BTC 띠</b>는 어떤 종목을 보든 비트코인의 가격과 5개 시간대 이평선 배열·MACD·Chop Zone을 보여주는 시장 기준선입니다(누르면 BTC로 이동). 다른 종목을 볼 때도 BTC는 1000봉으로 받아 지표 정확도를 유지합니다. 색은 상승 빨강·하락 파랑이며, Chop Zone 색 띠만 TradingView 원본 색을 그대로 씁니다.<br>
+      ※ <b>지금과 가장 비슷했던 과거 봉</b>은 예측이 아니라 조회입니다. 선택한 시간대의 최근 500봉 각각에 대해 지표 12가지(이평 배열 · 가격과 이평 위치 · 이평 간격과 21이평 거리 · MACD 0선/시그널/히스토그램 방향 · MACD 강도 · Chop Zone 각도 · 20봉 평균 대비 변동폭 · 20봉 평균 대비 거래대금 · 매수비중 · 캔들 몸통 · OI 변화 · 펀딩비)가 지금 봉과 얼마나 같은지 0~100%로 매기고 평균을 냅니다. 숫자 지표는 이 500봉 안에서 보통 흔들리는 폭(표준편차)의 2배 이상 차이 나면 0%로 봅니다. 모든 값은 그 봉까지의 데이터로만 계산하며, 이평선은 위 EMA/SMA 선택을 따릅니다.<br>
       ※ <b>추세 지표</b>는 모두 종가 기준이며 진행 중인 봉까지 포함해 계산합니다(차트 프로그램이 실시간으로 보여주는 방식과 같음). EMA는 계산에 쓰인 과거 봉 수가 기간의 4배 미만이면 차트 값과 차이가 날 수 있어 <b>~</b>로 표시합니다(상장 기간이 짧은 종목의 1일봉 등). MACD는 12/26/9, Chop Zone은 TradingView 기본 공식(EMA34 기울기를 최근 30봉 고저 범위로 정규화한 각도, 색상 동일)입니다.
     </div>
   </div>
@@ -434,21 +457,22 @@ const SYMBOLS = {
 const ANCHOR = 'BTC';   // 시장 기준 종목: 어떤 종목을 보든 상단 띠에 고정
 const ASSET_ORDER = ['BTC','ETH','SOL','ZEC','HYPE','ENA','VVV','PUMP','NEAR','ONDO','TAO','WLD','PENGU','DOGE'];
 
-// 요약 카드용: 전 종목 × 4개 시간대를 가볍게 (20봉 평균 계산에 충분한 양)
+// 요약 카드용: 전 종목 × 5개 시간대를 가볍게 (20봉 평균 계산에 충분한 양)
 const TF_CONFIG = {
   '1d':  { interval:'1d',  label:'1일봉',  limit:120, chartCount:60 },
   '4h':  { interval:'4h',  label:'4시간봉', limit:120, chartCount:60 },
+  '1h':  { interval:'1h',  label:'1시간봉', limit:120, chartCount:60 },
   '15m': { interval:'15m', label:'15분봉', limit:120, chartCount:60 },
   '5m':  { interval:'5m',  label:'5분봉',  limit:120, chartCount:60 },
 };
-const TF_ORDER = ['1d','4h','15m','5m'];
+const TF_ORDER = ['1d','4h','1h','15m','5m'];
 const MA_PERIOD = 20;
 
 // 상세 표용: 지금 보고 있는 종목·시간대 하나만 깊게.
 // 캔들 API는 1개든 1000개든 요청 비용(weight 2)이 같지만, OI 히스토리가 최대 500개까지만
 // 제공되고 모바일에서 500행을 넘기면 30초 자동 갱신 때 렌더링이 무거워져서 500으로 맞췄다.
 const DETAIL_LIMIT = 500;  // 표에 보여줄 봉 수
-const DEEP_LIMIT = 1000;   // 지금 보는 종목은 4개 시간대 모두 1000봉 (EMA200을 차트와 같은 값으로 맞추려면 긴 과거가 필요)
+const DEEP_LIMIT = 1000;   // 지금 보는 종목은 5개 시간대 모두 1000봉 (EMA200을 차트와 같은 값으로 맞추려면 긴 과거가 필요)
 const OI_LIMIT = 500;
 
 let currentAsset = 'BTC';
@@ -534,10 +558,10 @@ function fetchWithTimeout(url, ms = 10000){
   return fetch(url, { signal: controller.signal }).finally(() => clearTimeout(id));
 }
 
-async function fetchKlines(asset, tf, limit){
+async function fetchKlines(asset, tf, limit, endTime){
   const cfg = TF_CONFIG[tf];
   const sym = SYMBOLS[asset].symbol;
-  const url = `https://api.binance.com/api/v3/klines?symbol=${sym}&interval=${cfg.interval}&limit=${limit}`;
+  const url = `https://api.binance.com/api/v3/klines?symbol=${sym}&interval=${cfg.interval}&limit=${limit}${endTime ? `&endTime=${endTime}` : ''}`;
   let res;
   try{
     res = await fetchWithTimeout(url);
@@ -1005,221 +1029,211 @@ function renderIndicators(){
 }
 
 
-// ---------- 과거 유사 국면 통계 (최근접 이웃 + 삼중 장벽) ----------
-// 주관적 판단 없이 "과거에 지금과 비슷했던 시점들 뒤에 실제로 무슨 일이 있었나"만 센다.
-// GAP: 유사 사례끼리 최소 간격. 결과를 보는 기간(H)만큼 떨어뜨려야 사례들의 결과 구간이 겹치지 않아
-//      20개가 실제로 20개의 독립된 사례가 된다 (간격이 좁으면 같은 추세 하나가 여러 번 세어져 확률이 부풀려짐)
-// VAL_MIN: '고확률'로 부르려면 같은 판정이 과거에 최소 이 횟수 이상 나와 실제로 HI 이상 맞았어야 함
-const ANA = { WINDOW:500, H:10, K_ATR:1.5, K:20, MIN_N:10, HI:0.70, FLAT_HI:0.60, GAP:10, VAL_MIN:10 };
-const anaCache = new WeakMap();
-const pct0 = x => (x * 100).toFixed(0) + '%';   // 캔들 배열이 새로 오면 자동으로 다시 계산
+// ---------- 지금과 가장 비슷했던 과거 봉 ----------
+// 예측이 아니라 사실 조회: 선택한 시간대의 최근 500봉 중에서, 대시보드에 보이는 지표 상태가
+// 지금 봉과 가장 비슷했던 봉을 유사도 순으로 찾는다.
+const SIM = { WINDOW:500, EXCL:12, GAP:6, TOP:10 };   // EXCL: 직전 12봉은 당연히 비슷해서 제외 · GAP: 결과끼리 최소 간격
+const simCache = new WeakMap();
+const simOpen = {};   // tf -> 펼친 봉의 시각
+const pct0 = x => (x * 100).toFixed(0) + '%';
 
-// 봉마다 상태 특징값(모두 ATR 등으로 정규화) — 그 봉까지의 데이터만 사용
-function anaFeatures(candles){
-  const n = candles.length, cl = candles.map(c => c.close);
-  const atr = atrSeries(candles, 14);
-  const ps = [8, 21, 50, 100, 200], e = {};
-  ps.forEach(p => e[p] = emaSeries(cl, p));
-  const e12 = emaSeries(cl, 12), e26 = emaSeries(cl, 26), e34 = emaSeries(cl, 34);
-  const macd = cl.map((_, i) => e12[i] != null && e26[i] != null ? e12[i] - e26[i] : null);
-  const st = macd.findIndex(v => v != null);
-  const sg = st < 0 ? [] : emaSeries(macd.slice(st), 9);
-  const hist = cl.map((_, i) => (st < 0 || i < st || sg[i - st] == null) ? null : macd[i] - sg[i - st]);
-  const F = new Array(n).fill(null);
-  for(let i = 211; i < n; i++){
-    const A = atr[i];
-    if(!A || e[200][i] == null || hist[i] == null || hist[i-1] == null || e34[i-1] == null) continue;
-    let hh = -Infinity, ll = Infinity, h50 = -Infinity, l50 = Infinity;
-    for(let j = i - 49; j <= i; j++){
-      const c = candles[j];
-      if(c.high > h50) h50 = c.high; if(c.low < l50) l50 = c.low;
-      if(j >= i - 29){ if(c.high > hh) hh = c.high; if(c.low < ll) ll = c.low; }
-    }
+function smaSeries(v, p){
+  const o = new Array(v.length).fill(null); let s = 0;
+  for(let i = 0; i < v.length; i++){ s += v[i]; if(i >= p) s -= v[i - p]; if(i >= p - 1) o[i] = s / p; }
+  return o;
+}
+// Chop Zone 각도 (화면 표시와 같은 공식, 봉마다)
+function chopSeries(candles){
+  const n = candles.length, cl = candles.map(c => c.close), ema = emaSeries(cl, 34), out = new Array(n).fill(null);
+  for(let i = 29; i < n; i++){
+    if(ema[i] == null || ema[i-1] == null) continue;
+    let hh = -Infinity, ll = Infinity;
+    for(let j = i - 29; j <= i; j++){ if(candles[j].high > hh) hh = candles[j].high; if(candles[j].low < ll) ll = candles[j].low; }
     if(hh <= ll) continue;
-    const y2 = (e34[i-1] - e34[i]) / ((candles[i].high + candles[i].low + cl[i]) / 3) * (25 / (hh - ll) * ll);
-    const a1 = 180 * Math.acos(1 / Math.sqrt(1 + y2 * y2)) / Math.PI;
-    let align = 0;
-    for(let k = 0; k < 4; k++){ const d = e[ps[k]][i] - e[ps[k+1]][i]; align += d > 0 ? 1 : d < 0 ? -1 : 0; }
-    F[i] = [ (cl[i] - e[21][i]) / A, align, hist[i] / A, (hist[i] - hist[i-1]) / A,
-             y2 > 0 ? -a1 : a1, (cl[i] - cl[i-10]) / A, h50 > l50 ? (cl[i] - l50) / (h50 - l50) : 0.5 ];
+    const y2 = (ema[i-1] - ema[i]) / ((candles[i].high + candles[i].low + cl[i]) / 3) * (25 / (hh - ll) * ll);
+    const a1 = Math.round(180 * Math.acos(1 / Math.sqrt(1 + y2 * y2)) / Math.PI);
+    out[i] = y2 > 0 ? -a1 : a1;
   }
-  return { F, atr };
+  return out;
 }
 
-// t 시점 진입 후 H봉 안에 ±k·ATR 중 어디에 먼저 닿았나: 1 상승, -1 하락, 0 횡보(한 봉에서 둘 다 닿아도 0)
-function anaOutcome(candles, atr, t){
-  const up = candles[t].close + ANA.K_ATR * atr[t], dn = candles[t].close - ANA.K_ATR * atr[t];
-  for(let j = t + 1; j <= t + ANA.H; j++){
-    const hu = candles[j].high >= up, hd = candles[j].low <= dn;
-    if(hu && hd) return 0;
-    if(hu) return 1;
-    if(hd) return -1;
-  }
-  return 0;
-}
+// 비교하는 지표 묶음. 묶음마다 0~1 점수를 매겨 평균하므로 한 지표가 점수를 독차지하지 않는다.
+const SIM_FAM = [
+  { k:'align', name:'이평 배열',      type:'bin' },
+  { k:'pos',   name:'가격·이평 위치', type:'bin' },
+  { k:'gaps',  name:'이평 간격',      type:'vec' },
+  { k:'mst',   name:'MACD 상태',      type:'bin' },
+  { k:'mstr',  name:'MACD 강도',      type:'num' },
+  { k:'chop',  name:'Chop Zone',      type:'num' },
+  { k:'range', name:'변동폭',         type:'num' },
+  { k:'vol',   name:'거래대금',       type:'num' },
+  { k:'buy',   name:'매수비중',       type:'num' },
+  { k:'body',  name:'캔들 몸통',      type:'num' },
+  { k:'oi',    name:'OI 변화',        type:'num' },
+  { k:'fund',  name:'펀딩비',         type:'num' },
+];
+const sgn = x => x > 0 ? 1 : x < 0 ? -1 : 0;
+const SIM_TXT = {
+  align: a => { const u = a.filter(x => x > 0).length, d = a.filter(x => x < 0).length; return u === 4 ? '정배열 4/4' : d === 4 ? '역배열 4/4' : `혼조 (정 ${u}/4)`; },
+  pos:   a => `5개 중 ${a.reduce((x, y) => x + y, 0)}개 위`,
+  gaps:  a => a.slice(0, 4).map(v => (v >= 0 ? '+' : '') + v.toFixed(1)).join(' / ') + `% · 21이평 대비 ${(a[4] >= 0 ? '+' : '') + a[4].toFixed(2)}%`,
+  mst:   a => `0선 ${a[0] ? '위' : '아래'} · 시그널 ${a[1] ? '위' : '아래'} · 히스토 ${a[2] ? '↑' : '↓'}`,
+  mstr:  v => `${v >= 0 ? '+' : ''}${v.toFixed(3)}% (가격 대비)`,
+  chop:  v => `${v > 0 ? '+' : ''}${v}° ${czZone(v).label}`,
+  range: v => `20봉 평균의 ${Math.exp(v).toFixed(2)}배`,
+  vol:   v => `20봉 평균의 ${Math.exp(v).toFixed(2)}배`,
+  buy:   v => v == null ? '—' : v.toFixed(1) + '%',
+  body:  v => `${v >= 0 ? '+' : ''}${v.toFixed(2)}%`,
+  oi:    v => v == null ? '—' : `${v >= 0 ? '+' : ''}${v.toFixed(2)}%`,
+  fund:  v => v == null ? '—' : fmtFunding(v),
+};
 
-function wilson(k, n, z = 1.96){
-  if(!n) return [0, 0];
-  const p = k / n, d = 1 + z*z/n, c = p + z*z/(2*n), r = z * Math.sqrt(p*(1-p)/n + z*z/(4*n*n));
-  return [Math.max(0, (c - r) / d), Math.min(1, (c + r) / d)];
-}
-
-// 마감된 봉에만 의존하는 부분(특징 표준화·과거 결과·검증)은 새 봉이 마감될 때만 다시 계산한다.
-const anaClosedCache = new Map();
-function anaPick(C, z, poolLen){
-  const D = z.length, idx = new Array(poolLen), dd = new Float64Array(poolLen);
-  for(let k = 0; k < poolLen; k++){
-    const q = C.Z[k]; let x = 0;
-    for(let d = 0; d < D; d++){ const w = z[d] - q[d]; x += w * w; }
-    dd[k] = x; idx[k] = k;
-  }
-  idx.sort((u, v) => dd[u] - dd[v]);
-  const sel = [];
-  for(const k of idx){
-    const i = C.cands[k];
-    if(sel.every(j => Math.abs(j - i) >= ANA.GAP)){ sel.push(i); if(sel.length >= ANA.K) break; }
-  }
-  return sel;
-}
-function anaTally(C, arr){ const c = { up:0, dn:0, flat:0 }; arr.forEach(i => C.out[i] > 0 ? c.up++ : C.out[i] < 0 ? c.dn++ : c.flat++); return c; }
-// 유사 사례 비율이 기준 이상 + 95% 범위 하한이 평소 비율보다 높음
-const anaStrong = (k, m, base, th) => m > 0 && k / m >= th && wilson(k, m)[0] > base;
-
-function anaClosed(candles, F, atr, validate){
-  const n = candles.length, H = ANA.H, last = candles[n - 2];
-  const key = `${n}|${candles[0].openTime}|${last.openTime}|${last.close}`;
-  let C = anaClosedCache.get(key);
-  if(!C){
-    const start = Math.max(211, n - 1 - ANA.WINDOW);
-    const cands = [];
-    for(let i = start; i + H <= n - 2; i++) if(F[i]) cands.push(i);   // 이후 H봉이 마감봉으로 확정된 시점만
-    if(cands.length < 100) return null;
-    const D = F[cands[0]].length, mu = new Array(D).fill(0), sd = new Array(D).fill(0);
-    cands.forEach(i => F[i].forEach((v, d) => mu[d] += v / cands.length));
-    cands.forEach(i => F[i].forEach((v, d) => sd[d] += (v - mu[d]) ** 2 / cands.length));
-    for(let d = 0; d < D; d++) sd[d] = Math.sqrt(sd[d]) || 1;
-    const out = {}, fwd = {};
-    cands.forEach(i => { out[i] = anaOutcome(candles, atr, i); fwd[i] = (candles[i + H].close - candles[i].close) / atr[i]; });
-    C = { start, cands, mu, sd, out, fwd, val:null, Z: cands.map(i => F[i].map((v, d) => (v - mu[d]) / sd[d])) };
-    const b = anaTally(C, cands);
-    C.base = { up:b.up / cands.length, dn:b.dn / cands.length, flat:b.flat / cands.length };
-    if(anaClosedCache.size > 40) anaClosedCache.clear();
-    anaClosedCache.set(key, C);
-  }
-  // 검증: 각 과거 시점에서 그때 이미 결과가 확정된 사례만으로 같은 판정을 내려 보고 실제 결과와 대조
-  if(validate && !C.val){
-    const val = { long:{ n:0, hit:0 }, short:{ n:0, hit:0 }, flat:{ n:0, hit:0 } };
-    let q = 0;
-    for(let k = 0; k < C.cands.length; k += 2){            // 2봉 간격으로 검사 (속도)
-      const t = C.cands[k];
-      while(q < C.cands.length && C.cands[q] + H <= t) q++;
-      if(q < 100) continue;
-      const s2 = anaPick(C, C.Z[k], q);
-      if(s2.length < ANA.MIN_N) continue;
-      const c2 = anaTally(C, s2), mm = s2.length, o = C.out[t], b2 = anaTally(C, C.cands.slice(0, q));
-      if(anaStrong(c2.up, mm, b2.up / q, ANA.HI)){ val.long.n++; if(o > 0) val.long.hit++; }
-      else if(anaStrong(c2.dn, mm, b2.dn / q, ANA.HI)){ val.short.n++; if(o < 0) val.short.hit++; }
-      else if(anaStrong(c2.flat, mm, b2.flat / q, ANA.FLAT_HI)){ val.flat.n++; if(o === 0) val.flat.hit++; }
+// 봉마다 지표 상태 (그 봉까지의 데이터만 사용)
+function simStates(candles){
+  const n = candles.length, cl = candles.map(c => c.close);
+  const MAs = MA_LIST.map(p => maType === 'SMA' ? smaSeries(cl, p) : emaSeries(cl, p));
+  const e12 = emaSeries(cl, 12), e26 = emaSeries(cl, 26);
+  const mac = cl.map((_, i) => e12[i] != null && e26[i] != null ? e12[i] - e26[i] : null);
+  const st = mac.findIndex(v => v != null), sg = st < 0 ? [] : emaSeries(mac.slice(st), 9);
+  const sig = mac.map((_, i) => st < 0 || i < st ? null : sg[i - st]);
+  const cz = chopSeries(candles), er = elapsedRatio(candles[n - 1]);
+  const S = new Array(n).fill(null);
+  let sr = 0, sv = 0;   // 직전 20봉(마감) 변동폭·거래대금 합
+  for(let i = 0; i < n; i++){
+    const c = candles[i], ma = MAs.map(a => a[i]);
+    if(i >= 20 && ma.every(v => v != null) && sig[i] != null && sig[i-1] != null && cz[i] != null){
+      const last = i === n - 1;
+      // 진행 중인 봉은 아직 덜 찼으니 경과율로 환산 (변동폭은 시간의 제곱근에 비례한다고 봄)
+      const rng = last ? c.rangePct / Math.sqrt(er) : c.rangePct, vol = last ? c.quoteVolume / er : c.quoteVolume;
+      const h = mac[i] - sig[i], hp = mac[i-1] - sig[i-1];
+      S[i] = {
+        align: [0, 1, 2, 3].map(k => sgn(ma[k] - ma[k+1])),
+        pos:   ma.map(v => c.close > v ? 1 : 0),
+        gaps:  [0, 1, 2, 3].map(k => (ma[k] - ma[k+1]) / ma[k+1] * 100).concat([(c.close - ma[1]) / ma[1] * 100]),
+        mst:   [mac[i] > 0 ? 1 : 0, mac[i] > sig[i] ? 1 : 0, h > hp ? 1 : 0],
+        mstr:  h / c.close * 100,
+        chop:  cz[i],
+        range: Math.log(Math.max(rng, 1e-9) / Math.max(sr / 20, 1e-9)),
+        vol:   Math.log(Math.max(vol, 1e-9) / Math.max(sv / 20, 1e-9)),
+        buy:   c.buyRatio,
+        body:  (c.close - c.open) / c.open * 100,
+        oi:    c.oiDeltaPct,
+        fund:  c.fundingCount ? c.fundingSettled : c.fundingPrevailing,
+      };
     }
-    C.val = val;
+    sr += c.rangePct; sv += c.quoteVolume;
+    if(i >= 20){ sr -= candles[i-20].rangePct; sv -= candles[i-20].quoteVolume; }
   }
-  return C;
+  return S;
 }
 
-function computeAnalog(candles, validate){
-  if(!candles) return null;
-  const hit = anaCache.get(candles);
-  if(hit && (hit.val || !validate)) return hit;
-  const n = candles.length, H = ANA.H;
-  if(n < 400) return null;
-  const { F, atr } = anaFeatures(candles);
-  if(!F[n - 1]) return null;
-  const C = anaClosed(candles, F, atr, validate);
-  if(!C) return null;
+function computeSimilar(candles){
+  if(!candles || candles.length < 300) return null;
+  const hit = simCache.get(candles);
+  if(hit && hit.maType === maType) return hit;
+  const n = candles.length, S = simStates(candles), now = S[n - 1];
+  if(!now) return null;
+  const start = Math.max(0, n - SIM.WINDOW), win = [];
+  for(let i = start; i < n; i++) if(S[i]) win.push(i);
+  if(win.length < 50) return null;
 
-  const z = F[n - 1].map((v, d) => (v - C.mu[d]) / C.sd[d]);
-  const sel = anaPick(C, z, C.cands.length), m = sel.length, c = anaTally(C, sel);
-  const pu = c.up / m, pd = c.dn / m, pf = c.flat / m, val = C.val, base = C.base;
-  // 검증 통과 = 같은 판정이 이 종목·시간대에서 VAL_MIN회 이상 나왔고 실제로 HI 이상 맞았음
-  const vOk = v => v && v.n >= ANA.VAL_MIN && v.hit / v.n >= ANA.HI;
-  const tag = val ? '검증 미통과' : '검증 전';
-  let verdict, cls, hot = false;
-  if(m < ANA.MIN_N){ verdict = '표본 부족'; cls = 'mix'; }
-  else if(anaStrong(c.up, m, base.up, ANA.HI)){
-    if(vOk(val && val.long)){ verdict = '롱 우위 · 고확률'; cls = 'up'; hot = true; }
-    else { verdict = `롱 ${pct0(pu)} · ${tag}`; cls = 'mix'; }
-  }
-  else if(anaStrong(c.dn, m, base.dn, ANA.HI)){
-    if(vOk(val && val.short)){ verdict = '숏 우위 · 고확률'; cls = 'down'; hot = true; }
-    else { verdict = `숏 ${pct0(pd)} · ${tag}`; cls = 'mix'; }
-  }
-  else if(anaStrong(c.flat, m, base.flat, ANA.FLAT_HI)){
-    if(vOk(val && val.flat)){ verdict = `${H}봉 횡보 확률 높음`; cls = 'flat'; }
-    else { verdict = `횡보 ${pct0(pf)} · ${tag}`; cls = 'mix'; }
-  }
-  else if(pu >= ANA.HI || pd >= ANA.HI){ verdict = `${pu >= pd ? '롱' : '숏'} ${pct0(Math.max(pu, pd))} · 평소와 차이 불확실`; cls = 'mix'; }
-  else if(pu >= 0.5){ verdict = '롱 약우위'; cls = 'up'; }
-  else if(pd >= 0.5){ verdict = '숏 약우위'; cls = 'down'; }
-  else if(pf >= 0.5){ verdict = '횡보 우세'; cls = 'flat'; }
-  else { verdict = '방향 불명확'; cls = 'mix'; }
-  const r = {
-    m, c, pu, pd, pf, verdict, cls, hot, val, base, window: n - 1 - C.start, bn: C.cands.length,
-    ci: { up:wilson(c.up, m), dn:wilson(c.dn, m), flat:wilson(c.flat, m) },
-    avgFwd: sel.reduce((x, i) => x + C.fwd[i], 0) / m,
-    top: sel.slice(0, 3).map(i => ({ t:candles[i].openTime, o:C.out[i] })),
+  // 숫자 지표는 '이 구간에서 보통 얼마나 흔들리나(표준편차)'를 기준으로 비교: 2표준편차 이상 차이면 0점
+  const sdOf = vals => {
+    const v = vals.filter(x => x != null && isFinite(x));
+    if(v.length < 10) return null;
+    const m = v.reduce((a, b) => a + b, 0) / v.length;
+    return Math.sqrt(v.reduce((a, b) => a + (b - m) ** 2, 0) / v.length) || null;
   };
-  anaCache.set(candles, r);
+  const sd = {};
+  SIM_FAM.forEach(f => {
+    if(f.type === 'num') sd[f.k] = sdOf(win.map(i => S[i][f.k]));
+    if(f.type === 'vec') sd[f.k] = now.gaps.map((_, j) => sdOf(win.map(i => S[i].gaps[j])));
+  });
+  const famSim = (a, b, f) => {
+    const x = a[f.k], y = b[f.k];
+    if(f.type === 'bin'){ let e = 0; x.forEach((v, j) => { if(v === y[j]) e++; }); return e / x.length; }
+    if(f.type === 'vec'){ let s = 0, k = 0; x.forEach((v, j) => { const d = sd[f.k][j]; if(d){ s += 1 - Math.min(Math.abs(v - y[j]) / (2 * d), 1); k++; } }); return k ? s / k : null; }
+    if(x == null || y == null || !sd[f.k]) return null;   // OI·펀딩처럼 값이 없는 봉은 그 지표만 빼고 평균
+    return 1 - Math.min(Math.abs(x - y) / (2 * sd[f.k]), 1);
+  };
+
+  const scored = [];
+  win.forEach(i => {
+    if(i > n - 1 - SIM.EXCL) return;
+    const fs = SIM_FAM.map(f => famSim(now, S[i], f)), av = fs.filter(v => v != null);
+    scored.push({ i, sim: av.reduce((a, b) => a + b, 0) / av.length, fs });
+  });
+  // 몇 개나 비슷했나 (구간 = 기준을 넘는 봉이 연속된 묶음)
+  const countAt = th => { let bars = 0, runs = 0, prev = -9; scored.forEach(s => { if(s.sim >= th){ bars++; if(s.i !== prev + 1) runs++; prev = s.i; } }); return { bars, runs }; };
+  const ranked = scored.slice().sort((a, b) => b.sim - a.sim), top = [];
+  for(const s of ranked){
+    if(top.every(t => Math.abs(t.i - s.i) >= SIM.GAP)){ top.push(s); if(top.length >= SIM.TOP) break; }
+  }
+  const r = {
+    maType, n, now, S, window: n - start, total: scored.length,
+    c80: countAt(0.8), c70: countAt(0.7),
+    top: top.map(s => ({ i:s.i, sim:s.sim, fs:s.fs, t:candles[s.i].openTime, close:candles[s.i].close })),
+  };
+  simCache.set(candles, r);
   return r;
 }
 
-const anaTxtCls = cls => cls === 'up' ? 'c-up' : cls === 'down' ? 'c-down' : cls === 'flat' ? 'cz-y' : 'muted';
-
 function renderAnalog(){
   const grid = document.getElementById('anaGrid');
-  grid.innerHTML = TF_ORDER.map(tf => {
-    const lab = TF_CONFIG[tf].label;
-    const { candles, detailed } = getCandles(currentAsset, tf);
-    const a = detailed ? computeAnalog(candles, true) : null;
-    if(!a) return `<div class="ind-card" data-tf="${tf}"><div class="tf-label">${lab}</div><div class="sum-empty">${detailed ? '계산 불가 (과거 봉 부족)' : '1000봉 불러오는 중…'}</div></div>`;
-    const row = (k, p, base, cls) => `<div class="ana-row"><span>${k}</span><span class="ana-bar"><i class="${cls}" style="width:${pct0(p)}"></i></span><b class="${cls}">${pct0(p)}</b><span class="muted">평소 ${pct0(base)}</span></div>`;
-    const lead = a.pu >= a.pd && a.pu >= a.pf ? ['상승', a.pu, a.ci.up] : a.pd >= a.pf ? ['하락', a.pd, a.ci.dn] : ['횡보', a.pf, a.ci.flat];
-    const v = a.val;
-    const hot = a.hot ? (a.cls === 'up' ? 'hot-up' : 'hot-down') : '';
-    const arrow = o => o > 0 ? '<span class="c-up">상승</span>' : o < 0 ? '<span class="c-down">하락</span>' : '<span class="cz-y">횡보</span>';
-    return `
-      <div class="ind-card ${hot} ${tf === currentTf ? 'active' : ''}" data-tf="${tf}">
-        <div class="tf-label">${lab}<span class="pill ${a.cls}">${a.verdict}</span></div>
-        <div class="ind-sub">향후 ${ANA.H}봉 · ±${ANA.K_ATR} ATR · 유사 국면 ${a.m}개 / 최근 ${a.window}봉</div>
-        <div class="ind-sec">
-          ${row('상승', a.pu, a.base.up, 'c-up')}
-          ${row('하락', a.pd, a.base.dn, 'c-down')}
-          ${row('횡보', a.pf, a.base.flat, 'cz-y')}
-          <div class="ind-sub">${lead[0]} ${pct0(lead[1])}의 95% 범위 ${pct0(lead[2][0])}~${pct0(lead[2][1])}</div>
-          <div class="ind-sub">${ANA.H}봉 뒤 평균 ${a.avgFwd >= 0 ? '+' : ''}${a.avgFwd.toFixed(2)} ATR</div>
-        </div>
-        <div class="ind-sec">
-          <div class="ind-k"><span>가장 비슷했던 때</span></div>
-          <div class="ind-sub">${a.top.map(x => `${fmtTime(x.t, tf)} → ${arrow(x.o)}`).join('<br>')}</div>
-        </div>
-        <div class="ind-sec">
-          <div class="ind-k"><span>과거 판정 적중 (이 방법을 과거에 돌려본 결과)</span></div>
-          <div class="ind-sub">롱≥70% ${v.long.n ? `${v.long.hit}/${v.long.n} (${pct0(v.long.hit / v.long.n)})` : '판정 없음'}<br>숏≥70% ${v.short.n ? `${v.short.hit}/${v.short.n} (${pct0(v.short.hit / v.short.n)})` : '판정 없음'}<br>횡보≥60% ${v.flat.n ? `${v.flat.hit}/${v.flat.n} (${pct0(v.flat.hit / v.flat.n)})` : '판정 없음'}</div>
-        </div>
-      </div>`;
+  const tf = currentTf, lab = TF_CONFIG[tf].label;
+  const { candles, detailed } = getCandles(currentAsset, tf);
+  const r = detailed ? computeSimilar(candles) : null;
+  const title = `지금과 가장 비슷했던 과거 봉 · ${SYMBOLS[currentAsset].label} ${lab}`;
+  if(!r){
+    grid.innerHTML = `<div class="ind-card" style="grid-column:1/-1"><div class="tf-label">${title}</div><div class="sum-empty">${detailed ? '비교할 수 있는 과거 봉이 부족함 (상장 기간이 짧음)' : '1000봉 불러오는 중…'}</div></div>`;
+    return;
+  }
+  const mark = v => v == null ? '' : v >= 0.8 ? '<span class="sim-ok">✓</span>' : v >= 0.5 ? '<span class="sim-mid">≈</span>' : '<span class="sim-no">✗</span>';
+  const open = simOpen[tf];
+  const rows = r.top.map((m, k) => {
+    const chips = SIM_FAM.map((f, j) => m.fs[j] == null ? '' : `<span class="sim-chip">${mark(m.fs[j])}${f.name}</span>`).join('');
+    const detail = open !== m.t ? '' : `
+      <div class="sim-detail"><table>
+        <tr><th>지표</th><th>지금</th><th>그때</th><th>일치</th></tr>
+        ${SIM_FAM.map((f, j) => m.fs[j] == null ? '' : `<tr><td>${f.name}</td><td>${SIM_TXT[f.k](r.now[f.k])}</td><td>${SIM_TXT[f.k](r.S[m.i][f.k])}</td><td>${pct0(m.fs[j])}</td></tr>`).join('')}
+      </table><button class="copy-btn" data-goto="${m.t}">아래 표에서 이 봉 보기</button></div>`;
+    return `<div class="sim-row" data-t="${m.t}">
+      <div class="sim-head"><b>#${k + 1}</b><span>${fmtTime(m.t, tf)}</span><span class="sim-pct">유사도 ${pct0(m.sim)}</span><span class="muted">${r.n - 1 - m.i}봉 전 · 종가 ${fmtPrice(m.close)}</span><span class="sim-caret">${open === m.t ? '▾' : '▸'}</span></div>
+      <div class="chips">${chips}</div>${detail}
+    </div>`;
   }).join('');
-  grid.querySelectorAll('.ind-card').forEach(card => {
-    card.addEventListener('click', () => { if(getCandles(currentAsset, card.dataset.tf).candles) switchTab(card.dataset.tf); });
-  });
+  grid.innerHTML = `
+    <div class="ind-card" style="grid-column:1/-1">
+      <div class="tf-label">${title}<span class="pill mix">최근 ${r.window}봉</span></div>
+      <div class="sim-count">최근 ${r.window}봉 중 유사도 80% 이상 <b>${r.c80.bars}봉</b> (${r.c80.runs}개 구간) · 70% 이상 <b>${r.c70.bars}봉</b> (${r.c70.runs}개 구간)</div>
+      <div class="ind-sub">비교 지표 ${SIM_FAM.length}가지(${SIM_FAM.map(f => f.name).join(' · ')})를 각각 0~100%로 매겨 평균 · 값이 없는 지표는 빼고 평균 · 지금 봉은 진행 중이라 변동폭·거래대금을 경과율로 환산 · 직전 ${SIM.EXCL}봉은 지금과 당연히 비슷해서 제외 · 같은 구간이 여러 번 뽑히지 않게 ${SIM.GAP}봉 이상 떨어진 봉만</div>
+      <div class="ind-sub">✓ 거의 같음(80%+) · ≈ 비슷(50~80%) · ✗ 다름 — 줄을 누르면 지금과 그때의 값을 나란히 보여줍니다</div>
+      ${rows || '<div class="sum-empty">비교할 봉이 없음</div>'}
+    </div>`;
 }
+document.getElementById('anaGrid').addEventListener('click', e => {
+  const g = e.target.closest('[data-goto]');
+  if(g){
+    const tr = document.querySelector(`#tableBody tr[data-t="${g.dataset.goto}"]`);
+    if(tr){ tr.scrollIntoView({ block:'center', behavior:'smooth' }); tr.classList.add('flash'); setTimeout(() => tr.classList.remove('flash'), 2400); }
+    return;
+  }
+  const head = e.target.closest('.sim-head');
+  if(head){
+    const t = +head.parentElement.dataset.t;
+    simOpen[currentTf] = simOpen[currentTf] === t ? null : t;
+    renderAnalog();
+  }
+});
 
-// 복사 텍스트용 요약
+// 복사 텍스트용 요약 (지금 보는 종목만)
 function pushAnalogSummary(L, asset){
-  L.push(`## ${asset === currentAsset ? '' : SYMBOLS[asset].label + ' '}과거 유사 국면 통계 (대시보드 기계 집계 · 최근 최대 ${ANA.WINDOW}봉 중 지금과 가장 비슷한 ${ANA.K}개 시점 · 이후 ${ANA.H}봉 · ±${ANA.K_ATR}ATR 먼저 닿은 쪽)`);
+  if(asset !== currentAsset) return;
+  L.push(`## 지금과 가장 비슷했던 과거 봉 (대시보드 계산 · 시간대별 최근 ${SIM.WINDOW}봉 · 지표 ${SIM_FAM.length}가지 종합 유사도)`);
   TF_ORDER.forEach(tf => {
-    const a = computeAnalog(getCandles(asset, tf).candles, true);
-    if(!a){ L.push(`- ${TF_CONFIG[tf].label}: 계산 불가 (데이터 부족)`); return; }
-    const v = a.val;
-    L.push(`- ${TF_CONFIG[tf].label}: ${a.verdict} · n=${a.m} · 상승 ${pct0(a.pu)} (95% ${pct0(a.ci.up[0])}~${pct0(a.ci.up[1])}) / 하락 ${pct0(a.pd)} (95% ${pct0(a.ci.dn[0])}~${pct0(a.ci.dn[1])}) / 횡보 ${pct0(a.pf)} · 평소 ${pct0(a.base.up)}/${pct0(a.base.dn)}/${pct0(a.base.flat)} · ${ANA.H}봉 뒤 평균 ${a.avgFwd.toFixed(2)}ATR${v ? ` · 과거 판정 적중 롱 ${v.long.hit}/${v.long.n}, 숏 ${v.short.hit}/${v.short.n}, 횡보 ${v.flat.hit}/${v.flat.n}` : ''}`);
+    const r = computeSimilar(getCandles(asset, tf).candles);
+    if(!r){ L.push(`- ${TF_CONFIG[tf].label}: 계산 불가`); return; }
+    L.push(`- ${TF_CONFIG[tf].label}: 유사도 80% 이상 ${r.c80.bars}봉(${r.c80.runs}구간) · 70% 이상 ${r.c70.bars}봉(${r.c70.runs}구간) · 가장 비슷한 순: ${r.top.slice(0, 5).map(m => `${csvTime(m.t, tf)} ${pct0(m.sim)}`).join(', ')}`);
   });
   L.push('');
 }
@@ -1241,10 +1255,7 @@ function renderBtcStrip(){
     const maCls = ma.order === 'up' ? 'c-up' : ma.order === 'down' ? 'c-down' : 'muted';
     const cz = chop ? `<span title="Chop Zone ${chop.cur.zone.label}"><i class="bs-sw" style="background:${chop.cur.zone.color}"></i>${chop.cur.angle > 0 ? '+' : ''}${chop.cur.angle}°</span>` : '';
     const mc = macd ? `<span class="${macd.cls === 'up' ? 'c-up' : 'c-down'}" title="MACD ${macd.head} · ${macd.mom}">0선${macd.aboveZero ? '↑' : '↓'} 시그${macd.aboveSig ? '↑' : '↓'}</span>` : '';
-    const an = computeAnalog(getCandles(ANCHOR, tf).candles, true);
-    const anTxt = !an ? '' : an.m < ANA.MIN_N ? '<span class="muted">유사 표본부족</span>'
-      : `<span class="${anaTxtCls(an.cls)}" title="과거 유사 국면 ${an.m}개: 상승 ${pct0(an.pu)} · 하락 ${pct0(an.pd)} · 횡보 ${pct0(an.pf)}">유사 ${an.pu >= an.pd && an.pu >= an.pf ? '↑' + pct0(an.pu) : an.pd >= an.pf ? '↓' + pct0(an.pd) : '횡보 ' + pct0(an.pf)}${an.hot ? ' ★' : ''}</span>`;
-    return `<div><div class="bs-tf"><span>${lab}</span>${cz}</div><div class="bs-ln"><span class="${maCls}">${ma.label.replace(/ \(정 (\d+\/\d+)\)/, ' $1')}</span>${mc}</div><div class="bs-ln">${anTxt}</div></div>`;
+    return `<div><div class="bs-tf"><span>${lab}</span>${cz}</div><div class="bs-ln"><span class="${maCls}">${ma.label.replace(/ \(정 (\d+\/\d+)\)/, ' $1')}</span>${mc}</div></div>`;
   }).join('');
   el.innerHTML = head + cells;
 }
@@ -1400,7 +1411,7 @@ function renderTable(tf, allCandles, detailed){
     const buyW = buyDev == null ? '0%' : Math.min(100, Math.abs(buyDev) / 15 * 100).toFixed(0) + '%';
     const fundVal = c.fundingCount ? c.fundingSettled : c.fundingPrevailing;
     rows.push(
-`<tr class="${isCurrent ? 'current-row' : ''}${sepAbove ? ' day-start' : ''}">`+
+`<tr class="${isCurrent ? 'current-row' : ''}${sepAbove ? ' day-start' : ''}" data-t="${c.openTime}">`+
 `<td class="${bull ? 'bull' : 'bear'}">${fmtTime(c.openTime, tf)}${isCurrent?' (진행중)':''}</td>`+
 `<td>${fmtPrice(c.open)}</td><td>${fmtPrice(c.high)}</td><td>${fmtPrice(c.low)}</td>`+
 `<td class="${bull ? 'c-up' : 'c-down'}">${fmtPrice(c.close)}</td>`+
@@ -1523,7 +1534,7 @@ function renderDetail(tf){
   renderChartFor(tf, candles);
 }
 
-// ---------- 지금 보는 종목 깊게 로딩 (4개 시간대 × 1000봉 + OI 4세트 + 펀딩 + 프리미엄) ----------
+// ---------- 지금 보는 종목 깊게 로딩 (5개 시간대 × 1000봉 + OI 5세트 + 펀딩 + 프리미엄) ----------
 // 한 번 받아두면 시간대 탭을 바꿔도 추가 요청 없이 바로 그린다.
 async function loadAssetDeep(asset){
   deepLoading.add(asset);
@@ -1568,15 +1579,15 @@ async function loadAssetDeep(asset){
 // ---------- 분석 요청용 프롬프트 템플릿 ----------
 // "표 데이터 복사"를 누를 때 숫자 데이터 위에 항상 붙는 페르소나 프롬프트.
 // 문구를 바꾸고 싶으면 이 함수만 수정하면 된다.
-// multi=true 이면 4개 시간대 캔들 원본이 모두 들어간 경우의 문구를 쓴다.
+// multi=true 이면 5개 시간대 캔들 원본이 모두 들어간 경우의 문구를 쓴다.
 function buildAnalysisPrompt(sym, tfLabel, candleCount, multi = false){
   const maTypeLabel = maType === 'SMA' ? '단순이동평균(SMA)' : '지수이동평균(EMA)';
   const tableScope = multi ? `시간대별 최근 ${candleCount}봉` : `최근 ${candleCount}봉`;
   const mtfLine = multi
-    ? `2. **멀티 타임프레임 확인**: 1일봉·4시간봉·15분봉·5분봉 네 시간대의 캔들 원본(각 최근 ${candleCount}봉)과 추세 지표 요약이 모두 있다. 상위 시간대(1일·4시간)로 큰 추세와 주요 지지·저항을 먼저 정하고, 하위 시간대(15분·5분)로 진입 자리를 판단해라. 시간대 간 방향이 엇갈리면 어느 시간대가 어느 쪽을 가리키는지 명시하고, 엇갈림 자체를 시나리오에 반영해라.`
-    : `2. **멀티 타임프레임 확인**: 캔들 원본은 ${sym.label}(${sym.name}) ${tfLabel} 하나뿐이지만, '추세 지표' 섹션에는 1일봉·4시간봉·15분봉·5분봉의 이평선 배열·MACD·Chop Zone 요약이 모두 있다. 이 요약으로 시간대 간 방향 일치 여부를 먼저 확인하고, 캔들 원본이 없어 판단할 수 없는 부분(예: 다른 시간대의 정확한 진입 자리)은 구분해서 말해라. 내가 다른 시간대 표를 추가로 붙여넣으면 그때 통합 분석해라.`;
+    ? `2. **멀티 타임프레임 확인**: 1일봉·4시간봉·1시간봉·15분봉·5분봉 다섯 시간대의 캔들 원본(각 최근 ${candleCount}봉)과 추세 지표 요약이 모두 있다. 상위 시간대(1일·4시간)로 큰 추세와 주요 지지·저항을 먼저 정하고, 1시간봉으로 흐름의 전환 여부를 확인한 뒤, 하위 시간대(15분·5분)로 진입 자리를 판단해라. 시간대 간 방향이 엇갈리면 어느 시간대가 어느 쪽을 가리키는지 명시하고, 엇갈림 자체를 시나리오에 반영해라.`
+    : `2. **멀티 타임프레임 확인**: 캔들 원본은 ${sym.label}(${sym.name}) ${tfLabel} 하나뿐이지만, '추세 지표' 섹션에는 1일봉·4시간봉·1시간봉·15분봉·5분봉의 이평선 배열·MACD·Chop Zone 요약이 모두 있다. 이 요약으로 시간대 간 방향 일치 여부를 먼저 확인하고, 캔들 원본이 없어 판단할 수 없는 부분(예: 다른 시간대의 정확한 진입 자리)은 구분해서 말해라. 내가 다른 시간대 표를 추가로 붙여넣으면 그때 통합 분석해라.`;
   const scopeLine = multi
-    ? `- 이 데이터는 ${sym.label}(${sym.name}) 1일봉·4시간봉·15분봉·5분봉, 시간대별 최근 ${candleCount}개 캔들, 현물(spot) 기준이다`
+    ? `- 이 데이터는 ${sym.label}(${sym.name}) 1일봉·4시간봉·1시간봉·15분봉·5분봉, 시간대별 최근 ${candleCount}개 캔들, 현물(spot) 기준이다`
     : `- 이 데이터는 ${sym.label}(${sym.name}) ${tfLabel}, 최근 ${candleCount}개 캔들, 현물(spot) 기준이다`;
   return [
 `# Role & Objective`,
@@ -1589,7 +1600,7 @@ mtfLine,
 `4. **MACD**: '추세 지표'의 12/26/9 MACD 값(0선·시그널 대비 위치, 히스토그램 방향, 최근 교차)을 사용하고, 다이버전스는 캔들 표의 고점·저점과 대조해서 확인해라.`,
 `5. **Chop zone 여부**: '추세 지표'의 Chop Zone(EMA34 기울기 각도, TradingView 기본 공식)과 캔들 표의 스윙 고점/저점 구조를 함께 보고, 지금이 추세 구간인지 횡보 구간인지 먼저 판별한 뒤 그 판단을 전제로 나머지를 해석해라.`,
 ...(sym.label !== ANCHOR ? [`6. **BTC 기준**: 비트코인이 크립토 시장 전체 추세의 기준이다. 'BTC 추세 지표 — 시장 기준' 섹션과 이 종목의 추세 지표를 시간대별로 비교해 같은 방향(동조)인지 다른 방향(디커플링)인지 먼저 판단하고, 그 결과를 시나리오와 확률에 반영해라.`] : []),
-`${sym.label !== ANCHOR ? 7 : 6}. **과거 유사 국면 통계**: 대시보드가 최근 500봉에서 지금과 지표 상태가 비슷했던 시점을 기계적으로 골라, 그 뒤 ${ANA.H}봉 동안 ±${ANA.K_ATR}ATR 중 어디에 먼저 닿았는지 센 값이다. 표본 수(n)·95% 범위·평소 비율과의 차이·과거 판정 적중률을 함께 보고, 표본이 적거나 평소와 차이가 작거나 적중률이 낮으면 근거로서의 비중을 낮춰라. 이 통계와 너의 차트 해석이 엇갈리면 그 사실을 명시해라.`,
+`${sym.label !== ANCHOR ? 7 : 6}. **지금과 가장 비슷했던 과거 봉**: 대시보드가 시간대별 최근 500봉에서 지금 봉과 지표 상태(이평 배열·위치·간격, MACD 상태·강도, Chop Zone, 변동폭, 거래대금, 매수비중, 캔들 몸통, OI 변화, 펀딩비)가 가장 비슷했던 봉의 시각을 유사도 순으로 뽑았다. 그 시각을 CSV에서 찾아 그 뒤 가격이 실제로 어떻게 움직였는지 사실로 정리해라. CSV 범위 밖이면 그렇다고 말하고, 사례가 몇 개뿐이라는 점을 감안해라.`,
 ``,
 `# Output Format`,
 `---`,
@@ -1597,7 +1608,7 @@ mtfLine,
 `- 추세 상태 (이평선 배열 + Chop 여부)`,
 `- 거래량·모멘텀 평가 (거래대금/매수비중 + MACD)`,
 `- 주요 지지/저항 (스윙 고점·저점 기준)`,
-`- 과거 유사 국면 통계 해석 (신뢰도 포함)`,
+`- 지금과 비슷했던 과거 봉들의 이후 움직임 (사실 정리)`,
 ``,
 `### 2. 시나리오 (확률 높은 순 3개)`,
 `- 시나리오별: 발동 조건(Trigger) · 목표가 · 무효화 조건`,
@@ -1617,7 +1628,7 @@ scopeLine,
   ].join('\n');
 }
 
-// 4개 시간대 추세 지표 요약 (두 복사 방식 공용). markTf 가 null 이면 표시 없음
+// 5개 시간대 추세 지표 요약 (두 복사 방식 공용). markTf 가 null 이면 표시 없음
 function pushIndicatorSummary(L, markTf, asset = currentAsset){
   const nm = asset === currentAsset ? '추세 지표' : `${SYMBOLS[asset].label} 추세 지표 — 시장 기준`;
   L.push(`## ${nm} (대시보드 계산값 · 이평선 ${maType} · 진행 중인 봉 포함)`);
@@ -1701,7 +1712,7 @@ function buildTableText(){
   const oiChange20 = (current.oiValue != null && refOi != null) ? ((current.oiValue - refOi) / refOi) * 100 : null;
   const curFunding = prem ? prem.lastFundingRate : current.fundingPrevailing;
 
-  // --- 4개 시간대 추세 지표 요약 ---
+  // --- 5개 시간대 추세 지표 요약 ---
   pushIndicatorSummary(L, currentTf);
   if(currentAsset !== ANCHOR) pushIndicatorSummary(L, null, ANCHOR);
   pushAnalogSummary(L, currentAsset);
@@ -1746,7 +1757,7 @@ function buildTableText(){
   return L.join('\n');
 }
 
-// ---------- 4개 시간대 전체 복사 ----------
+// ---------- 5개 시간대 전체 복사 ----------
 // 행 수가 많아지므로 표는 압축 CSV로 쓴다: 시가·고가·저가·종가로 다시 계산할 수 있는 칸
 // (변동폭 $, 상승%, 하락%)과 $·천 단위 쉼표를 빼서 행당 길이를 절반 가까이 줄였다.
 let multiRows = (() => { try{ return parseInt(localStorage.getItem('vol-multi-rows'), 10) || 500; }catch(e){ return 500; } })();
@@ -1772,7 +1783,7 @@ function buildMultiTableText(rowsPerTf){
 
   const L = [];
   L.push(buildAnalysisPrompt(sym, '', rowsPerTf, true));
-  L.push(`# ${sym.label}(${sym.name}) 4개 시간대 데이터`);
+  L.push(`# ${sym.label}(${sym.name}) 5개 시간대 데이터`);
   L.push(`조회 시각: ${new Date().toLocaleString('ko-KR')} (한국시간, 캔들 시간도 한국시간)`);
   L.push(`데이터 출처: Binance ${sym.symbol} 현물 klines + USDT 무기한 선물 OI·펀딩비`);
   L.push('');
@@ -1881,7 +1892,8 @@ function switchTab(tf){
   document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tf === tf));
   document.querySelectorAll('.sum-card').forEach(c => c.classList.toggle('active', c.dataset.tf === tf));
   document.querySelectorAll('.ind-card').forEach(c => c.classList.toggle('active', c.dataset.tf === tf));
-  renderDetail(tf);   // 현재 종목은 4개 시간대를 이미 받아둬서 추가 요청 없음
+  renderDetail(tf);   // 현재 종목은 5개 시간대를 이미 받아둬서 추가 요청 없음
+  renderAnalog();
 }
 function switchAsset(asset){
   const prevAsset = currentAsset;
@@ -1911,7 +1923,7 @@ async function refreshAll(){
   btn.disabled = true;
   btn.textContent = '🔄 불러오는 중...';
   const focus = currentAsset;
-  status.textContent = `${ASSET_ORDER.length - 1}개 종목 요약 + ${SYMBOLS[focus].label} 4개 시간대 상세 불러오는 중...`;
+  status.textContent = `${ASSET_ORDER.length - 1}개 종목 요약 + ${SYMBOLS[focus].label} 5개 시간대 상세 불러오는 중...`;
 
   // 지금 보는 종목은 loadAssetDeep이 따로 받으므로 요약 요청에서 뺀다
   const combos = [];
