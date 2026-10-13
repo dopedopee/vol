@@ -270,6 +270,27 @@
   .ana-row b{ text-align:right; }
   .ana-row .muted{ font-size:10px; text-align:right; }
   .cz-y{ color:#E6C200; }
+  .lv-wrap{ display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.6fr); gap:16px; margin:8px 0; }
+  .lv-zone{ border:1px solid var(--border); padding:6px 8px; margin-bottom:2px; font-size:11.5px; }
+  .lv-zh{ display:flex; flex-wrap:wrap; gap:2px 10px; align-items:baseline; }
+  .lv-zh span{ color:var(--text-faint); font-size:10.5px; }
+  .lv-edge{ font-size:11px; margin-top:3px; padding-left:8px; }
+  .lv-zone.cur{ border-color:var(--accent); background:#140f06; }
+  .lv-zone em, .lv-gap em{ color:var(--accent); font-style:normal; font-weight:700; }
+  .lv-gap{ font-size:10.5px; color:var(--text-faint); padding:3px 8px; margin-bottom:2px; border-left:2px dashed var(--border); }
+  .lv-gap.cur{ border-left-color:var(--accent); }
+  .lv-table{ overflow-x:auto; }
+  .lv-table table{ min-width:0; width:100%; font-size:11.5px; }
+  .lv-table th, .lv-table td{ position:static; text-align:left; padding:4px 6px; white-space:nowrap; }
+  .lv-table td:first-child{ background:transparent; border-left:none; }
+  .lv-table td.lv-why{ white-space:normal; font-size:10.5px; color:var(--text-faint); min-width:180px; }
+  .lv-p{ color:#fff; font-weight:700; }
+  .lv-key td{ background:#140f06 !important; }
+  .lv-now td{ color:var(--accent); border-top:1px solid var(--accent-dim); border-bottom:1px solid var(--accent-dim); font-size:10.5px; }
+  .lv-now td.lv-p{ color:var(--accent); }
+  .lv-tier{ padding:0 5px; border:1px solid var(--border); font-size:10px; }
+  .lv-tier.t-강{ color:var(--accent); border-color:var(--accent); } .lv-tier.t-중{ color:var(--text-dim); } .lv-tier.t-약{ color:var(--text-faint); }
+  @media (max-width:800px){ .lv-wrap{ grid-template-columns:1fr; } }
   .sim-count{ font-size:12px; margin:8px 0 4px; color:var(--text); }
   .sim-count b{ color:var(--accent); }
   .sim-row{ border-top:1px solid var(--border); padding:8px 0 6px; }
@@ -352,6 +373,12 @@
     </div>
   </div>
   <div class="ind-grid" id="indGrid"></div>
+
+  <div class="ind-head">
+    <div class="t">주요 가격 레벨 — 가격대 구분 · 핵심 지지/저항 (1일·4시간·1시간 종합)</div>
+    <button class="copy-btn" id="lvCopyBtn" title="차트에 옮겨 그리기 좋게 레벨 목록만 복사">레벨 목록 복사</button>
+  </div>
+  <div class="ind-grid" id="lvGrid"></div>
 
   <div class="ind-head">
     <div class="t">지금과 가장 비슷했던 과거 봉 — 대시보드의 모든 지표를 종합한 유사도 순 (선택한 시간대 기준)</div>
@@ -438,6 +465,7 @@
       ※ <b>지금 보고 있는 종목은 5개 시간대 모두 최근 1000봉</b>을 불러와 이동평균선·MACD·Chop Zone을 계산하고, 표에는 그중 <b>최근 500봉</b>을 보여줍니다(5분봉 약 42시간 · 15분봉 약 5.2일 · 1시간봉 약 21일 · 4시간봉 약 83일 · 1일봉 약 500일). 다른 종목은 요약 카드용으로 120봉만 불러옵니다. 바이낸스는 <b>OI 히스토리를 최근 30일, 최대 500개까지만</b> 제공하므로 그보다 오래된 봉의 OI는 비어 있습니다(—). 무기한 선물이 없는 종목은 OI·펀딩비 전체가 비어 있습니다.<br>
       ※ 상단에 고정된 <b>BTC 띠</b>는 어떤 종목을 보든 비트코인의 가격과 5개 시간대 이평선 배열·MACD·Chop Zone을 보여주는 시장 기준선입니다(누르면 BTC로 이동). 다른 종목을 볼 때도 BTC는 1000봉으로 받아 지표 정확도를 유지합니다. 색은 상승 빨강·하락 파랑이며, Chop Zone 색 띠만 TradingView 원본 색을 그대로 씁니다.<br>
       ※ <b>지금과 가장 비슷했던 과거 봉</b>은 예측이 아니라 조회입니다. 선택한 시간대의 최근 500봉 각각에 대해 지표 12가지(이평 배열 · 가격과 이평 위치 · 이평 간격과 21이평 거리 · MACD 0선/시그널/히스토그램 방향 · MACD 강도 · Chop Zone 각도 · 20봉 평균 대비 변동폭 · 20봉 평균 대비 거래대금 · 매수비중 · 캔들 몸통 · OI 변화 · 펀딩비)가 지금 봉과 얼마나 같은지 0~100%로 매기고 평균을 냅니다. 여기에 <b>선택한 시간대보다 상위 시간대</b>(5분봉이면 15분·1시간·4시간·1일)의 이평 배열 · 가격과 이평 위치 · MACD 상태 · 가격이 8/21/50/100/200 이평 대비 몇 % 위·아래인지 · 이평 사이 간격(%) 5가지씩을 더합니다(시간대당 총 비중은 선택한 시간대 지표 3가지와 같게 고정). 거리·간격은 그 상위 시간대의 최근 1000봉에서 보통 얼마나 변하는지(표준편차)를 눈금으로 비교합니다. 상위 시간대는 그 과거 시점에 <b>이미 마감된 가장 최근 봉</b> 기준이고, 지금도 진행 중인 상위 봉은 쓰지 않습니다(그래서 위 추세 지표 카드의 값과 한 봉 차이가 날 수 있음). 숫자 지표는 이 500봉 안에서 보통 흔들리는 폭(표준편차)의 2배 이상 차이 나면 0%로 봅니다. 모든 값은 그 봉까지의 데이터로만 계산하며, 이평선은 위 EMA/SMA 선택을 따릅니다. 표시된 각 유사 봉 옆의 <b>직후 3봉·5봉 이내 최대 상승/하락</b>은 그 봉 종가 대비 이후 봉들의 최고가·최저가 비율이고, 요약 표의 평균·중앙값·가장 컸던 값은 <b>화면에 표시된 상위 10개 중</b> 유사도 80% 이상(또는 70% 이상)인 봉만 집계한 것입니다(전체 해당 봉이 아님).<br>
+      ※ <b>주요 가격 레벨</b>은 추가 요청 없이 지금 보는 종목의 1일·4시간·1시간 1000봉으로 계산합니다. <b>가격대</b>는 1일봉이 각 가격에 머문 날 수 분포에서 오래 머문 구간을 묶고, 빠르게 지나간(체류가 양옆 봉우리의 40% 미만인) 가격을 경계로 나눈 것입니다. <b>지지·저항</b>은 1D·4H·1H 스윙 고점/저점(좌우 5~6봉 확인, 상위 시간대일수록·최근일수록·그 자리에서 이후 반대로 크게 움직였을수록 무겁게 — 3 ATR이면 1배, 6 ATR 이상 2배, 자잘한 꺾임은 0.2배)과 가격대 중심을 후보로 모아 1일봉 ATR의 0.35배 안의 것끼리 한 선으로 묶고, 4시간봉에서 그 선에 꼬리만 닿고 되돌아간 횟수, 지지와 저항으로 모두 작동했는지, 그 가격의 거래 밀집도를 더해 점수를 매깁니다. 현재가 위·아래 각각 점수 상위 4개(가까운 범위 안)를 보여주고 가장 높은 선에 ★핵심을 붙입니다.<br>
       ※ <b>추세 지표</b>는 모두 종가 기준이며 진행 중인 봉까지 포함해 계산합니다(차트 프로그램이 실시간으로 보여주는 방식과 같음). EMA는 계산에 쓰인 과거 봉 수가 기간의 4배 미만이면 차트 값과 차이가 날 수 있어 <b>~</b>로 표시합니다(상장 기간이 짧은 종목의 1일봉 등). MACD는 12/26/9, Chop Zone은 TradingView 기본 공식(EMA34 기울기를 최근 30봉 고저 범위로 정규화한 각도, 색상 동일)입니다.
     </div>
   </div>
@@ -1032,6 +1060,7 @@ function renderIndicators(){
       if(getCandles(currentAsset, card.dataset.tf).candles) switchTab(card.dataset.tf);
     });
   });
+  renderLevels();
   renderAnalog();
   renderBtcStrip();
 }
@@ -1360,6 +1389,252 @@ function pushAnalogSummary(L, asset){
     L.push(gl('유사도 80% 이상', r.g80)); L.push(gl('유사도 70% 이상', r.g70));
     L.push(`  · 가장 비슷한 순 (시각 유사도 | 직후 3봉 최대상승/최대하락 ; 5봉 최대상승/최대하락): ` + r.top.map(m => `${csvTime(m.t, tf)} ${pct0(m.sim)} | ${f(m.f3.up)}/${f(m.f3.dn)} ; ${f(m.f5.up)}/${f(m.f5.dn)}`).join(' , '));
   });
+  L.push('');
+}
+
+// ---------- 주요 가격 레벨: 가격대 구분 + 핵심 지지/저항 ----------
+// 추가 요청 없이, 지금 보는 종목의 1일·4시간·1시간 1000봉으로 계산한다. 예측이 아니라 과거 가격이 실제로 반응한 자리의 집계다.
+const LV = {
+  PIV:  { '1d':5, '4h':6, '1h':6 },          // 스윙 고점/저점 확인 봉 수(좌우)
+  W:    { '1d':3, '4h':2, '1h':1 },          // 시간대 가중치 (상위일수록 무겁게)
+  HALF: { '1d':240, '4h':60, '1h':15 },      // 최근성 반감기(일) — 오래된 자리일수록 비중 감소(최소 25%)
+  SHOW: 4,                                   // 방향별 표시 개수
+};
+let lvCache = null;
+
+// 스윙마다 '그 뒤 반대로 얼마나 크게 움직였나'(ATR 단위)를 함께 기록 — 횡보 속 자잘한 꺾임과 크게 튕겨낸 자리를 구분
+function lvPivots(c, k){
+  const out = [], atr = atrSeries(c, 14), m = 4 * k;
+  const move = (i, up) => {   // up: 고점이면 이후 최저까지 하락폭, 저점이면 이후 최고까지 상승폭
+    let ext = up ? Infinity : -Infinity;
+    for(let j = i + 1; j <= Math.min(c.length - 1, i + m); j++){ if(up) ext = Math.min(ext, c[j].low); else ext = Math.max(ext, c[j].high); }
+    return Math.abs((up ? c[i].high : c[i].low) - ext) / atr[i];
+  };
+  const prom = a => Math.max(0.2, Math.min(2, a / 3));   // 3 ATR 움직이면 1배, 6 ATR 이상이면 2배, 자잘하면 0.2배
+  for(let i = k; i <= c.length - 2 - k; i++){   // 진행 중인 마지막 봉 제외, 좌우 k봉 확인된 것만
+    let hi = true, lo = true;
+    for(let j = i - k; j <= i + k && (hi || lo); j++){
+      if(j === i) continue;
+      if(c[j].high >= c[i].high && (j > i || c[j].high > c[i].high)) hi = false;
+      if(c[j].low  <= c[i].low  && (j > i || c[j].low  < c[i].low )) lo = false;
+    }
+    if(hi) out.push({ p:c[i].high, kind:'H', t:c[i].openTime, pr:prom(move(i, true)) });
+    if(lo) out.push({ p:c[i].low,  kind:'L', t:c[i].openTime, pr:prom(move(i, false)) });
+  }
+  return out;
+}
+
+// 1일봉 체류 분포로 가격대(레벨대) 구분: 오래 머문 가격은 하나의 가격대, 빠르게 지나간 가격(체류가 빈 곳)은 경계
+function lvZones(d1, cur){
+  const lo = Math.min(...d1.map(c => c.low)), hi = Math.max(...d1.map(c => c.high));
+  const step = 0.006, L0 = Math.log(lo), nb = Math.max(1, Math.ceil((Math.log(hi) - L0) / step) + 1);
+  const raw = new Float64Array(nb);
+  d1.forEach(c => {
+    const a = Math.floor((Math.log(c.low) - L0) / step), b = Math.floor((Math.log(c.high) - L0) / step);
+    for(let i = a; i <= b; i++) raw[i] += 1 / (b - a + 1);
+  });
+  const sm = new Float64Array(nb);
+  for(let i = 0; i < nb; i++){ let s = 0, k = 0; for(let j = i - 3; j <= i + 3; j++) if(j >= 0 && j < nb){ s += raw[j]; k++; } sm[i] = s / k; }
+  const price = i => Math.exp(L0 + (i + 0.5) * step);
+  const W = Math.round(0.18 / step);               // 양옆 18% 안에서 봉우리를 찾는다
+  let valleys = [];
+  for(let i = 3; i < nb - 3; i++){
+    let isMin = true; for(let j = i - 3; j <= i + 3; j++) if(sm[j] < sm[i]){ isMin = false; break; }
+    if(!isMin) continue;
+    let lp = 0, rp = 0;
+    for(let j = Math.max(0, i - W); j < i; j++) lp = Math.max(lp, sm[j]);
+    for(let j = i + 1; j <= Math.min(nb - 1, i + W); j++) rp = Math.max(rp, sm[j]);
+    if(sm[i] < 0.4 * Math.min(lp, rp)) valleys.push(i);
+  }
+  const minGap = Math.round(0.05 / step), vs = [];
+  valleys.forEach(v => { const last = vs[vs.length - 1]; if(last == null || v - last >= minGap) vs.push(v); else if(sm[v] < sm[last]) vs[vs.length - 1] = v; });
+  const edges = [0, ...vs, nb - 1], total = raw.reduce((a, b) => a + b, 0), zones = [];
+  for(let z = 0; z < edges.length - 1; z++){
+    const a = edges[z], b = edges[z + 1];
+    let pk = 0, pi = a; for(let i = a; i <= b; i++) if(sm[i] > pk){ pk = sm[i]; pi = i; }
+    let x = a, y = b;
+    while(x < pi && sm[x] < 0.15 * pk) x++;
+    while(y > pi && sm[y] < 0.15 * pk) y--;
+    let share = 0; for(let i = x; i <= y; i++) share += raw[i];
+    zones.push({ lo:price(x) / Math.exp(step / 2), hi:price(y) * Math.exp(step / 2), poc:price(pi), share:share / total });
+  }
+  // 체류가 3% 미만인 구간은 가격대가 아니라 빠르게 지나간 경로로 본다
+  const kept = zones.filter(z => z.share >= 0.03).sort((a, b) => b.lo - a.lo);
+  kept.forEach(z => z.cur = cur >= z.lo && cur <= z.hi);
+  return { zones:kept, days:d1.length };
+}
+
+function computeLevels(asset){
+  const d1 = getCandles(asset, '1d').candles, h4 = getCandles(asset, '4h').candles, h1 = getCandles(asset, '1h').candles;
+  if(!d1 || !h4 || d1.length < 30 || h4.length < 100) return null;
+  if(lvCache && lvCache.d1 === d1 && lvCache.h4 === h4 && lvCache.h1 === h1) return lvCache.r;
+
+  const cur = h4[h4.length - 1].close, now = Date.now();
+  const atrD = atrSeries(d1, 14), atrPct = atrD[atrD.length - 1] / d1[d1.length - 1].close * 100;
+  const tol = Math.min(3, Math.max(0.4, 0.35 * atrPct));          // 같은 선으로 묶는 폭(%)
+
+  // 1) 후보: 1D·4H·1H 스윙 고점/저점 (+ 가격대 중심)
+  const cand = [];
+  [['1d', d1], ['4h', h4], ['1h', h1]].forEach(([tf, c]) => {
+    if(!c || c.length < 30) return;
+    lvPivots(c, LV.PIV[tf]).forEach(v => {
+      const rec = Math.max(0.25, Math.pow(0.5, (now - v.t) / 864e5 / LV.HALF[tf]));
+      cand.push({ ...v, tf, w:LV.W[tf] * rec * v.pr });
+    });
+  });
+  const Z = lvZones(d1, cur);
+  Z.zones.forEach(z => cand.push({ p:z.poc, kind:'P', tf:'zone', w:1.5, t:now }));
+  cand.sort((a, b) => a.p - b.p);
+
+  // 2) 가까운 후보끼리 묶기
+  const clusters = [];
+  cand.forEach(v => {
+    const cl = clusters[clusters.length - 1];
+    if(cl && (v.p - cl.p) / cl.p * 100 <= tol){ cl.m.push(v); cl.sw += v.w; cl.p = cl.m.reduce((s, x) => s + x.p * x.w, 0) / cl.sw; }
+    else clusters.push({ p:v.p, m:[v], sw:v.w });
+  });
+
+  // 3) 4시간봉 반응 횟수 · 지지↔저항 전환 · 거래 밀집도
+  const H = h4.slice(0, -1);
+  const vStep = tol / 200, vL0 = Math.log(Math.min(...H.map(c => c.low))), vb = {};
+  H.forEach(c => {
+    const a = Math.floor((Math.log(c.low) - vL0) / vStep), b = Math.floor((Math.log(c.high) - vL0) / vStep);
+    for(let i = a; i <= b; i++) vb[i] = (vb[i] || 0) + c.quoteVolume / (b - a + 1);
+  });
+  const vVals = Object.values(vb), vMean = vVals.reduce((a, b) => a + b, 0) / vVals.length;
+  const volAt = p => { const c = Math.floor((Math.log(p) - vL0) / vStep), r = Math.round(tol / 100 / vStep); let s = 0, k = 0; for(let i = c - r; i <= c + r; i++){ s += vb[i] || 0; k++; } return s / k / vMean; };
+
+  const levels = clusters.map(cl => {
+    const L = cl.p, band = L * tol / 100;
+    let sup = 0, res = 0, lastS = -9, lastR = -9, lastT = null;
+    H.forEach((c, i) => {
+      if(c.low >= L - band && c.low <= L + band && c.close > L){ if(i - lastS >= 3){ sup++; lastT = c.openTime; } lastS = i; }
+      if(c.high >= L - band && c.high <= L + band && c.close < L){ if(i - lastR >= 3){ res++; lastT = c.openTime; } lastR = i; }
+    });
+    const cnt = {}; cl.m.forEach(v => { const key = v.tf + v.kind; cnt[key] = (cnt[key] || 0) + 1; });
+    const pivScore = cl.m.reduce((s, v) => s + v.w, 0), flip = sup > 0 && res > 0, vr = volAt(L);
+    const volBonus = Math.max(0, Math.min(2, Math.log2(Math.max(vr, 1e-9))));
+    const score = pivScore + 0.5 * Math.min(sup + res, 8) + (flip ? 1.5 : 0) + 1.5 * volBonus;
+    return { p:L, score, sup, res, flip, vr, cnt, lastT, isPoc:cl.m.some(v => v.kind === 'P') };
+  });
+
+  // 4) 현재가 위·아래로 나눠, 가까운 범위 안에서 점수 높은 선을 고른다
+  // 범위: 기본 ±max(12%, 1일봉 ATR×4), 단 현재 가격대의 위·아래 끝까지는 항상 포함 (최대 45%)
+  const curZ = Z.zones.find(z => z.cur);
+  const limUp = Math.min(45, Math.max(12, 4 * atrPct, curZ ? (curZ.hi / cur - 1) * 100 + 2 * tol : 0));
+  const limDn = Math.min(45, Math.max(12, 4 * atrPct, curZ ? (1 - curZ.lo / cur) * 100 + 2 * tol : 0));
+  // 강도: 전체 후보 중 점수 상위 10% = 강, 상위 30% = 중, 나머지 = 약
+  const sorted = levels.map(l => l.score).sort((a, b) => b - a);
+  const q10 = sorted[Math.floor(sorted.length * 0.1)] ?? Infinity, q30 = sorted[Math.floor(sorted.length * 0.3)] ?? Infinity;
+  levels.forEach(l => { l.tier = l.score >= q10 ? '강' : l.score >= q30 ? '중' : '약'; l.dist = (l.p - cur) / cur * 100; });
+  const pick = side => {
+    const lim = side > 0 ? limUp : limDn;
+    const pool = levels.filter(l => side > 0 ? l.p > cur * (1 + tol / 200) : l.p < cur * (1 - tol / 200))
+      .map(l => ({ ...l })).filter(l => Math.abs(l.dist) <= lim);
+    if(!pool.length) return [];
+    const byScore = pool.slice().sort((a, b) => b.score - a.score), sel = byScore.slice(0, LV.SHOW);
+    const nearest = pool.slice().sort((a, b) => Math.abs(a.dist) - Math.abs(b.dist))[0];
+    if(!sel.includes(nearest) && nearest.score >= 0.35 * byScore[0].score) sel.push(nearest);
+    sel.forEach(l => l.key = l === byScore[0]);
+    return sel.sort((a, b) => Math.abs(a.dist) - Math.abs(b.dist));
+  };
+  const resis = pick(1), supps = pick(-1);
+
+  // 가격대마다 하단 지지·상단 저항: 가격대 아래쪽 25%(경계 바깥 tol 포함)와 위쪽 25%에서 점수가 가장 높은 선
+  const best = (a, b) => { const c = levels.filter(l => l.p >= a && l.p <= b); return c.length ? c.reduce((x, y) => y.score > x.score ? y : x) : null; };
+  Z.zones.forEach(z => {
+    const w = z.hi - z.lo, k = 1 + tol / 100;
+    z.sup = best(z.lo / k, z.lo + 0.25 * w);
+    z.res = best(z.hi - 0.25 * w, z.hi * k);
+    if(z.sup && z.res && z.sup === z.res) z.res = null;
+  });
+
+  const r = { cur, tol, atrPct, limUp, limDn, resis, supps, zones:Z.zones, days:Z.days, h4days:Math.round((H[H.length-1].openTime - H[0].openTime) / 864e5) };
+  lvCache = { d1, h4, h1, r };
+  return r;
+}
+
+const lvWhy = l => {
+  const tfName = { '1d':'1D', '4h':'4H', '1h':'1H' }, parts = [];
+  ['1d', '4h', '1h'].forEach(tf => {
+    const h = l.cnt[tf + 'H'] || 0, lo = l.cnt[tf + 'L'] || 0;
+    if(h) parts.push(`${tfName[tf]} 고점${h > 1 ? '×' + h : ''}`);
+    if(lo) parts.push(`${tfName[tf]} 저점${lo > 1 ? '×' + lo : ''}`);
+  });
+  if(l.sup + l.res) parts.push(`4H 반응 ${l.sup + l.res}회(지지 ${l.sup}·저항 ${l.res})`);
+  if(l.flip) parts.push('지지↔저항 전환');
+  if(l.isPoc) parts.push('가격대 중심');
+  if(l.vr >= 1.3) parts.push(`거래 밀집 ${l.vr.toFixed(1)}×`);
+  return parts.join(' · ') || '—';
+};
+
+function renderLevels(){
+  const grid = document.getElementById('lvGrid');
+  const { detailed } = getCandles(currentAsset, '4h');
+  const r = detailed ? computeLevels(currentAsset) : null;
+  const sym = SYMBOLS[currentAsset].label;
+  if(!r){ grid.innerHTML = `<div class="ind-card" style="grid-column:1/-1"><div class="tf-label">주요 가격 레벨 · ${sym}</div><div class="sum-empty">${detailed ? '계산할 과거 데이터가 부족함' : '1000봉 불러오는 중…'}</div></div>`; return; }
+
+  const row = (l, side) => `<tr class="${l.key ? 'lv-key' : ''}">
+      <td class="${side > 0 ? 'c-up' : 'c-down'}">${side > 0 ? '저항' : '지지'}${l.key ? ' ★핵심' : ''}</td>
+      <td class="lv-p">${fmtPrice(l.p)}</td><td>${fmtSignedPct(l.dist)}</td>
+      <td><span class="lv-tier t-${l.tier}">${l.tier}</span></td>
+      <td class="lv-why">${lvWhy(l)}${l.lastT ? ` · 최근 반응 ${fmtTime(l.lastT, '4h')}` : ''}</td></tr>`;
+  const srRows = r.resis.slice().reverse().map(l => row(l, 1)).join('') +
+    `<tr class="lv-now"><td>현재가</td><td class="lv-p">${fmtPrice(r.cur)}</td><td colspan="3">— 위는 저항(+${r.limUp.toFixed(0)}% 안), 아래는 지지(−${r.limDn.toFixed(0)}% 안)</td></tr>` +
+    r.supps.map(l => row(l, -1)).join('');
+
+  const zr = [];
+  r.zones.forEach((z, i) => {
+    const ed = (l, nm, cls) => l ? `<div class="lv-edge"><span class="${cls}">${nm}</span> <b>${fmtPrice(l.p)}</b> <span class="lv-tier t-${l.tier}">${l.tier}</span> <span class="muted">${fmtSignedPct(l.dist)}</span></div>` : '';
+    zr.push(`<div class="lv-zone ${z.cur ? 'cur' : ''}"><div class="lv-zh"><b>${fmtPrice(z.lo)} ~ ${fmtPrice(z.hi)}</b><span>중심 ${fmtPrice(z.poc)} · 체류 ${pct0(z.share)}</span>${z.cur ? `<em>◀ 현재 ${fmtPrice(r.cur)}</em>` : ''}</div>${ed(z.res, '상단 저항', 'c-up')}${ed(z.sup, '하단 지지', 'c-down')}</div>`);
+    const nx = r.zones[i + 1];
+    if(nx){
+      const inGap = r.cur < z.lo && r.cur > nx.hi;
+      zr.push(`<div class="lv-gap ${inGap ? 'cur' : ''}">빈 구간 ${fmtPrice(nx.hi)} ~ ${fmtPrice(z.lo)} — 빠르게 지나간 가격${inGap ? ` <em>◀ 현재 ${fmtPrice(r.cur)} (가격대 사이)</em>` : ''}</div>`);
+    }
+  });
+
+  grid.innerHTML = `<div class="ind-card" style="grid-column:1/-1">
+    <div class="tf-label">주요 가격 레벨 · ${sym}<span class="pill mix">1D ${r.days}봉 · 4H 약 ${r.h4days}일 · 1H 반영</span></div>
+    <div class="lv-wrap">
+      <div><div class="ind-k"><span>가격대별 상단 저항·하단 지지 (1일봉 체류 분포, 위→아래)</span></div>${zr.join('')}</div>
+      <div><div class="ind-k"><span>핵심 지지·저항 (현재가에 가까운 순)</span></div>
+        <div class="lv-table"><table><tr><th></th><th>가격</th><th>거리</th><th>강도</th><th>근거</th></tr>${srRows}</table></div>
+        ${!r.resis.length ? '<div class="ind-sub">위쪽 범위 안에 과거 반응 자리가 없음 (신고가권 등)</div>' : ''}${!r.supps.length ? '<div class="ind-sub">아래쪽 범위 안에 과거 반응 자리가 없음</div>' : ''}
+      </div>
+    </div>
+    <div class="ind-sub">선 하나는 ±${r.tol.toFixed(2)}% 폭의 구간(1일봉 ATR의 0.35배)입니다. 강도는 1D·4H·1H 스윙 고저점(상위 시간대·최근일수록, 그리고 그 자리에서 가격이 크게 튕겨 나갔을수록 무겁게) + 4시간봉에서 꼬리만 닿고 되돌아간 횟수 + 지지↔저항 전환 + 거래 밀집도를 합한 점수입니다. 강도는 전체 후보 중 상위 10% 강 · 상위 30% 중 · 나머지 약이고, ★핵심은 방향별 최고 점수, 가격대별 상단 저항·하단 지지는 그 가격대의 위쪽·아래쪽 25%에서 가장 강한 선입니다. 과거 반응의 집계일 뿐 다음에도 지켜진다는 보장은 없습니다.</div>
+  </div>`;
+}
+
+function levelListText(){
+  const r = computeLevels(currentAsset);
+  if(!r) return null;
+  const f = l => `${fmtPrice(l.p)}${l.key ? ' (핵심)' : ''} [${l.tier}]`;
+  return [
+    `${SYMBOLS[currentAsset].label} 주요 레벨 · ${new Date().toLocaleString('ko-KR')} · 현재가 ${fmtPrice(r.cur)}`,
+    `저항(가까운 순): ${r.resis.map(f).join(' · ') || '없음'}`,
+    `지지(가까운 순): ${r.supps.map(f).join(' · ') || '없음'}`,
+    ...r.zones.map(z => `가격대 ${fmtPrice(z.lo)}~${fmtPrice(z.hi)}${z.cur ? ' (현재)' : ''}: 상단 저항 ${z.res ? fmtPrice(z.res.p) + ' [' + z.res.tier + ']' : '—'} / 하단 지지 ${z.sup ? fmtPrice(z.sup.p) + ' [' + z.sup.tier + ']' : '—'}`),
+  ].join('\n');
+}
+document.getElementById('lvCopyBtn').addEventListener('click', async e => {
+  const t = levelListText(), btn = e.currentTarget;
+  if(!t){ flashBtn(btn, '데이터 없음'); return; }
+  try{ await navigator.clipboard.writeText(t); flashBtn(btn, '복사됨 ✓'); }catch(err){ flashBtn(btn, '복사 실패'); }
+});
+
+function pushLevelSummary(L){
+  const r = computeLevels(currentAsset);
+  L.push(`## 주요 가격 레벨 (대시보드 계산 · 1D·4H·1H 스윙 고저점 + 4H 반응 횟수 + 지지↔저항 전환 + 거래 밀집 · 선 폭 ±${r ? r.tol.toFixed(2) : '—'}%)`);
+  if(!r){ L.push('- 계산 불가'); L.push(''); return; }
+  L.push('- 가격대(1일봉 체류 분포, 위→아래):');
+  r.zones.forEach(z => L.push(`  · ${fmtPrice(z.lo)}~${fmtPrice(z.hi)} (중심 ${fmtPrice(z.poc)}, 체류 ${pct0(z.share)})${z.cur ? ' ←현재' : ''} — 상단 저항 ${z.res ? `${fmtPrice(z.res.p)} 강도 ${z.res.tier}` : '—'} / 하단 지지 ${z.sup ? `${fmtPrice(z.sup.p)} 강도 ${z.sup.tier}` : '—'}`));
+  const ln = (l, nm) => `  · ${nm} ${fmtPrice(l.p)} (${fmtSignedPct(l.dist)}) 강도 ${l.tier}${l.key ? ' ★핵심' : ''} — ${lvWhy(l)}`;
+  L.push(`- 현재가 ${fmtPrice(r.cur)}`);
+  r.resis.forEach(l => L.push(ln(l, '저항')));
+  r.supps.forEach(l => L.push(ln(l, '지지')));
   L.push('');
 }
 
@@ -1732,7 +2007,7 @@ mtfLine,
 `### 1. 현재 진단`,
 `- 추세 상태 (이평선 배열 + Chop 여부)`,
 `- 거래량·모멘텀 평가 (거래대금/매수비중 + MACD)`,
-`- 주요 지지/저항 (스윙 고점·저점 기준)`,
+`- 주요 지지/저항 ('주요 가격 레벨' 섹션의 대시보드 계산값을 기준으로, 캔들 원본과 대조해 확인)`,
 `- 지금과 비슷했던 과거 봉들의 이후 움직임 (사실 정리)`,
 ``,
 `### 2. 시나리오 (확률 높은 순 3개)`,
@@ -1839,6 +2114,7 @@ function buildTableText(){
 
   // --- 5개 시간대 추세 지표 요약 ---
   pushIndicatorSummary(L, currentTf);
+  pushLevelSummary(L);
   if(currentAsset !== ANCHOR) pushIndicatorSummary(L, null, ANCHOR);
   pushAnalogSummary(L, currentAsset);
   if(currentAsset !== ANCHOR) pushAnalogSummary(L, ANCHOR);
@@ -1914,6 +2190,7 @@ function buildMultiTableText(rowsPerTf){
   L.push('');
 
   pushIndicatorSummary(L, null);
+  pushLevelSummary(L);
   if(currentAsset !== ANCHOR) pushIndicatorSummary(L, null, ANCHOR);
   pushAnalogSummary(L, currentAsset);
   if(currentAsset !== ANCHOR) pushAnalogSummary(L, ANCHOR);
