@@ -290,7 +290,16 @@
   .lv-now td.lv-p{ color:var(--accent); }
   .lv-tier{ padding:0 5px; border:1px solid var(--border); font-size:10px; }
   .lv-tier.t-강{ color:var(--accent); border-color:var(--accent); } .lv-tier.t-중{ color:var(--text-dim); } .lv-tier.t-약{ color:var(--text-faint); }
-  @media (max-width:800px){ .lv-wrap{ grid-template-columns:1fr; } }
+  .lv-top{ display:grid; gap:3px; margin:6px 0 10px; font-size:11.5px; line-height:1.5; }
+  .lv-top b{ color:var(--accent); display:inline-block; min-width:74px; margin-right:6px; font-size:10.5px; }
+  .lv-3{ display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:16px; margin:8px 0; }
+  .lv-item{ font-size:11px; line-height:1.65; padding:5px 8px; border:1px solid var(--border); margin-bottom:3px; overflow-wrap:anywhere; }
+  .lv-item b{ color:#fff; }
+  #lvGrid{ grid-template-columns:minmax(0,1fr); }
+  @media (max-width:800px){ .lv-wrap, .lv-3{ grid-template-columns:minmax(0,1fr); }
+    .lv-table tr{ display:flex; flex-wrap:wrap; align-items:baseline; border-bottom:1px solid var(--border); }
+    .lv-table td, .lv-table th{ display:block; border:none; } .lv-table th:last-child{ display:none; }
+    .lv-table td.lv-why, .lv-now td[colspan]{ flex-basis:100%; min-width:0; white-space:normal; padding-top:0; } }
   .sim-count{ font-size:12px; margin:8px 0 4px; color:var(--text); }
   .sim-count b{ color:var(--accent); }
   .sim-row{ border-top:1px solid var(--border); padding:8px 0 6px; }
@@ -375,7 +384,7 @@
   <div class="ind-grid" id="indGrid"></div>
 
   <div class="ind-head">
-    <div class="t">주요 가격 레벨 — 가격대 구분 · 핵심 지지/저항 (1일·4시간·1시간 종합)</div>
+    <div class="t">주요 가격 레벨 — 수평 지지·저항 · 추세선 · 피보나치 · 거래량 프로파일 (고정 규칙 · 합류 점수)</div>
     <button class="copy-btn" id="lvCopyBtn" title="차트에 옮겨 그리기 좋게 레벨 목록만 복사">레벨 목록 복사</button>
   </div>
   <div class="ind-grid" id="lvGrid"></div>
@@ -465,7 +474,7 @@
       ※ <b>지금 보고 있는 종목은 5개 시간대 모두 최근 1000봉</b>을 불러와 이동평균선·MACD·Chop Zone을 계산하고, 표에는 그중 <b>최근 500봉</b>을 보여줍니다(5분봉 약 42시간 · 15분봉 약 5.2일 · 1시간봉 약 21일 · 4시간봉 약 83일 · 1일봉 약 500일). 다른 종목은 요약 카드용으로 120봉만 불러옵니다. 바이낸스는 <b>OI 히스토리를 최근 30일, 최대 500개까지만</b> 제공하므로 그보다 오래된 봉의 OI는 비어 있습니다(—). 무기한 선물이 없는 종목은 OI·펀딩비 전체가 비어 있습니다.<br>
       ※ 상단에 고정된 <b>BTC 띠</b>는 어떤 종목을 보든 비트코인의 가격과 5개 시간대 이평선 배열·MACD·Chop Zone을 보여주는 시장 기준선입니다(누르면 BTC로 이동). 다른 종목을 볼 때도 BTC는 1000봉으로 받아 지표 정확도를 유지합니다. 색은 상승 빨강·하락 파랑이며, Chop Zone 색 띠만 TradingView 원본 색을 그대로 씁니다.<br>
       ※ <b>지금과 가장 비슷했던 과거 봉</b>은 예측이 아니라 조회입니다. 선택한 시간대의 최근 500봉 각각에 대해 지표 12가지(이평 배열 · 가격과 이평 위치 · 이평 간격과 21이평 거리 · MACD 0선/시그널/히스토그램 방향 · MACD 강도 · Chop Zone 각도 · 20봉 평균 대비 변동폭 · 20봉 평균 대비 거래대금 · 매수비중 · 캔들 몸통 · OI 변화 · 펀딩비)가 지금 봉과 얼마나 같은지 0~100%로 매기고 평균을 냅니다. 여기에 <b>선택한 시간대보다 상위 시간대</b>(5분봉이면 15분·1시간·4시간·1일)의 이평 배열 · 가격과 이평 위치 · MACD 상태 · 가격이 8/21/50/100/200 이평 대비 몇 % 위·아래인지 · 이평 사이 간격(%) 5가지씩을 더합니다(시간대당 총 비중은 선택한 시간대 지표 3가지와 같게 고정). 거리·간격은 그 상위 시간대의 최근 1000봉에서 보통 얼마나 변하는지(표준편차)를 눈금으로 비교합니다. 상위 시간대는 그 과거 시점에 <b>이미 마감된 가장 최근 봉</b> 기준이고, 지금도 진행 중인 상위 봉은 쓰지 않습니다(그래서 위 추세 지표 카드의 값과 한 봉 차이가 날 수 있음). 숫자 지표는 이 500봉 안에서 보통 흔들리는 폭(표준편차)의 2배 이상 차이 나면 0%로 봅니다. 모든 값은 그 봉까지의 데이터로만 계산하며, 이평선은 위 EMA/SMA 선택을 따릅니다. 표시된 각 유사 봉 옆의 <b>직후 3봉·5봉 이내 최대 상승/하락</b>은 그 봉 종가 대비 이후 봉들의 최고가·최저가 비율이고, 요약 표의 평균·중앙값·가장 컸던 값은 <b>화면에 표시된 상위 10개 중</b> 유사도 80% 이상(또는 70% 이상)인 봉만 집계한 것입니다(전체 해당 봉이 아님).<br>
-      ※ <b>주요 가격 레벨</b>은 추가 요청 없이 지금 보는 종목의 1일·4시간·1시간 1000봉으로 계산합니다. <b>가격대</b>는 1일봉이 각 가격에 머문 날 수 분포에서 오래 머문 구간을 묶고, 빠르게 지나간(체류가 양옆 봉우리의 40% 미만인) 가격을 경계로 나눈 것입니다. <b>지지·저항</b>은 1D·4H·1H 스윙 고점/저점(좌우 5~6봉 확인, 상위 시간대일수록·최근일수록·그 자리에서 이후 반대로 크게 움직였을수록 무겁게 — 3 ATR이면 1배, 6 ATR 이상 2배, 자잘한 꺾임은 0.2배)과 가격대 중심을 후보로 모아 1일봉 ATR의 0.35배 안의 것끼리 한 선으로 묶고, 4시간봉에서 그 선에 꼬리만 닿고 되돌아간 횟수, 지지와 저항으로 모두 작동했는지, 그 가격의 거래 밀집도를 더해 점수를 매깁니다. 현재가 위·아래 각각 점수 상위 4개(가까운 범위 안)를 보여주고 가장 높은 선에 ★핵심을 붙입니다.<br>
+      ※ <b>주요 가격 레벨</b>은 추가 요청 없이 지금 보는 종목의 1일(주봉·월봉 합성)·4시간·1시간·15분·5분 1000봉으로, 같은 데이터면 항상 같은 선이 나오는 고정 규칙으로 계산합니다. 주요 스윙(좌우 N봉 고저 + ATR×1.5 필터)의 몸통~꼬리 구간을 ATR×0.3 안끼리 묶고, 터치·돌파·역할 전환, 거래량 프로파일(POC·VAH·VAL·HVN, OHLCV 근사), 피보나치(최근 구조를 깬 임펄스), 반응 이력 있는 이평, 전일·전주·전월 고저와 시가, 라운드 넘버가 겹치는 만큼 점수를 더해 6점 이상 핵심, 3~5점 보조로 표시합니다. <b>가격대</b>는 1일봉이 각 가격에 머문 날 수 분포로 나눈 것입니다.<br>
       ※ <b>추세 지표</b>는 모두 종가 기준이며 진행 중인 봉까지 포함해 계산합니다(차트 프로그램이 실시간으로 보여주는 방식과 같음). EMA는 계산에 쓰인 과거 봉 수가 기간의 4배 미만이면 차트 값과 차이가 날 수 있어 <b>~</b>로 표시합니다(상장 기간이 짧은 종목의 1일봉 등). MACD는 12/26/9, Chop Zone은 TradingView 기본 공식(EMA34 기울기를 최근 30봉 고저 범위로 정규화한 각도, 색상 동일)입니다.
     </div>
   </div>
@@ -1392,35 +1401,207 @@ function pushAnalogSummary(L, asset){
   L.push('');
 }
 
-// ---------- 주요 가격 레벨: 가격대 구분 + 핵심 지지/저항 ----------
-// 추가 요청 없이, 지금 보는 종목의 1일·4시간·1시간 1000봉으로 계산한다. 예측이 아니라 과거 가격이 실제로 반응한 자리의 집계다.
+// ---------- 주요 가격 레벨: 고정 규칙 작도 (수평 지지·저항 · 기간 레벨 · 추세선 · 피보나치 · 거래량 프로파일 · 이평 · 합류 점수) ----------
+// 같은 데이터면 언제나 같은 선이 나오도록 모든 작도를 규칙으로 정했다. 예측이 아니라 과거 가격 구조를 기계적으로 정리한 것.
+// 재료: 지금 보는 종목의 1일(→주봉·월봉 합성)·4시간·1시간·15분·5분봉 각 1000봉. 추가 요청 없음.
 const LV = {
-  PIV:  { '1d':5, '4h':6, '1h':6 },          // 스윙 고점/저점 확인 봉 수(좌우)
-  W:    { '1d':3, '4h':2, '1h':1 },          // 시간대 가중치 (상위일수록 무겁게)
-  HALF: { '1d':240, '4h':60, '1h':15 },      // 최근성 반감기(일) — 오래된 자리일수록 비중 감소(최소 25%)
-  SHOW: 4,                                   // 방향별 표시 개수
+  N:   { '1w':3, '1d':4, '4h':4, '1h':5, '15m':5, '5m':6 },   // 스윙 확인 봉 수(좌우)
+  PT:  { '1w':3, '1d':3, '4h':2, '1h':1, '15m':1, '5m':1 },   // 스윙 점수: 일봉 이상 3 · 4H 2 · 그 아래 1
+  MAJOR:1.5,   // 주요 스윙: 직전 반대 방향 스윙과 ATR(14)×1.5 이상 차이
+  CL:0.3,      // 같은 레벨로 묶는 폭: ATR×0.3
+  BRK:0.25,    // 돌파: 종가가 구간 밖으로 ATR×0.25 이상 (또는 2봉 연속 밖 마감)
+  MAT:0.3,     // 이평 터치: ATR×0.3 이내
+  CORE:6, AUX:3, SIDE:4,   // 6점+ 핵심 · 3~5 보조 · 2 이하 미표시 · 방향별 최대 표시 수(적게 그린다: 합쳐 8개 안팎)
+  RET:[0.236, 0.382, 0.5, 0.618, 0.65, 0.786], EXT:[1.272, 1.618, 2, 2.618],
 };
+const LV_TFS = ['1w', '1d', '4h', '1h', '15m', '5m'];
+const LV_MS = { '1w':6048e5, '1d':864e5, '4h':144e5, '1h':36e5, '15m':9e5, '5m':3e5 };
+const TFN = { '1w':'1W', '1d':'1D', '4h':'4H', '1h':'1H', '15m':'15m', '5m':'5m', x:'—' };
+const lvT = (t, tf) => csvTime(t, tf === '1w' || tf === '1d' ? '1d' : tf);
 let lvCache = null;
 
-// 스윙마다 '그 뒤 반대로 얼마나 크게 움직였나'(ATR 단위)를 함께 기록 — 횡보 속 자잘한 꺾임과 크게 튕겨낸 자리를 구분
-function lvPivots(c, k){
-  const out = [], atr = atrSeries(c, 14), m = 4 * k;
-  const move = (i, up) => {   // up: 고점이면 이후 최저까지 하락폭, 저점이면 이후 최고까지 상승폭
-    let ext = up ? Infinity : -Infinity;
-    for(let j = i + 1; j <= Math.min(c.length - 1, i + m); j++){ if(up) ext = Math.min(ext, c[j].low); else ext = Math.max(ext, c[j].high); }
-    return Math.abs((up ? c[i].high : c[i].low) - ext) / atr[i];
-  };
-  const prom = a => Math.max(0.2, Math.min(2, a / 3));   // 3 ATR 움직이면 1배, 6 ATR 이상이면 2배, 자잘하면 0.2배
-  for(let i = k; i <= c.length - 2 - k; i++){   // 진행 중인 마지막 봉 제외, 좌우 k봉 확인된 것만
+// 1일봉 → 주봉(월요일 00:00 UTC = 한국 월 09:00)·월봉 합성
+function lvAgg(d1, key){
+  const out = [];
+  d1.forEach(c => {
+    const k = key(c.openTime), w = out[out.length - 1];
+    if(w && w.openTime === k){ if(c.high > w.high) w.high = c.high; if(c.low < w.low) w.low = c.low; w.close = c.close; w.quoteVolume += c.quoteVolume; }
+    else out.push({ openTime:k, open:c.open, high:c.high, low:c.low, close:c.close, quoteVolume:c.quoteVolume });
+  });
+  return out;
+}
+const lvWeekKey = t => t - ((new Date(t).getUTCDay() + 6) % 7) * 864e5;
+const lvMonthKey = t => { const d = new Date(t); return Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), 1); };
+
+// 스윙: 좌우 N봉보다 높은 고가 / 낮은 저가. 마지막 N봉 안의 것은 오른쪽이 덜 차서 '잠정'.
+// 주요 스윙만 남김: 직전 반대 방향 주요 스윙과 ATR×1.5 이상 차이 나야 새 스윙, 같은 방향이면 더 극단 쪽으로 교체(지그재그).
+// 구간: 스윙 캔들의 몸통 끝~꼬리 끝 (차트에 쓸 수 있게 폭은 ATR 0.5배까지, 주봉은 0.2배까지)
+function lvSwings(c, tf){
+  const N = LV.N[tf], n = c.length, atr = atrSeries(c, 14), raw = [], maj = [];
+  for(let i = N; i < n; i++){
     let hi = true, lo = true;
-    for(let j = i - k; j <= i + k && (hi || lo); j++){
+    for(let j = i - N; j <= Math.min(n - 1, i + N) && (hi || lo); j++){
       if(j === i) continue;
-      if(c[j].high >= c[i].high && (j > i || c[j].high > c[i].high)) hi = false;
-      if(c[j].low  <= c[i].low  && (j > i || c[j].low  < c[i].low )) lo = false;
+      if(c[j].high > c[i].high || (j > i && c[j].high === c[i].high)) hi = false;
+      if(c[j].low < c[i].low || (j > i && c[j].low === c[i].low)) lo = false;
     }
-    if(hi) out.push({ p:c[i].high, kind:'H', t:c[i].openTime, pr:prom(move(i, true)) });
-    if(lo) out.push({ p:c[i].low,  kind:'L', t:c[i].openTime, pr:prom(move(i, false)) });
+    const prov = i > n - 1 - N;
+    if(hi) raw.push({ i, k:'H', p:c[i].high, prov });
+    if(lo) raw.push({ i, k:'L', p:c[i].low, prov });
   }
+  raw.forEach(s => {
+    const last = maj[maj.length - 1];
+    if(!last) maj.push(s);
+    else if(last.k === s.k){ if(s.k === 'H' ? s.p > last.p : s.p < last.p) maj[maj.length - 1] = s; }
+    else if(Math.abs(s.p - last.p) >= LV.MAJOR * atr[s.i]) maj.push(s);
+  });
+  maj.forEach(s => {
+    const b = c[s.i], a = atr[s.i] * (tf === '1w' ? 0.2 : 0.5);
+    if(s.k === 'H'){ s.hi = b.high; s.lo = Math.max(Math.max(b.open, b.close), b.high - a); if(s.hi - s.lo < 0.1 * a) s.lo = s.hi - 0.1 * a; }
+    else { s.lo = b.low; s.hi = Math.min(Math.min(b.open, b.close), b.low + a); if(s.hi - s.lo < 0.1 * a) s.hi = s.lo + 0.1 * a; }
+    s.t = b.openTime; s.tf = tf;
+  });
+  return { maj, atr };
+}
+
+// 구조: 확정된 주요 스윙의 마지막 고점 2개·저점 2개 비교
+function lvStructure(maj, c){
+  const M = maj.filter(s => !s.prov), H = M.filter(s => s.k === 'H').slice(-2), L = M.filter(s => s.k === 'L').slice(-2);
+  if(H.length < 2 || L.length < 2) return { txt:'판단 불가 (주요 스윙 부족)', dir:0 };
+  const hh = H[1].p > H[0].p, hl = L[1].p > L[0].p, cur = c[c.length - 1].close;
+  const dir = hh && hl ? 1 : !hh && !hl ? -1 : 0;
+  let txt = dir > 0 ? '상승 구조 (고점·저점 상승)' : dir < 0 ? '하락 구조 (고점·저점 하락)' : hh ? '확장 (고점↑ 저점↓)' : '수렴 (고점↓ 저점↑)';
+  txt += cur > H[1].p ? ` · 직전 주요 고점 ${fmtPrice(H[1].p)} 위` : cur < L[1].p ? ` · 직전 주요 저점 ${fmtPrice(L[1].p)} 아래` : ` · 주요 고점 ${fmtPrice(H[1].p)} ~ 저점 ${fmtPrice(L[1].p)} 사이`;
+  return { txt, dir, hi:H[1], lo:L[1] };
+}
+
+// 수평 구간의 터치·돌파·역할 전환 (마감된 봉만)
+// 터치: 꼬리가 구간에 들어왔다가 종가는 원래 쪽에서 마감 · 돌파: 종가가 구간 밖 ATR×0.25 이상, 또는 2봉 연속 밖 마감
+// 횟수는 최근 구간(from 이후)만 센다 — 몇 년 전 횡보 속 잔파도까지 세면 모든 가격이 '여러 번 반응한 자리'가 되기 때문
+// 역할 전환: '가장 최근 돌파' 뒤 그 구간에서 반대 역할로 반응이 나온 것 (지금 역할이 확인됐는지)
+function lvReact(L, c, atr, from){
+  let side = 0, sup = 0, res = 0, brk = 0, flip = false, ls = -9, lr = -9, lastT = null, bd = 0, brkT = null;
+  for(let i = 1; i < c.length - 1; i++){
+    const b = c[i], a = atr[i], pc = c[i - 1].close, inW = i >= from;
+    if(!side){ side = b.close > L.hi ? 1 : b.close < L.lo ? -1 : 0; continue; }
+    if(side > 0){
+      if(b.close < L.lo - LV.BRK * a || (b.close < L.lo && pc < L.lo)){ side = -1; bd = -1; flip = false; brkT = b.openTime; if(inW) brk++; continue; }
+      if(b.low <= L.hi && b.close > L.hi){ if(i - ls >= 3){ if(inW) sup++; lastT = b.openTime; if(bd > 0 && inW) flip = true; } ls = i; }
+    } else {
+      if(b.close > L.hi + LV.BRK * a || (b.close > L.hi && pc > L.hi)){ side = 1; bd = 1; flip = false; brkT = b.openTime; if(inW) brk++; continue; }
+      if(b.high >= L.lo && b.close < L.lo){ if(i - lr >= 3){ if(inW) res++; lastT = b.openTime; if(bd < 0 && inW) flip = true; } lr = i; }
+    }
+  }
+  return { sup, res, brk, flip, lastT, brkT };
+}
+
+// 거래량 프로파일 (OHLCV 근사): 봉마다 거래대금을 고가~저가 칸에 균등 분배. 칸 = ATR×0.25
+function lvProfile(c, step){
+  let lo = Infinity, hi = -Infinity;
+  c.forEach(x => { if(x.low < lo) lo = x.low; if(x.high > hi) hi = x.high; });
+  step = Math.max(step, (hi - lo) / 300);
+  const nb = Math.floor((hi - lo) / step) + 1, v = new Float64Array(nb), P = i => lo + (i + 0.5) * step;
+  c.forEach(x => { const a = Math.floor((x.low - lo) / step), b = Math.floor((x.high - lo) / step); for(let i = a; i <= b; i++) v[i] += x.quoteVolume / (b - a + 1); });
+  const tot = v.reduce((s, x) => s + x, 0);
+  let poc = 0; for(let i = 1; i < nb; i++) if(v[i] > v[poc]) poc = i;
+  let up = poc, dn = poc, s = v[poc];   // POC에서 위아래 중 큰 칸을 붙여 70%까지 = 밸류 에어리어
+  while(s < 0.7 * tot && (up < nb - 1 || dn > 0)){
+    const u = up < nb - 1 ? v[up + 1] : -1, d = dn > 0 ? v[dn - 1] : -1;
+    s += u >= d ? v[++up] : v[--dn];
+  }
+  const sm = Array.from(v, (_, i) => { let t = 0, k = 0; for(let j = i - 2; j <= i + 2; j++) if(j >= 0 && j < nb){ t += v[j]; k++; } return t / k; });
+  const mean = tot / nb, hvn = [], lvn = [];
+  for(let i = 4; i < nb - 4; i++){
+    let mx = true, mn = true;
+    for(let j = i - 4; j <= i + 4; j++){ if(j === i) continue; if(j < i ? sm[j] >= sm[i] : sm[j] > sm[i]) mx = false; if(j < i ? sm[j] <= sm[i] : sm[j] < sm[i]) mn = false; }
+    if(mx && sm[i] >= 1.3 * mean && Math.abs(i - poc) > 3) hvn.push({ p:P(i), r:sm[i] / mean });
+    if(mn){ let l = 0, r = 0; for(let j = Math.max(0, i - 15); j < i; j++) l = Math.max(l, sm[j]); for(let j = i + 1; j <= Math.min(nb - 1, i + 15); j++) r = Math.max(r, sm[j]); if(sm[i] <= 0.5 * Math.min(l, r)) lvn.push({ p:P(i), r:sm[i] / mean }); }
+  }
+  return { poc:P(poc), vah:lo + (up + 1) * step, val:lo + dn * step, step,
+    hvn:hvn.sort((a, b) => b.r - a.r).slice(0, 3), lvn:lvn.sort((a, b) => a.r - b.r).slice(0, 3),
+    days:Math.round((c[c.length - 1].openTime - c[0].openTime) / 864e5) };
+}
+
+// 앵커드 VWAP: t 시점부터 누적. 대표가격 (H+L+C)/3, 거래량 = 거래대금/대표가격. t를 포함하는 가장 촘촘한 시간대 사용
+function lvAvwap(series, t){
+  const c = series.find(s => s && s.length && s[0].openTime <= t);
+  if(!c) return null;
+  let q = 0, b = 0;
+  c.forEach(x => { if(x.openTime >= t){ q += x.quoteVolume; b += x.quoteVolume / ((x.high + x.low + x.close) / 3); } });
+  return b ? q / b : null;
+}
+
+// 피보나치: 가장 최근에 구조를 깬 임펄스(직전 같은 종류 주요 스윙을 넘어선 다리 A→B). B는 그 뒤 극단까지 연장
+function lvFib(c, maj, tf){
+  const M = maj.filter(s => !s.prov), n = c.length;
+  for(let k = M.length - 1; k >= 2; k--){
+    const B = M[k], A = M[k - 1], up = B.k === 'H';
+    if(!(up ? B.p > M[k - 2].p : B.p < M[k - 2].p)) continue;
+    let b = B.p, bi = B.i;
+    for(let i = B.i + 1; i < n; i++) if(up ? c[i].high > b : c[i].low < b){ b = up ? c[i].high : c[i].low; bi = i; }
+    const a = A.p, d = b - a, p786 = b - d * 0.786, lc = c[n - 2].close;
+    return { tf, up, a, b, ta:c[A.i].openTime, tb:c[bi].openTime,
+      ret:LV.RET.map(r => ({ r, p:b - d * r })), ext:LV.EXT.map(r => ({ r, p:a + d * r })),
+      dead: up ? lc < p786 : lc > p786, pos:(b - c[n - 1].close) / d };
+  }
+  return null;
+}
+
+// 작동 중인 이평: 최근 100봉에서 이평에 ATR×0.3 이내로 닿고 3봉 안에 반대쪽으로 ATR 1배 이상 튕긴 횟수가 2회 이상이고, 종가 관통 횟수 이상
+function lvMaActive(c, tf, atr){
+  const n = c.length, cl = c.map(x => x.close), out = [];
+  MA_LIST.forEach(p => {
+    const m = maType === 'SMA' ? smaSeries(cl, p) : emaSeries(cl, p);
+    if(m[n - 1] == null) return;
+    let sup = 0, res = 0, ls = -9, lr = -9, x = 0;
+    for(let i = Math.max(p, n - 101); i < n - 1; i++){
+      const v = m[i], a = atr[i];
+      if(m[i - 1] != null && (c[i].close > v) !== (c[i - 1].close > m[i - 1])) x++;   // 종가가 이평을 관통한 횟수
+      let mx = -Infinity, mn = Infinity;
+      for(let j = i + 1; j <= Math.min(n - 1, i + 3); j++){ if(c[j].high > mx) mx = c[j].high; if(c[j].low < mn) mn = c[j].low; }
+      if(Math.abs(c[i].low - v) <= LV.MAT * a && c[i].close > v && mx >= v + a && i - ls >= 3){ sup++; ls = i; }
+      if(Math.abs(c[i].high - v) <= LV.MAT * a && c[i].close < v && mn <= v - a && i - lr >= 3){ res++; lr = i; }
+    }
+    if(sup + res >= 2 && sup + res >= x) out.push({ tf, p, v:m[n - 1], sup, res, x, a:atr[n - 1] });   // 관통이 반응보다 잦으면 지지·저항이 아니라 그냥 지나다니는 선
+  });
+  return out;
+}
+
+// 추세선: 같은 종류 주요 스윙 두 개(상승선 = 높아지는 저점, 하락선 = 낮아지는 고점), 꼬리 기준(꼬리가 ATR 2배 넘게 튀면 몸통)
+// 두 앵커 사이 종가 이탈 없어야 함 · 3번째 터치부터 '유효' · 1일봉은 로그 스케일, 그 아래는 리니어
+function lvTrend(c, maj, tf, logS){
+  const n = c.length, atr = atrSeries(c, 14), F = logS ? Math.log : x => x, G = logS ? Math.exp : x => x, out = [];
+  const anc = s => { const b = c[s.i], a = 2 * atr[s.i];
+    if(s.k === 'L'){ const y = Math.min(b.open, b.close); return y - b.low > a ? y : b.low; }
+    const y = Math.max(b.open, b.close); return b.high - y > a ? y : b.high; };
+  ['L', 'H'].forEach(k => {
+    const S = maj.filter(s => s.k === k && !s.prov).slice(-8), sg = k === 'L' ? 1 : -1, cands = [];
+    for(let x = 0; x < S.length; x++) for(let y = x + 1; y < S.length; y++){
+      const A = S[x], B = S[y], pa = anc(A), pb = anc(B);
+      if(sg * (pb - pa) <= 0 || Math.abs(pb - pa) < atr[B.i]) continue;   // 거의 평평하면 추세선이 아니라 수평 레벨
+      const sl = (F(pb) - F(pa)) / (B.i - A.i), at = i => G(F(pa) + sl * (i - A.i));
+      let touch = 2, lt = A.i, brk = -1, prevOut = false, ok = true;
+      for(let i = A.i + 1; i < n - 1; i++){
+        const v = at(i), a = atr[i], beyond = sg * (v - c[i].close);   // > 0 이면 선 반대편 마감
+        if(i < B.i && beyond > 0){ ok = false; break; }
+        if(i > B.i){ if(beyond >= LV.BRK * a || (beyond > 0 && prevOut)){ brk = i; break; } prevOut = beyond > 0; }
+        if(i === B.i){ lt = i; continue; }
+        if(i - lt >= 3 && (i > B.i || B.i - i >= 3) && beyond <= 0 && sg * ((k === 'L' ? c[i].low : c[i].high) - v) <= 0.25 * a){ touch++; lt = i; }
+      }
+      if(ok) cands.push({ A, B, pa, pb, at, touch, brk });
+    }
+    const mk = (x, st) => {
+      let off = 0;
+      for(let i = x.A.i; i < n; i++){ const d = F(k === 'L' ? c[i].high : c[i].low) - F(x.at(i)); if(sg * d > sg * off) off = d; }
+      const now = x.at(n - 1);
+      return { tf, k, log:logS, st, ta:c[x.A.i].openTime, pa:x.pa, tb:c[x.B.i].openTime, pb:x.pb, now, touch:x.touch,
+        steep:Math.abs(now - x.at(n - 2)) > 0.35 * atr[n - 1], ch:G(F(now) + off), brkT:x.brk >= 0 ? c[x.brk].openTime : null };
+    };
+    const act = cands.filter(x => x.brk < 0).sort((p, q) => q.touch - p.touch || q.B.i - p.B.i || p.A.i - q.A.i)[0];
+    if(act) out.push(mk(act, act.touch >= 3 ? '유효' : '후보'));
+    const bro = cands.filter(x => x.brk >= n - 16 && x.touch >= 3).sort((p, q) => q.brk - p.brk || q.touch - p.touch)[0];
+    if(bro) out.push(mk(bro, '이탈'));
+  });
   return out;
 }
 
@@ -1465,158 +1646,221 @@ function lvZones(d1, cur){
 }
 
 function computeLevels(asset){
-  const d1 = getCandles(asset, '1d').candles, h4 = getCandles(asset, '4h').candles, h1 = getCandles(asset, '1h').candles;
+  const C = {};
+  ['1d', '4h', '1h', '15m', '5m'].forEach(tf => C[tf] = getCandles(asset, tf).candles);
+  const d1 = C['1d'], h4 = C['4h'];
   if(!d1 || !h4 || d1.length < 30 || h4.length < 100) return null;
-  if(lvCache && lvCache.d1 === d1 && lvCache.h4 === h4 && lvCache.h1 === h1) return lvCache.r;
+  if(lvCache && lvCache.ma === maType && ['1d', '4h', '1h', '15m', '5m'].every(tf => lvCache.C[tf] === C[tf])) return lvCache.r;
+  const C0 = { ...C };
 
-  const cur = h4[h4.length - 1].close, now = Date.now();
-  const atrD = atrSeries(d1, 14), atrPct = atrD[atrD.length - 1] / d1[d1.length - 1].close * 100;
-  const tol = Math.min(3, Math.max(0.4, 0.35 * atrPct));          // 같은 선으로 묶는 폭(%)
+  const w1 = lvAgg(d1, lvWeekKey), mo = lvAgg(d1, lvMonthKey);
+  C['1w'] = w1;
+  const last = C['5m'] || C['1h'] || h4, cur = last[last.length - 1].close;
+  const SW = {}, A = {};
+  LV_TFS.forEach(tf => { const c = C[tf]; if(c && c.length >= 30){ SW[tf] = lvSwings(c, tf); A[tf] = SW[tf].atr[c.length - 1]; } });
+  const atrPct = A['1d'] / cur * 100;
+  const tolOf = tf => LV.CL * (tf === '1w' ? A['1d'] : (A[tf] || A['4h']));
 
-  // 1) 후보: 1D·4H·1H 스윙 고점/저점 (+ 가격대 중심)
-  const cand = [];
-  [['1d', d1], ['4h', h4], ['1h', h1]].forEach(([tf, c]) => {
-    if(!c || c.length < 30) return;
-    lvPivots(c, LV.PIV[tf]).forEach(v => {
-      const rec = Math.max(0.25, Math.pow(0.5, (now - v.t) / 864e5 / LV.HALF[tf]));
-      cand.push({ ...v, tf, w:LV.W[tf] * rec * v.pr });
-    });
-  });
-  const Z = lvZones(d1, cur);
-  Z.zones.forEach(z => cand.push({ p:z.poc, kind:'P', tf:'zone', w:1.5, t:now }));
-  cand.sort((a, b) => a.p - b.p);
-
-  // 2) 가까운 후보끼리 묶기
-  const clusters = [];
-  cand.forEach(v => {
-    const cl = clusters[clusters.length - 1];
-    if(cl && (v.p - cl.p) / cl.p * 100 <= tol){ cl.m.push(v); cl.sw += v.w; cl.p = cl.m.reduce((s, x) => s + x.p * x.w, 0) / cl.sw; }
-    else clusters.push({ p:v.p, m:[v], sw:v.w });
-  });
-
-  // 3) 4시간봉 반응 횟수 · 지지↔저항 전환 · 거래 밀집도
-  const H = h4.slice(0, -1);
-  const vStep = tol / 200, vL0 = Math.log(Math.min(...H.map(c => c.low))), vb = {};
-  H.forEach(c => {
-    const a = Math.floor((Math.log(c.low) - vL0) / vStep), b = Math.floor((Math.log(c.high) - vL0) / vStep);
-    for(let i = a; i <= b; i++) vb[i] = (vb[i] || 0) + c.quoteVolume / (b - a + 1);
-  });
-  const vVals = Object.values(vb), vMean = vVals.reduce((a, b) => a + b, 0) / vVals.length;
-  const volAt = p => { const c = Math.floor((Math.log(p) - vL0) / vStep), r = Math.round(tol / 100 / vStep); let s = 0, k = 0; for(let i = c - r; i <= c + r; i++){ s += vb[i] || 0; k++; } return s / k / vMean; };
-
-  const levels = clusters.map(cl => {
-    const L = cl.p, band = L * tol / 100;
-    let sup = 0, res = 0, lastS = -9, lastR = -9, lastT = null;
-    H.forEach((c, i) => {
-      if(c.low >= L - band && c.low <= L + band && c.close > L){ if(i - lastS >= 3){ sup++; lastT = c.openTime; } lastS = i; }
-      if(c.high >= L - band && c.high <= L + band && c.close < L){ if(i - lastR >= 3){ res++; lastT = c.openTime; } lastR = i; }
-    });
-    const cnt = {}; cl.m.forEach(v => { const key = v.tf + v.kind; cnt[key] = (cnt[key] || 0) + 1; });
-    const pivScore = cl.m.reduce((s, v) => s + v.w, 0), flip = sup > 0 && res > 0, vr = volAt(L);
-    const volBonus = Math.max(0, Math.min(2, Math.log2(Math.max(vr, 1e-9))));
-    const score = pivScore + 0.5 * Math.min(sup + res, 8) + (flip ? 1.5 : 0) + 1.5 * volBonus;
-    return { p:L, score, sup, res, flip, vr, cnt, lastT, isPoc:cl.m.some(v => v.kind === 'P') };
-  });
-
-  // 4) 현재가 위·아래로 나눠, 가까운 범위 안에서 점수 높은 선을 고른다
-  // 범위: 기본 ±max(12%, 1일봉 ATR×4), 단 현재 가격대의 위·아래 끝까지는 항상 포함 (최대 45%)
-  const curZ = Z.zones.find(z => z.cur);
-  const limUp = Math.min(45, Math.max(12, 4 * atrPct, curZ ? (curZ.hi / cur - 1) * 100 + 2 * tol : 0));
-  const limDn = Math.min(45, Math.max(12, 4 * atrPct, curZ ? (1 - curZ.lo / cur) * 100 + 2 * tol : 0));
-  // 강도: 전체 후보 중 점수 상위 10% = 강, 상위 30% = 중, 나머지 = 약
-  const sorted = levels.map(l => l.score).sort((a, b) => b - a);
-  const q10 = sorted[Math.floor(sorted.length * 0.1)] ?? Infinity, q30 = sorted[Math.floor(sorted.length * 0.3)] ?? Infinity;
-  levels.forEach(l => { l.tier = l.score >= q10 ? '강' : l.score >= q30 ? '중' : '약'; l.dist = (l.p - cur) / cur * 100; });
-  const pick = side => {
-    const lim = side > 0 ? limUp : limDn;
-    const pool = levels.filter(l => side > 0 ? l.p > cur * (1 + tol / 200) : l.p < cur * (1 - tol / 200))
-      .map(l => ({ ...l })).filter(l => Math.abs(l.dist) <= lim);
-    if(!pool.length) return [];
-    const byScore = pool.slice().sort((a, b) => b.score - a.score), sel = byScore.slice(0, LV.SHOW);
-    const nearest = pool.slice().sort((a, b) => Math.abs(a.dist) - Math.abs(b.dist))[0];
-    if(!sel.includes(nearest) && nearest.score >= 0.35 * byScore[0].score) sel.push(nearest);
-    sel.forEach(l => l.key = l === byScore[0]);
-    return sel.sort((a, b) => Math.abs(a.dist) - Math.abs(b.dist));
+  // ---- 1) 근거 모으기: 상위 시간대부터. 같은 근거 종류는 레벨당 한 번만 점수
+  const lv = [];
+  const add = (lo, hi, ref, tf, key, pts, info) => {
+    let L = null, bd = Infinity;
+    lv.forEach(l => { const d = Math.abs(l.ref - ref); if((d <= tolOf(l.tf) || (key[0] !== 's' && lo <= l.hi && hi >= l.lo)) && d < bd){ bd = d; L = l; } });
+    if(!L){ L = { lo, hi, ref, tf, ev:{}, sws:[], why:[] }; lv.push(L); }
+    // 같은 사건의 하위 시간대 스윙(상위 스윙 캔들 안의 고저)은 중복이라 건너뜀 — 1D 고점이 4H·1H 고점으로 또 세지지 않게
+    if(key[0] === 's' && L.sws.some(h => h.k === info.k && h.tf !== info.tf && info.t >= h.t - LV_MS[info.tf] && info.t < h.t + LV_MS[h.tf])) return;
+    L.ev[key] = Math.max(L.ev[key] || 0, pts);
+    if(key[0] === 's') L.sws.push(info); else if(!L.why.includes(info)) L.why.push(info);
   };
-  const resis = pick(1), supps = pick(-1);
+  LV_TFS.forEach(tf => SW[tf] && SW[tf].maj.forEach(s => add(s.lo, s.hi, s.p, tf, 's' + LV.PT[tf], LV.PT[tf], s)));
 
-  // 가격대마다 하단 지지·상단 저항: 가격대 아래쪽 25%(경계 바깥 tol 포함)와 위쪽 25%에서 점수가 가장 높은 선
-  const best = (a, b) => { const c = levels.filter(l => l.p >= a && l.p <= b); return c.length ? c.reduce((x, y) => y.score > x.score ? y : x) : null; };
-  Z.zones.forEach(z => {
-    const w = z.hi - z.lo, k = 1 + tol / 100;
-    z.sup = best(z.lo / k, z.lo + 0.25 * w);
-    z.res = best(z.hi - 0.25 * w, z.hi * k);
-    if(z.sup && z.res && z.sup === z.res) z.res = null;
+  // 거래량 프로파일: 중기 = 4H 전체(약 166일), 단기 = 1H 전체(약 41일)
+  const vpM = lvProfile(h4, 0.25 * A['4h']), vpS = C['1h'] && C['1h'].length > 100 ? lvProfile(C['1h'], 0.25 * A['1h']) : null;
+  [[vpM, '4H'], [vpS, '1H']].forEach(([v, nm]) => {
+    if(!v) return;
+    const w = v.step / 2;
+    [['POC', v.poc], ['VAH', v.vah], ['VAL', v.val]].forEach(([k, p]) => add(p - w, p + w, p, 'x', 'vp', 2, `${nm} ${k}`));
+    v.hvn.forEach(h => add(h.p - w, h.p + w, h.p, 'x', 'hvn', 1, `${nm} HVN`));
   });
 
-  const r = { cur, tol, atrPct, limUp, limDn, resis, supps, zones:Z.zones, days:Z.days, h4days:Math.round((H[H.length-1].openTime - H[0].openTime) / 864e5) };
-  lvCache = { d1, h4, h1, r };
+  // 피보나치 (1D·4H 임펄스): 0.5와 골든 포켓(0.618~0.65)만 합류 근거
+  const fibs = [['1d', d1], ['4h', h4]].map(([tf, c]) => SW[tf] ? lvFib(c, SW[tf].maj, tf) : null).filter(Boolean);
+  fibs.forEach(f => {
+    if(f.dead) return;
+    const p5 = f.ret[2].p, g1 = f.ret[3].p, g2 = f.ret[4].p, w = 0.1 * A[f.tf];
+    add(p5 - w, p5 + w, p5, 'x', 'fib', 1, `${TFN[f.tf]} 피보 0.5`);
+    add(Math.min(g1, g2), Math.max(g1, g2), (g1 + g2) / 2, 'x', 'fib', 1, `${TFN[f.tf]} 피보 0.618~0.65`);
+  });
+
+  // 작동 중인 이평 (1D·4H·1H)
+  const mas = [];
+  ['1d', '4h', '1h'].forEach(tf => C[tf] && SW[tf] && mas.push(...lvMaActive(C[tf], tf, SW[tf].atr)));
+  mas.forEach(m => add(m.v - 0.15 * m.a, m.v + 0.15 * m.a, m.v, 'x', 'ma', 1, `${TFN[m.tf]} ${maType}${m.p}`));
+
+  // 기간 기준 레벨 (UTC 기준 = 한국 09:00 시작)
+  const dl = d1.length, per = [
+    ['PDH(전일 고가)', d1[dl - 2].high], ['PDL(전일 저가)', d1[dl - 2].low], ['일봉 시가', d1[dl - 1].open],
+  ];
+  if(w1.length > 1) per.push(['PWH(전주 고가)', w1[w1.length - 2].high], ['PWL(전주 저가)', w1[w1.length - 2].low], ['주봉 시가', w1[w1.length - 1].open]);
+  if(mo.length > 1) per.push(['PMH(전월 고가)', mo[mo.length - 2].high], ['PML(전월 저가)', mo[mo.length - 2].low], ['월봉 시가', mo[mo.length - 1].open]);
+  const st4 = lvStructure(SW['4h'].maj, h4);
+  if(st4.hi && st4.lo) per.push(['EQ(4H 스윙 범위 중간)', (st4.hi.p + st4.lo.p) / 2]);
+  per.forEach(([nm, p]) => add(p - 0.1 * A['4h'], p + 0.1 * A['4h'], p, 'x', 'per', 1, nm));
+
+  // 라운드 넘버: 가격 자릿수의 절반 단위 (BTC 8만 → 5,000 단위)
+  const unit = Math.pow(10, Math.floor(Math.log10(cur))) / 2;
+  for(let k = Math.ceil(cur * 0.75 / unit); k <= Math.floor(cur * 1.25 / unit); k++){
+    const p = k * unit; add(p - 0.05 * A['4h'], p + 0.05 * A['4h'], p, 'x', 'rnd', 1, `라운드 ${fmtPrice(p)}`);
+  }
+
+  // ---- 2) 터치·돌파·전환 판정 (1W·1D 레벨은 1일봉 최근 1년, 4H·1H·근거만 있는 레벨은 4시간봉, 15m·5m 레벨은 1시간봉으로)
+  lv.forEach(L => {
+    const et = L.tf === '1w' || L.tf === '1d' ? '1d' : (L.tf === '15m' || L.tf === '5m') && SW['1h'] ? '1h' : '4h';
+    const c = C[et], from = et === '1d' ? Math.max(1, c.length - 365) : 1;   // 1일봉은 최근 1년, 나머지는 받은 전체
+    Object.assign(L, lvReact(L, c, SW[et].atr, from), { et });
+    if(L.sup + L.res >= 3 && L.sup + L.res >= 2 * L.brk) L.ev.tch = 2;   // 반응이 관통의 2배는 돼야 '지켜지는 레벨' (자주 관통되면 레인지 한가운데일 뿐)
+    if(L.flip) L.ev.flip = 2;
+    L.pts = Object.values(L.ev).reduce((s, x) => s + x, 0);
+    L.role = L.lo > cur ? 'R' : L.hi < cur ? 'S' : 'N';
+    L.dist = L.role === 'R' ? (L.lo / cur - 1) * 100 : L.role === 'S' ? (L.hi / cur - 1) * 100 : 0;
+  });
+
+  // ---- 3) 표시할 레벨 고르기: 3점 이상, 범위 안, 핵심 먼저 + 가까운 보조로 채움
+  const Z = lvZones(d1, cur), curZ = Z.zones.find(z => z.cur), tolPct = tolOf('1d') / cur * 100;
+  const limUp = Math.min(45, Math.max(12, 4 * atrPct, curZ ? (curZ.hi / cur - 1) * 100 + 2 * tolPct : 0));
+  const limDn = Math.min(45, Math.max(12, 4 * atrPct, curZ ? (1 - curZ.lo / cur) * 100 + 2 * tolPct : 0));
+  // 겹치는 레벨은 점수 높은(같으면 상위 시간대) 하나만 남김 — 선을 적게 그리기 위해
+  const rep = [], tfi = tf => tf === 'x' ? 9 : LV_TFS.indexOf(tf), gap = tolOf('4h');
+  lv.filter(l => l.pts >= LV.AUX).sort((a, b) => b.pts - a.pts || tfi(a.tf) - tfi(b.tf)).forEach(l => {
+    if(!rep.some(q => l.lo <= q.hi + gap && l.hi >= q.lo - gap)) rep.push(l);
+  });
+  const byDist = (a, b) => Math.abs(a.dist) - Math.abs(b.dist);
+  const pick = role => {
+    const pool = rep.filter(l => l.role === role && Math.abs(l.dist) <= (role === 'R' ? limUp : limDn)).sort(byDist);
+    const sel = pool.filter(l => l.pts >= LV.CORE).slice(0, LV.SIDE);
+    pool.forEach(l => { if(sel.length < LV.SIDE && !sel.includes(l)) sel.push(l); });
+    return sel.sort((a, b) => b.lo - a.lo);
+  };
+  const resis = pick('R'), supps = pick('S'), test = rep.filter(l => l.role === 'N').sort((a, b) => b.pts - a.pts);
+  const near = { R:rep.filter(l => l.role === 'R').sort(byDist).slice(0, 3), S:rep.filter(l => l.role === 'S').sort(byDist).slice(0, 3) };
+
+  // 가격대마다 하단 지지·상단 저항: 아래쪽·위쪽 25%(경계 바깥 묶음 폭 포함)에서 점수가 가장 높은 레벨
+  const best = (a, b) => rep.filter(l => l.ref >= a && l.ref <= b).reduce((x, y) => !x || y.pts > x.pts ? y : x, null);
+  Z.zones.forEach(z => {
+    const w = z.hi - z.lo, t = tolOf('1d');
+    z.sup = best(z.lo - t, z.lo + 0.25 * w); z.res = best(z.hi - 0.25 * w, z.hi + t);
+    if(z.sup && z.sup === z.res) z.res = null;
+  });
+
+  // ---- 4) 구조 요약 · 추세선 · 앵커드 VWAP
+  const st1 = lvStructure(SW['1d'].maj, d1);
+  const cl1 = d1.map(c => c.close), ma200 = (maType === 'SMA' ? smaSeries(cl1, 200) : emaSeries(cl1, 200))[dl - 1];
+  const wOpen = w1[w1.length - 1].open;
+  const trends = [...lvTrend(d1, SW['1d'].maj, '1d', true), ...lvTrend(h4, SW['4h'].maj, '4h', false), ...(SW['1h'] ? lvTrend(C['1h'], SW['1h'].maj, '1h', false) : [])];
+  const series = [C['1h'], h4, d1], avw = [];
+  [['1D 마지막 주요 저점', st1.lo], ['1D 마지막 주요 고점', st1.hi], ['4H 마지막 주요 저점', st4.lo], ['4H 마지막 주요 고점', st4.hi]].forEach(([nm, s]) => {
+    if(!s) return; const v = lvAvwap(series, s.t); if(v) avw.push({ nm, t:s.t, tf:s.tf, v });
+  });
+
+  // ---- 5) 확실하지 않은 것
+  const unk = [];
+  ['1d', '4h'].forEach(tf => { const m = SW[tf].maj[SW[tf].maj.length - 1]; if(m && m.prov) unk.push(`${TFN[tf]} 마지막 스윙(${m.k === 'H' ? '고점' : '저점'} ${fmtPrice(m.p)})은 잠정 — 오른쪽 ${LV.N[tf]}봉이 아직 다 안 찼음`); });
+  unk.push(`거래량 프로파일은 OHLCV 근사값(봉 거래대금을 고가~저가에 균등 분배) — 거래소 실제 프로파일과 다를 수 있음`);
+  unk.push(`1일봉 ${dl}봉(${lvT(d1[0].openTime, '1d')}~) 밖의 과거 가격대는 반영 못 함 · 15분/5분 스윙은 최근 약 ${Math.round(1000 * 15 / 1440)}일/${(1000 * 5 / 1440).toFixed(1)}일분`);
+  fibs.forEach(f => { if(f.dead) unk.push(`${TFN[f.tf]} 피보 임펄스는 0.786 종가 이탈로 무효 간주 — 합류 점수에서 제외`); });
+  if(!resis.length) unk.push('위쪽 범위 안에 3점 이상 레벨 없음 — 신고가권이면 피보 확장 레벨만 참고 가능');
+  if(!supps.length) unk.push('아래쪽 범위 안에 3점 이상 레벨 없음');
+
+  const r = { cur, atrPct, tolPct, limUp, limDn, resis, supps, test, near, zones:Z.zones, days:Z.days,
+    st1, st4, ma200, wOpen, trends, fibs, vpM, vpS, avw, per:per.map(([nm, p]) => ({ nm, p })), mas, unk };
+  lvCache = { C:C0, ma:maType, r };
   return r;
 }
 
+const lvRole = l => l.role === 'R' ? '저항' : l.role === 'S' ? '지지' : '현재 구간';
 const lvWhy = l => {
-  const tfName = { '1d':'1D', '4h':'4H', '1h':'1H' }, parts = [];
-  ['1d', '4h', '1h'].forEach(tf => {
-    const h = l.cnt[tf + 'H'] || 0, lo = l.cnt[tf + 'L'] || 0;
-    if(h) parts.push(`${tfName[tf]} 고점${h > 1 ? '×' + h : ''}`);
-    if(lo) parts.push(`${tfName[tf]} 저점${lo > 1 ? '×' + lo : ''}`);
-  });
-  if(l.sup + l.res) parts.push(`4H 반응 ${l.sup + l.res}회(지지 ${l.sup}·저항 ${l.res})`);
-  if(l.flip) parts.push('지지↔저항 전환');
-  if(l.isPoc) parts.push('가격대 중심');
-  if(l.vr >= 1.3) parts.push(`거래 밀집 ${l.vr.toFixed(1)}×`);
-  return parts.join(' · ') || '—';
+  const g = {}, parts = [];
+  l.sws.forEach(s => { const k = `${TFN[s.tf]} ${s.k === 'H' ? '고점' : '저점'}`; (g[k] = g[k] || []).push(s); });
+  const gs = Object.entries(g);   // 상위 시간대 순. 앞의 3묶음만 시각까지, 나머지는 개수만
+  gs.slice(0, 3).forEach(([k, a]) => { const s = a[a.length - 1]; parts.push(`${k}${a.length > 1 ? '×' + a.length : ''} ${lvT(s.t, s.tf)}${s.prov ? '(잠정)' : ''}`); });
+  if(gs.length > 3) parts.push(`하위 스윙 +${gs.slice(3).reduce((s, [, a]) => s + a.length, 0)}개`);
+  if(l.sup + l.res + l.brk) parts.push(`${TFN[l.et]}${l.et === '1d' ? ' 1년' : ''} 터치 ${l.sup + l.res}회(지지 ${l.sup}·저항 ${l.res})${l.brk ? `·관통 ${l.brk}회` : ''}`);
+  if(l.flip) parts.push(`역할 전환 확인(${lvT(l.brkT, l.et)} 돌파 후 반대 역할 반응)`);
+  const ma = l.why.filter(w => / (EMA|SMA)\d/.test(w)), oth = l.why.filter(w => !ma.includes(w));
+  if(ma.length) oth.push(ma.length > 2 ? `${ma.slice(0, 2).join('·')} 외 이평 ${ma.length - 2}개` : ma.join('·'));
+  return parts.concat(oth).join(' · ');
 };
+const lvTrName = t => t.k === 'L' ? ['상승 추세선(지지)', '상승 채널 상단(저항)'] : ['하락 추세선(저항)', '하락 채널 하단(지지)'];
+const lvTrText = (t, cur) => `${TFN[t.tf]} ${lvTrName(t)[0]} [${t.st}${t.st === '이탈' ? ' ' + lvT(t.brkT, t.tf) : ' ' + t.touch + '터치'}] ${t.log ? '로그' : '리니어'} · A ${lvT(t.ta, t.tf)} ${fmtPrice(t.pa)} → B ${lvT(t.tb, t.tf)} ${fmtPrice(t.pb)} · 현재 봉 ≈ ${fmtPrice(t.now)} (${fmtSignedPct((t.now / cur - 1) * 100)}) · ${lvTrName(t)[1]} ≈ ${fmtPrice(t.ch)}${t.steep ? ' · 가파름(이탈 위험↑)' : ''}`;
+const lvFibHead = f => `${TFN[f.tf]} ${f.up ? '상승' : '하락'} 임펄스 A ${lvT(f.ta, f.tf)} ${fmtPrice(f.a)} → B ${lvT(f.tb, f.tf)} ${fmtPrice(f.b)} · 현재 되돌림 ${(f.pos * 100).toFixed(0)}%${f.dead ? ' · 0.786 종가 이탈(무효)' : ''}`;
+const lvVpText = (v, nm) => `${nm} ${v.days}일: POC ${fmtPrice(v.poc)} · VAH ${fmtPrice(v.vah)} · VAL ${fmtPrice(v.val)} · HVN ${v.hvn.map(h => fmtPrice(h.p)).join(', ') || '—'} · LVN ${v.lvn.map(h => fmtPrice(h.p)).join(', ') || '—'}`;
 
 function renderLevels(){
   const grid = document.getElementById('lvGrid');
   const { detailed } = getCandles(currentAsset, '4h');
   const r = detailed ? computeLevels(currentAsset) : null;
-  const sym = SYMBOLS[currentAsset].label;
+  const sym = SYMBOLS[currentAsset].label, P = fmtPrice;
   if(!r){ grid.innerHTML = `<div class="ind-card" style="grid-column:1/-1"><div class="tf-label">주요 가격 레벨 · ${sym}</div><div class="sum-empty">${detailed ? '계산할 과거 데이터가 부족함' : '1000봉 불러오는 중…'}</div></div>`; return; }
-
-  const row = (l, side) => `<tr class="${l.key ? 'lv-key' : ''}">
-      <td class="${side > 0 ? 'c-up' : 'c-down'}">${side > 0 ? '저항' : '지지'}${l.key ? ' ★핵심' : ''}</td>
-      <td class="lv-p">${fmtPrice(l.p)}</td><td>${fmtSignedPct(l.dist)}</td>
-      <td><span class="lv-tier t-${l.tier}">${l.tier}</span></td>
-      <td class="lv-why">${lvWhy(l)}${l.lastT ? ` · 최근 반응 ${fmtTime(l.lastT, '4h')}` : ''}</td></tr>`;
-  const srRows = r.resis.slice().reverse().map(l => row(l, 1)).join('') +
-    `<tr class="lv-now"><td>현재가</td><td class="lv-p">${fmtPrice(r.cur)}</td><td colspan="3">— 위는 저항(+${r.limUp.toFixed(0)}% 안), 아래는 지지(−${r.limDn.toFixed(0)}% 안)</td></tr>` +
-    r.supps.map(l => row(l, -1)).join('');
+  const cls = l => l.role === 'R' ? 'c-up' : l.role === 'S' ? 'c-down' : '';
+  const row = l => `<tr class="${l.pts >= LV.CORE ? 'lv-key' : ''}"><td class="lv-p">${P(l.lo)} ~ ${P(l.hi)}</td><td>${l.role === 'N' ? '시험 중' : fmtSignedPct(l.dist)}</td>
+      <td class="${cls(l)}">${lvRole(l)}${l.pts >= LV.CORE ? ' ★핵심' : ''}</td><td><span class="lv-tier ${l.pts >= LV.CORE ? 't-강' : 't-중'}">${l.pts}점</span></td><td class="lv-why">${lvWhy(l)}</td></tr>`;
+  const rows = r.resis.map(row).join('') + r.test.map(row).join('') +
+    `<tr class="lv-now"><td class="lv-p">${P(r.cur)}</td><td colspan="4">현재가 — 위 +${r.limUp.toFixed(0)}% · 아래 −${r.limDn.toFixed(0)}% 안, 3점 이상만</td></tr>` + r.supps.map(row).join('');
+  const chip = l => `<span class="${cls(l)}">${P(l.lo)}~${P(l.hi)}</span> <span class="muted">${fmtSignedPct(l.dist)} ${l.pts}점</span>`;
 
   const zr = [];
   r.zones.forEach((z, i) => {
-    const ed = (l, nm, cls) => l ? `<div class="lv-edge"><span class="${cls}">${nm}</span> <b>${fmtPrice(l.p)}</b> <span class="lv-tier t-${l.tier}">${l.tier}</span> <span class="muted">${fmtSignedPct(l.dist)}</span></div>` : '';
-    zr.push(`<div class="lv-zone ${z.cur ? 'cur' : ''}"><div class="lv-zh"><b>${fmtPrice(z.lo)} ~ ${fmtPrice(z.hi)}</b><span>중심 ${fmtPrice(z.poc)} · 체류 ${pct0(z.share)}</span>${z.cur ? `<em>◀ 현재 ${fmtPrice(r.cur)}</em>` : ''}</div>${ed(z.res, '상단 저항', 'c-up')}${ed(z.sup, '하단 지지', 'c-down')}</div>`);
+    const ed = (l, nm, c) => l ? `<div class="lv-edge"><span class="${c}">${nm}</span> <b>${P(l.lo)}~${P(l.hi)}</b> <span class="lv-tier ${l.pts >= LV.CORE ? 't-강' : 't-중'}">${l.pts}점</span> <span class="muted">${fmtSignedPct(l.dist)}</span></div>` : '';
+    zr.push(`<div class="lv-zone ${z.cur ? 'cur' : ''}"><div class="lv-zh"><b>${P(z.lo)} ~ ${P(z.hi)}</b><span>중심 ${P(z.poc)} · 체류 ${pct0(z.share)}</span>${z.cur ? `<em>◀ 현재 ${P(r.cur)}</em>` : ''}</div>${ed(z.res, '상단 저항', 'c-up')}${ed(z.sup, '하단 지지', 'c-down')}</div>`);
     const nx = r.zones[i + 1];
-    if(nx){
-      const inGap = r.cur < z.lo && r.cur > nx.hi;
-      zr.push(`<div class="lv-gap ${inGap ? 'cur' : ''}">빈 구간 ${fmtPrice(nx.hi)} ~ ${fmtPrice(z.lo)} — 빠르게 지나간 가격${inGap ? ` <em>◀ 현재 ${fmtPrice(r.cur)} (가격대 사이)</em>` : ''}</div>`);
-    }
+    if(nx){ const g = r.cur < z.lo && r.cur > nx.hi; zr.push(`<div class="lv-gap ${g ? 'cur' : ''}">빈 구간 ${P(nx.hi)} ~ ${P(z.lo)} — 빠르게 지나간 가격${g ? ` <em>◀ 현재 ${P(r.cur)} (가격대 사이)</em>` : ''}</div>`); }
   });
 
+  const it = s => `<div class="lv-item">${s}</div>`;
+  const fibHtml = r.fibs.map(f => it(`${lvFibHead(f)}<br>되돌림 ${f.ret.map(x => `${x.r} ${x.r >= 0.618 && x.r <= 0.65 ? `<b>${P(x.p)}</b>` : P(x.p)}`).join(' · ')}<br>확장 ${f.ext.map(x => `${x.r} ${P(x.p)}`).join(' · ')}`)).join('') || it('구조를 깬 임펄스를 찾지 못함');
+  const vpHtml = [r.vpM && it(lvVpText(r.vpM, '중기 4H')), r.vpS && it(lvVpText(r.vpS, '단기 1H')),
+    it('앵커드 VWAP: ' + (r.avw.map(a => `${a.nm}(${lvT(a.t, a.tf)})부터 <b>${P(a.v)}</b>`).join(' · ') || '—'))].filter(Boolean).join('');
+  const perHtml = it(r.per.map(x => `${x.nm} <b>${P(x.p)}</b> <span class="muted">${fmtSignedPct((x.p / r.cur - 1) * 100)}</span>`).join('<br>'));
+  const maHtml = it(r.mas.length ? r.mas.map(m => `${TFN[m.tf]} ${maType}${m.p} <b>${P(m.v)}</b> — ${m.v < r.cur ? '아래(지지 쪽)' : '위(저항 쪽)'} · 최근 100봉 반응 ${m.sup + m.res}회(지지 ${m.sup}·저항 ${m.res}) · 관통 ${m.x}회`).join('<br>') : '최근 100봉에서 반응 2회 이상 & 관통보다 반응이 많은 이평 없음 — 이평은 참고값으로만');
+
   grid.innerHTML = `<div class="ind-card" style="grid-column:1/-1">
-    <div class="tf-label">주요 가격 레벨 · ${sym}<span class="pill mix">1D ${r.days}봉 · 4H 약 ${r.h4days}일 · 1H 반영</span></div>
+    <div class="tf-label">주요 가격 레벨 · ${sym}<span class="pill mix">1W·1D·4H·1H·15m·5m · 고정 규칙</span></div>
+    <div class="lv-top">
+      <div><b>1D</b>${r.st1.txt}</div><div><b>4H</b>${r.st4.txt}</div>
+      <div><b>위치</b>${r.ma200 ? `1D ${maType}200 ${P(r.ma200)} ${r.cur > r.ma200 ? '위' : '아래'} · ` : ''}주봉 시가 ${P(r.wOpen)} ${r.cur >= r.wOpen ? '위' : '아래'}${r.test.length ? ` · 지금 ${r.test[0].pts}점 레벨 구간 안` : ''}</div>
+      <div><b>가까운 저항</b>${r.near.R.map(chip).join(' · ') || '—'}</div><div><b>가까운 지지</b>${r.near.S.map(chip).join(' · ') || '—'}</div>
+    </div>
     <div class="lv-wrap">
       <div><div class="ind-k"><span>가격대별 상단 저항·하단 지지 (1일봉 체류 분포, 위→아래)</span></div>${zr.join('')}</div>
-      <div><div class="ind-k"><span>핵심 지지·저항 (현재가에 가까운 순)</span></div>
-        <div class="lv-table"><table><tr><th></th><th>가격</th><th>거리</th><th>강도</th><th>근거</th></tr>${srRows}</table></div>
-        ${!r.resis.length ? '<div class="ind-sub">위쪽 범위 안에 과거 반응 자리가 없음 (신고가권 등)</div>' : ''}${!r.supps.length ? '<div class="ind-sub">아래쪽 범위 안에 과거 반응 자리가 없음</div>' : ''}
-      </div>
+      <div><div class="ind-k"><span>수평 지지·저항 (가격 높은 순 · ★핵심 6점+ · 보조 3~5점)</span></div>
+        <div class="lv-table"><table><tr><th>구간</th><th>거리</th><th>역할</th><th>점수</th><th>근거 (앵커 캔들 시각)</th></tr>${rows}</table></div></div>
     </div>
-    <div class="ind-sub">선 하나는 ±${r.tol.toFixed(2)}% 폭의 구간(1일봉 ATR의 0.35배)입니다. 강도는 1D·4H·1H 스윙 고저점(상위 시간대·최근일수록, 그리고 그 자리에서 가격이 크게 튕겨 나갔을수록 무겁게) + 4시간봉에서 꼬리만 닿고 되돌아간 횟수 + 지지↔저항 전환 + 거래 밀집도를 합한 점수입니다. 강도는 전체 후보 중 상위 10% 강 · 상위 30% 중 · 나머지 약이고, ★핵심은 방향별 최고 점수, 가격대별 상단 저항·하단 지지는 그 가격대의 위쪽·아래쪽 25%에서 가장 강한 선입니다. 과거 반응의 집계일 뿐 다음에도 지켜진다는 보장은 없습니다.</div>
+    <div class="lv-3">
+      <div><div class="ind-k"><span>추세선·채널 (A·B 두 점을 이으면 됨)</span></div>${r.trends.map(t => it(lvTrText(t, r.cur).replace(/^(\S+ \S+ \S+)/, `<b class="${t.k === 'L' ? 'c-down' : 'c-up'}">$1</b>`).replace(/(현재 봉 ≈ )(\$[\d,.]+)/, '$1<b>$2</b>'))).join('') || it('조건을 만족하는 추세선 없음')}</div>
+      <div><div class="ind-k"><span>피보나치 (골든 포켓 굵게)</span></div>${fibHtml}</div>
+      <div><div class="ind-k"><span>거래량 프로파일 (OHLCV 근사) · 앵커드 VWAP</span></div>${vpHtml}</div>
+    </div>
+    <div class="lv-3">
+      <div><div class="ind-k"><span>기간 기준 레벨 (UTC = 한국 09:00 기준)</span></div>${perHtml}</div>
+      <div><div class="ind-k"><span>작동 중인 이평 (동적 지지·저항)</span></div>${maHtml}</div>
+      <div><div class="ind-k"><span>확실하지 않음</span></div>${it(r.unk.join('<br>'))}</div>
+    </div>
+    <div class="ind-sub">스윙 = 좌우 N봉 고저(1W 3 · 1D·4H 4 · 1H·15m 5 · 5m 6) 중 직전 반대 스윙과 ATR(14)×1.5 이상 차이 나는 주요 스윙만(상위 스윙 캔들 안의 하위 스윙은 같은 사건이라 한 번만) · 구간 = 스윙 캔들 몸통 끝~꼬리 끝 · ATR×0.3 안은 한 레벨로 묶음 · 터치 = 꼬리가 닿고 종가는 원래 쪽 · 돌파 = 종가가 구간 밖 ATR×0.25 이상 또는 2봉 연속 · 점수 = 일봉 이상 스윙 3 / 4H 스윙 2 / 1H 이하 스윙 1 / 터치 3회+(관통의 2배 이상, 1D는 최근 1년) 2 / 역할 전환(최근 돌파 후 반대 역할 반응) 2 / POC·VAH·VAL 2 / HVN 1 / 피보 0.5·0.618~0.65 1 / 반응 이평 1 / 기간 레벨 1 / 라운드 1 (같은 종류는 한 번만). 피보는 리니어 기준이며, TradingView에서 A→B로 그리면 확장 1.272·1.618은 −0.272·−0.618 자리입니다. 과거 구조의 정리일 뿐 다음에도 지켜진다는 보장은 없습니다.</div>
   </div>`;
 }
 
 function levelListText(){
   const r = computeLevels(currentAsset);
   if(!r) return null;
-  const f = l => `${fmtPrice(l.p)}${l.key ? ' (핵심)' : ''} [${l.tier}]`;
+  const P = fmtPrice, ln = l => `  ${lvRole(l)}${l.pts >= LV.CORE ? ' ★핵심' : ''} ${P(l.lo)}~${P(l.hi)} (${l.role === 'N' ? '시험 중' : fmtSignedPct(l.dist)}) ${l.pts}점`;
   return [
-    `${SYMBOLS[currentAsset].label} 주요 레벨 · ${new Date().toLocaleString('ko-KR')} · 현재가 ${fmtPrice(r.cur)}`,
-    `저항(가까운 순): ${r.resis.map(f).join(' · ') || '없음'}`,
-    `지지(가까운 순): ${r.supps.map(f).join(' · ') || '없음'}`,
-    ...r.zones.map(z => `가격대 ${fmtPrice(z.lo)}~${fmtPrice(z.hi)}${z.cur ? ' (현재)' : ''}: 상단 저항 ${z.res ? fmtPrice(z.res.p) + ' [' + z.res.tier + ']' : '—'} / 하단 지지 ${z.sup ? fmtPrice(z.sup.p) + ' [' + z.sup.tier + ']' : '—'}`),
+    `${SYMBOLS[currentAsset].label} 주요 레벨 · ${new Date().toLocaleString('ko-KR')} · 현재가 ${P(r.cur)}`,
+    `■ 수평 지지·저항 (가격 높은 순)`, ...r.resis.map(ln), ...r.test.map(ln), `  ── 현재가 ${P(r.cur)}`, ...r.supps.map(ln),
+    `■ 추세선 (A·B를 이으면 됨)`, ...(r.trends.length ? r.trends.map(t => '  ' + lvTrText(t, r.cur)) : ['  없음']),
+    `■ 피보나치 (리니어 · TradingView A→B 기준 확장 = 음수 레벨)`, ...r.fibs.map(f => `  ${lvFibHead(f)} | ${f.ret.map(x => `${x.r} ${P(x.p)}`).join(' · ')} | 확장 ${f.ext.map(x => `${x.r} ${P(x.p)}`).join(' · ')}`),
+    `■ 거래량 프로파일 (OHLCV 근사)`, ...[r.vpM && '  ' + lvVpText(r.vpM, '중기 4H'), r.vpS && '  ' + lvVpText(r.vpS, '단기 1H')].filter(Boolean),
+    `■ 기간 레벨: ${r.per.map(x => `${x.nm.split('(')[0]} ${P(x.p)}`).join(' · ')}`,
+    ...r.zones.map(z => `■ 가격대 ${P(z.lo)}~${P(z.hi)}${z.cur ? ' (현재)' : ''}: 상단 저항 ${z.res ? `${P(z.res.lo)}~${P(z.res.hi)} ${z.res.pts}점` : '—'} / 하단 지지 ${z.sup ? `${P(z.sup.lo)}~${P(z.sup.hi)} ${z.sup.pts}점` : '—'}`),
   ].join('\n');
 }
 document.getElementById('lvCopyBtn').addEventListener('click', async e => {
@@ -1625,16 +1869,24 @@ document.getElementById('lvCopyBtn').addEventListener('click', async e => {
   try{ await navigator.clipboard.writeText(t); flashBtn(btn, '복사됨 ✓'); }catch(err){ flashBtn(btn, '복사 실패'); }
 });
 
+// AI 복사용: 작도 규칙 + 구조 → 레벨표 → 추세선 → 피보 → 거래량 프로파일 → 가까운 3개씩 → 확실하지 않음
 function pushLevelSummary(L){
-  const r = computeLevels(currentAsset);
-  L.push(`## 주요 가격 레벨 (대시보드 계산 · 1D·4H·1H 스윙 고저점 + 4H 반응 횟수 + 지지↔저항 전환 + 거래 밀집 · 선 폭 ±${r ? r.tol.toFixed(2) : '—'}%)`);
+  const r = computeLevels(currentAsset), P = fmtPrice;
+  L.push('## 주요 가격 레벨 (대시보드가 고정 규칙으로 계산한 값)');
   if(!r){ L.push('- 계산 불가'); L.push(''); return; }
-  L.push('- 가격대(1일봉 체류 분포, 위→아래):');
-  r.zones.forEach(z => L.push(`  · ${fmtPrice(z.lo)}~${fmtPrice(z.hi)} (중심 ${fmtPrice(z.poc)}, 체류 ${pct0(z.share)})${z.cur ? ' ←현재' : ''} — 상단 저항 ${z.res ? `${fmtPrice(z.res.p)} 강도 ${z.res.tier}` : '—'} / 하단 지지 ${z.sup ? `${fmtPrice(z.sup.p)} 강도 ${z.sup.tier}` : '—'}`));
-  const ln = (l, nm) => `  · ${nm} ${fmtPrice(l.p)} (${fmtSignedPct(l.dist)}) 강도 ${l.tier}${l.key ? ' ★핵심' : ''} — ${lvWhy(l)}`;
-  L.push(`- 현재가 ${fmtPrice(r.cur)}`);
-  r.resis.forEach(l => L.push(ln(l, '저항')));
-  r.supps.forEach(l => L.push(ln(l, '지지')));
+  L.push(`- 작도 규칙: 스윙 = 좌우 N봉 고저(1W3·1D4·4H4·1H5·15m5·5m6) 중 직전 반대 스윙과 ATR(14)×1.5 이상 차이 나는 주요 스윙 · 구간 = 스윙 캔들 몸통 끝~꼬리 끝 · ATR×0.3 안은 한 레벨 · 터치 = 꼬리가 닿고 종가는 원래 쪽 · 돌파 = 종가가 구간 밖 ATR×0.25 이상 또는 2봉 연속 · 점수 = 일봉 이상 스윙3/4H 스윙2/하위 스윙1/터치 3회+(관통의 2배 이상, 1D는 최근 1년) 2/역할 전환(최근 돌파 후 반대 역할 반응) 2/POC·VAH·VAL 2/HVN1/피보 0.5·0.618~0.65 1/반응 이평1/기간 레벨1/라운드1 → 6점+ 핵심, 3~5 보조, 2 이하 제외 · 이평은 ${maType}`);
+  L.push(`1. 상위 구조: 1D ${r.st1.txt} / 4H ${r.st4.txt} / 현재가 ${P(r.cur)}${r.ma200 ? `, 1D ${maType}200 ${P(r.ma200)} ${r.cur > r.ma200 ? '위' : '아래'}` : ''}, 주봉 시가 ${P(r.wOpen)} ${r.cur >= r.wOpen ? '위' : '아래'}`);
+  L.push('2. 주요 레벨표 (가격 높은 순) | 구간 | 역할 | 점수 | 근거(앵커 캔들 시각) |');
+  [...r.resis, ...r.test, ...r.supps].forEach(l => L.push(`  | ${P(l.lo)}~${P(l.hi)} | ${lvRole(l)}${l.pts >= LV.CORE ? ' 핵심' : ''} (${fmtSignedPct(l.dist)}) | ${l.pts} | ${lvWhy(l)} |`));
+  L.push('3. 추세선:'); (r.trends.length ? r.trends : [null]).forEach(t => L.push('  · ' + (t ? lvTrText(t, r.cur) : '조건 만족 없음')));
+  L.push('4. 피보나치 (리니어):'); r.fibs.forEach(f => L.push(`  · ${lvFibHead(f)} | 되돌림 ${f.ret.map(x => `${x.r} ${P(x.p)}`).join(', ')} | 확장 ${f.ext.map(x => `${x.r} ${P(x.p)}`).join(', ')}`));
+  L.push('5. 거래량 프로파일 (OHLCV 근사):'); [r.vpM && lvVpText(r.vpM, '중기 4H'), r.vpS && lvVpText(r.vpS, '단기 1H')].filter(Boolean).forEach(s => L.push('  · ' + s));
+  L.push(`  · 앵커드 VWAP: ${r.avw.map(a => `${a.nm}(${lvT(a.t, a.tf)})부터 ${P(a.v)}`).join(', ') || '—'}`);
+  L.push(`  · 기간 레벨: ${r.per.map(x => `${x.nm} ${P(x.p)}`).join(', ')}`);
+  L.push(`  · 작동 중인 이평: ${r.mas.map(m => `${TFN[m.tf]} ${maType}${m.p} ${P(m.v)}(반응 ${m.sup + m.res}회·관통 ${m.x}회)`).join(', ') || '없음'}`);
+  L.push(`6. 가장 가까운 저항: ${r.near.R.map(l => `${P(l.lo)}~${P(l.hi)}(${l.pts}점)`).join(', ') || '없음'} / 지지: ${r.near.S.map(l => `${P(l.lo)}~${P(l.hi)}(${l.pts}점)`).join(', ') || '없음'}`);
+  L.push('7. 확실하지 않음: ' + r.unk.join(' / '));
+  L.push('- 가격대(1일봉 체류 분포, 위→아래): ' + r.zones.map(z => `${P(z.lo)}~${P(z.hi)}(체류 ${pct0(z.share)})${z.cur ? '←현재' : ''}`).join(', '));
   L.push('');
 }
 
@@ -2007,7 +2259,7 @@ mtfLine,
 `### 1. 현재 진단`,
 `- 추세 상태 (이평선 배열 + Chop 여부)`,
 `- 거래량·모멘텀 평가 (거래대금/매수비중 + MACD)`,
-`- 주요 지지/저항 ('주요 가격 레벨' 섹션의 대시보드 계산값을 기준으로, 캔들 원본과 대조해 확인)`,
+`- 주요 지지/저항·추세선·피보나치·POC ('주요 가격 레벨' 섹션은 대시보드가 고정 규칙과 합류 점수로 계산한 값이다. 이 값을 기준으로 캔들 원본과 대조해 확인하고, 상위 시간대 레벨을 우선해라. 돌파당한 레벨을 옮겨 그려 유효하다고 하지 말고, 데이터에 없는 과거 가격대를 지어내지 마라)`,
 `- 지금과 비슷했던 과거 봉들의 이후 움직임 (사실 정리)`,
 ``,
 `### 2. 시나리오 (확률 높은 순 3개)`,
