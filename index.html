@@ -325,6 +325,21 @@
   .sim-fwd{ font-size:11px; margin:4px 0 0; color:var(--text-dim); }
   tr.flash td, tr.flash td:first-child{ background-color:#4a3305 !important; }
   .pill.flat{ color:#E6C200; border-color:#E6C200; }
+  #optGrid{ grid-template-columns:minmax(0,1fr); }
+  .opt-kpi{ grid-template-columns:repeat(6, minmax(0,1fr)); margin:10px 0 12px; }
+  .opt-kpi .v{ font-size:15px; } .opt-kpi .v2{ font-size:10.5px; line-height:1.5; }
+  .opt-charts{ display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:16px; margin-top:10px; }
+  .opt-svg{ width:100%; height:150px; display:block; margin:4px 0 10px; }
+  .opt-axis{ stroke:var(--border); }
+  .opt-ch{ position:relative; margin:4px 0 10px; } .opt-ch .opt-svg{ margin:0; }
+  .opt-ml{ position:absolute; transform:translateX(4px); font-size:10px; font-family:var(--font-mono); white-space:nowrap; background:rgba(0,0,0,.6); padding:0 2px; }
+  .opt-ml.m-s{ color:#fff; } .opt-ml.m-p{ color:#E6C200; } .opt-ml.m-f{ color:#c78bff; }
+  .opt-ticks{ position:relative; height:14px; } .opt-ticks span{ position:absolute; transform:translateX(-50%); font-size:10px; color:var(--text-faint); font-family:var(--font-mono); }
+  .b-up{ fill:var(--up); opacity:.8; } .b-dn{ fill:var(--down); opacity:.8; } .b-acc{ fill:var(--accent); opacity:.85; }
+  .opt-mk{ stroke-width:1.2; stroke-dasharray:3 3; }
+  .m-s{ stroke:#fff; fill:#fff; } .m-p{ stroke:#E6C200; fill:#E6C200; } .m-f{ stroke:#c78bff; fill:#c78bff; }
+  @media (max-width:1100px){ .opt-kpi{ grid-template-columns:repeat(3, minmax(0,1fr)); } }
+  @media (max-width:800px){ .opt-kpi{ grid-template-columns:repeat(2, minmax(0,1fr)); } .opt-svg{ height:120px; } .opt-charts{ grid-template-columns:minmax(0,1fr); } }
   .brief{ background:var(--bg-elev); border:1px solid var(--border); padding:12px 14px; margin-bottom:12px; }
   .brief-h{ display:flex; justify-content:space-between; flex-wrap:wrap; gap:4px 10px; color:var(--accent); font-weight:700; font-size:12px; letter-spacing:.5px; }
   .brief-h .muted{ font-weight:400; font-size:10.5px; letter-spacing:0; }
@@ -416,6 +431,15 @@
     <div class="t">BTC 대비 상관도 — 봉별 수익률 상관계수 r · 베타 (최근 100봉 / 최근 20봉)</div>
   </div>
   <div class="ind-grid" id="corrGrid"></div>
+
+  <div class="ind-head">
+    <div class="t">옵션 — OI · PCR · Max Pain · IV · 25Δ Skew · GEX (Deribit, 5분마다)</div>
+    <div class="seg" id="optCcySeg">
+      <button data-ccy="BTC">BTC</button>
+      <button data-ccy="ETH">ETH</button>
+    </div>
+  </div>
+  <div class="ind-grid" id="optGrid"></div>
 
   <div class="ind-head">
     <div class="t">주요 가격 레벨 — 수평 지지·저항 · 추세선 · 피보나치 · 거래량 프로파일 (고정 규칙 · 합류 점수)</div>
@@ -1183,6 +1207,8 @@ function renderIndicators(){
   renderLevels();
   renderAnalog();
   renderBtcStrip();
+  renderOptions();
+  loadOptions();
   renderBrief();
 }
 
@@ -2060,6 +2086,218 @@ function pushCorrSummary(L){
   L.push('');
 }
 
+// ---------- 옵션 (Deribit 공개 API) ----------
+// 크립토 옵션 거래의 대부분이 Deribit에 몰려 있어서 Deribit 데이터를 쓴다. BTC·ETH만 (다른 종목은 옵션 시장이 없거나 너무 얇음).
+// 요청: 통화당 2개 (전체 옵션 요약 1 + DVOL 지수 1), 5분마다. 그리스(델타·감마)는 Deribit의 mark IV로 블랙-숄즈(선물가 기준) 직접 계산.
+const OPT = { CCY:['BTC', 'ETH'], TTL:5 * 60e3, BASE:'https://www.deribit.com/api/v2/public/',
+  MON:{ JAN:0, FEB:1, MAR:2, APR:3, MAY:4, JUN:5, JUL:6, AUG:7, SEP:8, OCT:9, NOV:10, DEC:11 } };
+const optCache = {}, optBusy = {};
+let optUser = null, optExp = 'all';
+const optCcy = () => optUser || (OPT.CCY.includes(currentAsset) ? currentAsset : 'BTC');
+const nPdf = x => 0.3989422804014327 * Math.exp(-x * x / 2);
+const nCdf = x => { const t = 1 / (1 + 0.2316419 * Math.abs(x)), p = nPdf(x) * t * (0.31938153 + t * (-0.356563782 + t * (1.781477937 + t * (-1.821255978 + t * 1.330274429)))); return x > 0 ? 1 - p : p; };
+function optGreeks(F, K, T, iv, c){
+  const sT = iv * Math.sqrt(T), d1 = (Math.log(F / K) + 0.5 * iv * iv * T) / sT;
+  return { delta:c ? nCdf(d1) : nCdf(d1) - 1, gamma:nPdf(d1) / (F * sT) };
+}
+const optInterp = (pts, x) => {   // pts: [x, y] x 오름차순. 범위 밖이면 null
+  for(let i = 1; i < pts.length; i++){ const [x0, y0] = pts[i - 1], [x1, y1] = pts[i]; if(x >= x0 && x <= x1) return x1 === x0 ? y0 : y0 + (y1 - y0) * (x - x0) / (x1 - x0); }
+  return null;
+};
+const optSum = (a, f) => a.reduce((s, o) => s + f(o), 0);
+
+// 만기 하나: OI · PCR · 최대 고통 · ATM IV · 25델타 리스크리버설/버터플라이
+function optExpStats(exp, os){
+  const T = os[0].T, F = os[0].F, calls = os.filter(o => o.c), puts = os.filter(o => !o.c);
+  const cOI = optSum(calls, o => o.oi), pOI = optSum(puts, o => o.oi);
+  // 최대 고통: 만기에 그 가격으로 끝나면 옵션 매수자 전체가 받는 돈이 가장 적은 행사가
+  let mp = null, best = Infinity;
+  [...new Set(os.map(o => o.K))].forEach(k => { const p = optSum(os, o => o.oi * (o.c ? Math.max(0, k - o.K) : Math.max(0, o.K - k))); if(p < best){ best = p; mp = k; } });
+  const smile = os.filter(o => o.c ? o.K >= F : o.K < F).sort((a, b) => a.K - b.K).map(o => [o.K, o.iv]);
+  const atm = optInterp(smile, F);
+  const c25 = optInterp(calls.map(o => [o.delta, o.iv]).sort((a, b) => a[0] - b[0]), 0.25);
+  const p25 = optInterp(puts.map(o => [o.delta, o.iv]).sort((a, b) => a[0] - b[0]), -0.25);
+  return { exp, T, F, cOI, pOI, oi:cOI + pOI, pcr:cOI ? pOI / cOI : null, mp, atm,
+    rr:c25 != null && p25 != null ? c25 - p25 : null, bf:c25 != null && p25 != null && atm != null ? (c25 + p25) / 2 - atm : null };
+}
+
+function optAnalyze(raw, spot, dvol){
+  const now = Date.now(), list = [];
+  raw.forEach(r => {
+    const m = /^([A-Z]+)-(\d{1,2})([A-Z]{3})(\d{2})-(\d+(?:\.\d+)?)-([CP])$/.exec(r.instrument_name || '');
+    if(!m || !(r.mark_iv > 0) || !(r.underlying_price > 0) || OPT.MON[m[3]] == null) return;
+    const exp = Date.UTC(2000 + +m[4], OPT.MON[m[3]], +m[2], 8), T = (exp - now) / (365 * 864e5);   // Deribit 만기 = 08:00 UTC
+    if(T <= 0) return;
+    const K = +m[5], F = r.underlying_price, iv = r.mark_iv / 100, c = m[6] === 'C';
+    list.push({ exp, T, K, F, iv, c, oi:r.open_interest || 0, vol:r.volume || 0, ...optGreeks(F, K, T, iv, c) });
+  });
+  if(list.length < 20) return null;
+  const S = spot || list.slice().sort((a, b) => a.T - b.T)[0].F;
+  const g = new Map();
+  list.forEach(o => { if(!g.has(o.exp)) g.set(o.exp, []); g.get(o.exp).push(o); });
+  const exps = [...g.entries()].sort((a, b) => a[0] - b[0]).map(([e, os]) => optExpStats(e, os));
+  const cm = (days, key) => {   // 고정 만기(7일·30일) 값: 앞뒤 만기 사이를 남은 기간으로 보간
+    const t = days / 365, pts = exps.filter(e => e[key] != null).map(e => [e.T, e[key]]);
+    if(!pts.length) return null;
+    if(t <= pts[0][0]) return pts[0][1];
+    if(t >= pts[pts.length - 1][0]) return pts[pts.length - 1][1];
+    return optInterp(pts, t);
+  };
+  const calls = list.filter(o => o.c), puts = list.filter(o => !o.c);
+  const cOI = optSum(calls, o => o.oi), pOI = optSum(puts, o => o.oi), cV = optSum(calls, o => o.vol), pV = optSum(puts, o => o.vol);
+
+  // GEX(감마 노출): 딜러가 콜은 롱·풋은 숏이라고 가정하는 통상적 방식. 값 = Γ × OI × S² × 1% (가격 1% 움직일 때 딜러가 사고팔아야 하는 달러 규모)
+  const gexAt = s => optSum(list, o => (o.c ? 1 : -1) * optGreeks(o.F * s / S, o.K, o.T, o.iv, o.c).gamma * o.oi * s * s * 0.01);
+  const byK = new Map();
+  list.forEach(o => {
+    const v = (o.c ? 1 : -1) * o.gamma * o.oi * S * S * 0.01, e = byK.get(o.K) || { k:o.K, c:0, p:0, cOI:0, pOI:0 };
+    if(o.c){ e.c += v; e.cOI += o.oi; } else { e.p += v; e.pOI += o.oi; }
+    byK.set(o.K, e);
+  });
+  const strikes = [...byK.values()].sort((a, b) => a.k - b.k), near = strikes.filter(e => e.k >= S * 0.7 && e.k <= S * 1.3);
+  const gex = optSum(strikes, e => e.c + e.p);
+  const callWall = near.reduce((a, e) => !a || e.c > a.c ? e : a, null), putWall = near.reduce((a, e) => !a || e.p < a.p ? e : a, null);
+  let flip = null;   // 감마 플립: 가격을 ±15% 옮겨 가며 총 GEX 부호가 바뀌는 곳 중 현재가에서 가장 가까운 지점
+  let prev = null;
+  for(let i = -60; i <= 60; i++){
+    const s = S * (1 + i * 0.0025), v = gexAt(s);
+    if(prev && Math.sign(v) !== Math.sign(prev.v)){
+      const x = prev.s + (s - prev.s) * (0 - prev.v) / (v - prev.v);
+      if(!flip || Math.abs(x - S) < Math.abs(flip - S)) flip = x;
+    }
+    prev = { s, v };
+  }
+  const nearExp = exps.find(e => e.T * 365 >= 0.5) || exps[0], bigExp = exps.reduce((a, e) => e.oi > a.oi ? e : a, exps[0]);
+  return { S, list, exps, strikes, cOI, pOI, pcrOI:cOI ? pOI / cOI : null, pcrVol:cV ? pV / cV : null,
+    atm7:cm(7, 'atm'), atm30:cm(30, 'atm'), rr7:cm(7, 'rr'), rr30:cm(30, 'rr'), bf30:cm(30, 'bf'),
+    gex, flip, callWall, putWall, nearExp, bigExp, dvol, t:now };
+}
+
+async function loadOptions(force){
+  const ccy = optCcy(), c = optCache[ccy];
+  if(optBusy[ccy] || (!force && c && Date.now() - c.at < OPT.TTL)) return;
+  optBusy[ccy] = true;
+  try{
+    const now = Date.now();
+    const [book, dv] = await Promise.all([
+      fetchWithTimeout(`${OPT.BASE}get_book_summary_by_currency?currency=${ccy}&kind=option`, 15000).then(r => { if(!r.ok) throw new Error('HTTP ' + r.status); return r.json(); }),
+      fetchWithTimeout(`${OPT.BASE}get_volatility_index_data?currency=${ccy}&start_timestamp=${now - 26 * 36e5}&end_timestamp=${now}&resolution=3600`, 15000).then(r => r.json()).catch(() => null),
+    ]);
+    const d = dv && dv.result && dv.result.data, dvol = d && d.length ? { v:d[d.length - 1][4], prev:d.length > 24 ? d[d.length - 25][4] : d[0][4] } : null;
+    const sc = getCandles(ccy, '5m').candles || getCandles(ccy, '1h').candles;
+    optCache[ccy] = { at:Date.now(), r:optAnalyze(book.result || [], sc ? sc[sc.length - 1].close : null, dvol), err:null };
+  }catch(e){
+    optCache[ccy] = { at:Date.now(), r:c ? c.r : null, err:e.name === 'AbortError' ? '시간 초과' : (e.message || '불러오기 실패') };
+  }finally{
+    optBusy[ccy] = false;
+    renderOptions();
+    renderBrief();
+  }
+}
+
+const optD = t => { const d = new Date(t); return `${d.getUTCMonth() + 1}/${d.getUTCDate()}`; };
+const optIv = v => v == null ? '—' : (v * 100).toFixed(1) + '%';
+const optVp = v => v == null ? '—' : (v >= 0 ? '+' : '−') + Math.abs(v * 100).toFixed(1);   // 변동성 포인트
+const optCoin = (v, ccy) => `${fmtCompact(v)} ${ccy}`;
+
+// 막대 차트(SVG): rows [{k, up, dn}] — up은 축 위, dn은 축 아래. marks: [{p, label, cls}] 세로선
+// 막대·선은 SVG(가로로 늘어남), 글자는 HTML로 얹어서 화면 폭이 바뀌어도 글자가 찌그러지지 않게 한다
+function optBars(rows, marks, upCls, dnCls){
+  if(!rows.length) return '<div class="sum-empty">표시할 행사가 없음</div>';
+  const W = 600, H = 150, mid = H / 2, n = rows.length, bw = W / n, mx = Math.max(...rows.map(r => Math.max(r.up, r.dn))) || 1;
+  const xOf = p => { for(let i = 1; i < n; i++) if(p <= rows[i].k) return (i - 1 + (p - rows[i - 1].k) / (rows[i].k - rows[i - 1].k)) * bw + bw / 2; return W; };
+  const step = Math.ceil(n / 7), ms = marks.filter(m => m.p != null && m.p >= rows[0].k && m.p <= rows[n - 1].k);
+  const bar = (i, v, top) => { const hh = v / mx * (mid - 4); return `<rect x="${i * bw + 1}" y="${top ? mid - hh : mid}" width="${Math.max(1, bw - 2)}" height="${hh}" class="${top ? upCls : dnCls}"><title>${fmtPrice(rows[i].k)}</title></rect>`; };
+  return `<div class="opt-ch"><svg class="opt-svg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">
+    <line x1="0" y1="${mid}" x2="${W}" y2="${mid}" class="opt-axis"/>
+    ${rows.map((r, i) => (r.up ? bar(i, r.up, true) : '') + (r.dn ? bar(i, r.dn, false) : '')).join('')}
+    ${ms.map(m => `<line x1="${xOf(m.p)}" y1="0" x2="${xOf(m.p)}" y2="${H}" class="opt-mk ${m.cls}" vector-effect="non-scaling-stroke"/>`).join('')}
+  </svg>${ms.map((m, i) => { const x = xOf(m.p) / W * 100; return `<span class="opt-ml ${m.cls}" style="left:${x}%;top:${i * 13}px;${x > 80 ? 'transform:translateX(calc(-100% - 4px))' : ''}">${m.label} ${fmtPrice(m.p)}</span>`; }).join('')}
+  <div class="opt-ticks">${rows.map((r, i) => (i - Math.floor(step / 2)) % step ? '' : `<span style="left:${(i + 0.5) / n * 100}%">${fmtCompact(r.k)}</span>`).join('')}</div></div>`;
+}
+
+function renderOptions(){
+  const el = document.getElementById('optGrid');
+  if(!el) return;
+  const ccy = optCcy(), c = optCache[ccy], r = c && c.r;
+  document.querySelectorAll('#optCcySeg button').forEach(b => b.classList.toggle('on', b.dataset.ccy === ccy));
+  const note = OPT.CCY.includes(currentAsset) ? '' : `<span class="muted">${SYMBOLS[currentAsset].label}는 옵션 시장이 없거나 얇아서 시장 기준인 ${ccy} 옵션을 보여줍니다.</span>`;
+  if(!r){
+    el.innerHTML = `<div class="ind-card" style="grid-column:1/-1"><div class="sum-empty">${c && c.err ? `⚠ Deribit 옵션 데이터를 불러오지 못함 (${c.err}) — 5분 뒤 다시 시도` : 'Deribit 옵션 데이터 불러오는 중…'}</div>${note}</div>`;
+    return;
+  }
+  const S = r.S, P = fmtPrice, pc = p => fmtSignedPct((p / S - 1) * 100);
+  const ne = r.nearExp, be = r.bigExp;
+  const box = (k, v, v2) => `<div class="stat-box"><div class="k">${k}</div><div class="v">${v}</div><div class="v2">${v2}</div></div>`;
+  const kpi = [
+    box('미결제약정 OI', fmtMoney((r.cOI + r.pOI) * S), `콜 ${optCoin(r.cOI, ccy)} · 풋 ${optCoin(r.pOI, ccy)}`),
+    box('PCR 풋/콜 비율', `<span class="${r.pcrOI >= 1 ? 'c-down' : 'c-up'}">${r.pcrOI != null ? r.pcrOI.toFixed(2) : '—'}</span>`, `OI 기준 · 24h 거래량 기준 ${r.pcrVol != null ? r.pcrVol.toFixed(2) : '—'}`),
+    box('Max Pain 최대 고통', `${P(ne.mp)} <span class="muted">${pc(ne.mp)}</span>`, `가장 가까운 만기 ${optD(ne.exp)} · 최대 OI 만기 ${optD(be.exp)} ${P(be.mp)} (${pc(be.mp)})`),
+    box('IV 내재변동성', `ATM 30일 ${optIv(r.atm30)}`, `7일 ${optIv(r.atm7)}${r.dvol ? ` · DVOL ${r.dvol.v.toFixed(1)} (24h ${fmtSignedPct((r.dvol.v / r.dvol.prev - 1) * 100, 1)})` : ''}`),
+    box('25Δ Skew (콜−풋 IV)', `<span class="${r.rr30 > 0 ? 'c-up' : 'c-down'}">30일 ${optVp(r.rr30)}</span>`, `7일 ${optVp(r.rr7)} · 30일 버터플라이 ${optVp(r.bf30)} <span class="muted">(+ 콜 선호 · − 풋 선호)</span>`),
+    box('GEX 감마 노출 (1%당)', `<span class="${r.gex >= 0 ? 'c-up' : 'c-down'}">${r.gex >= 0 ? '+' : '−'}${fmtMoney(Math.abs(r.gex))}</span> <span class="muted">${r.gex >= 0 ? '양감마' : '음감마'}</span>`, `플립 ${r.flip ? `${P(r.flip)} (${pc(r.flip)})` : '±15% 안 없음'} · 콜월 ${r.callWall ? P(r.callWall.k) : '—'} · 풋월 ${r.putWall ? P(r.putWall.k) : '—'}`),
+  ].join('');
+  const rows = r.exps.filter(e => e.T * 365 <= 200 && e.oi >= 0.01 * (r.cOI + r.pOI)).slice(0, 10);
+  const tbl = rows.map(e => `<tr class="${optExp === e.exp ? 'cr-cur' : ''}" data-exp="${e.exp}"><td class="cr-sym">${optD(e.exp)}</td><td>${(e.T * 365).toFixed(e.T * 365 < 2 ? 1 : 0)}일</td><td>${fmtMoney(e.oi * S)}</td><td class="${e.pcr >= 1 ? 'c-down' : 'c-up'}">${e.pcr != null ? e.pcr.toFixed(2) : '—'}</td><td>${P(e.mp)} <span class="muted">${pc(e.mp)}</span></td><td>${optIv(e.atm)}</td><td class="${e.rr > 0 ? 'c-up' : 'c-down'}">${optVp(e.rr)}</td><td>${optVp(e.bf)}</td></tr>`).join('');
+  // 차트: 선택한 만기(또는 전체)의 행사가별 OI, 전체 만기 합산 순 GEX — 현재가 ±20%
+  const sel = optExp === 'all' ? null : r.exps.find(e => e.exp === optExp);
+  const inR = k => k >= S * 0.8 && k <= S * 1.2;
+  const oiK = new Map();
+  r.list.forEach(o => { if((!sel || o.exp === sel.exp) && inR(o.K)){ const e = oiK.get(o.K) || { k:o.K, up:0, dn:0 }; if(o.c) e.up += o.oi; else e.dn += o.oi; oiK.set(o.K, e); } });
+  const oiRows = [...oiK.values()].sort((a, b) => a.k - b.k);
+  const gRows = r.strikes.filter(e => inR(e.k)).map(e => { const v = e.c + e.p; return { k:e.k, up:v > 0 ? v : 0, dn:v < 0 ? -v : 0 }; });
+  const mpMark = sel ? sel.mp : ne.mp;
+  el.innerHTML = `<div class="ind-card" style="grid-column:1/-1">
+    <div class="tf-label">옵션 · ${ccy} (Deribit)<span class="pill mix">기준가 ${P(S)} · ${new Date(r.t).toLocaleTimeString('ko-KR', { hour:'2-digit', minute:'2-digit' })} 갱신${c.err ? ' · ⚠ 최신 갱신 실패' : ''}</span></div>
+    ${note}
+    <div class="stat-row opt-kpi">${kpi}</div>
+    <div>
+      <div><div class="ind-k"><span>만기별 (OI 1% 이상, 200일 이내) — 행을 누르면 차트가 그 만기로</span></div>
+        <div class="lv-table cr-table"><table><tr><th>만기</th><th>남은</th><th>OI</th><th>PCR</th><th>Max Pain</th><th>ATM IV</th><th>25Δ RR</th><th>25Δ BF</th></tr>
+        <tr class="${optExp === 'all' ? 'cr-cur' : ''}" data-exp="all"><td class="cr-sym">전체</td><td>—</td><td>${fmtMoney((r.cOI + r.pOI) * S)}</td><td>${r.pcrOI != null ? r.pcrOI.toFixed(2) : '—'}</td><td>—</td><td>${optIv(r.atm30)}<span class="muted">30d</span></td><td>${optVp(r.rr30)}</td><td>${optVp(r.bf30)}</td></tr>${tbl}</table></div></div>
+    </div>
+    <div class="opt-charts">
+      <div><div class="ind-k"><span>행사가별 OI · ${sel ? optD(sel.exp) + ' 만기' : '전체 만기'} (위 <span class="c-up">콜</span> / 아래 <span class="c-down">풋</span>, 현재가 ±20%)</span></div>
+        ${optBars(oiRows, [{ p:S, label:'현재', cls:'m-s' }, { p:mpMark, label:'MaxPain', cls:'m-p' }], 'b-up', 'b-dn')}</div>
+      <div><div class="ind-k"><span>행사가별 순 GEX · 전체 만기 (위 양감마 / 아래 음감마)</span></div>
+        ${optBars(gRows, [{ p:S, label:'현재', cls:'m-s' }, { p:r.flip, label:'플립', cls:'m-f' }], 'b-acc', 'b-dn')}</div>
+    </div>
+    <div class="ind-sub"><b>PCR</b> 풋 OI ÷ 콜 OI (1 이상 = 풋이 더 많음). <b>Max Pain</b> 그 가격에서 만기를 맞으면 옵션 매수자 전체 수익이 가장 작은 행사가. <b>ATM IV</b> 현재 선물가 위치의 내재변동성(연율), <b>DVOL</b> Deribit 30일 변동성 지수. <b>25Δ RR</b> 델타 25 콜 IV − 델타 25 풋 IV(변동성 포인트, 음수 = 하락 보험 수요가 더 큼), <b>BF</b> 양쪽 날개 평균 − ATM. <b>GEX</b> 딜러가 콜 롱·풋 숏이라고 가정한 감마 노출(가격 1% 변화 시 딜러 헤지 규모) — 양감마면 딜러가 역방향으로 헤지해 변동을 누르는 쪽, 음감마면 같은 방향으로 헤지해 변동을 키우는 쪽으로 해석하는 게 통상적. 플립 = 총 GEX 부호가 바뀌는 가격, 콜월·풋월 = 콜·풋 감마가 가장 큰 행사가(±30% 안). 델타·감마는 Deribit mark IV로 블랙-숄즈 계산한 근사이며, 딜러 포지션 방향은 실제 데이터가 아니라 가정입니다. Deribit만 반영(CME·바이낸스 등 제외).</div>
+  </div>`;
+  el.querySelectorAll('tr[data-exp]').forEach(tr => tr.addEventListener('click', () => { optExp = tr.dataset.exp === 'all' ? 'all' : +tr.dataset.exp; renderOptions(); }));
+}
+document.getElementById('optCcySeg').addEventListener('click', e => {
+  const b = e.target.closest('button'); if(!b) return;
+  optUser = b.dataset.ccy === (OPT.CCY.includes(currentAsset) ? currentAsset : 'BTC') ? null : b.dataset.ccy;
+  optExp = 'all'; renderOptions(); loadOptions();
+});
+
+function optBriefRow(){
+  const ccy = optCcy(), c = optCache[ccy], r = c && c.r;
+  if(!r) return null;
+  const P = fmtPrice, pc = p => fmtSignedPct((p / r.S - 1) * 100), flags = [];
+  if(r.gex < 0) flags.push(['warn', `${ccy} 옵션 음감마 (딜러 헤지가 변동을 키우는 쪽)`]);
+  if(r.flip && r.S < r.flip && r.gex >= 0) flags.push(['info', `${ccy} 감마 플립 ${P(r.flip)} 아래`]);
+  if(r.rr30 != null && r.rr30 <= -0.05) flags.push(['warn', `${ccy} 25Δ 풋 스큐 ${optVp(r.rr30)} (하락 보험 수요 강함)`]);
+  if(r.nearExp && Math.abs(r.nearExp.mp / r.S - 1) <= 0.03 && r.nearExp.T * 365 <= 3) flags.push(['info', `${optD(r.nearExp.exp)} 만기 Max Pain ${P(r.nearExp.mp)} (${pc(r.nearExp.mp)})`]);
+  const txt = `${ccy} PCR ${r.pcrOI != null ? r.pcrOI.toFixed(2) : '—'} · Max Pain ${optD(r.nearExp.exp)} ${P(r.nearExp.mp)} (${pc(r.nearExp.mp)}) · ATM IV 30일 ${optIv(r.atm30)}${r.dvol ? ` · DVOL ${r.dvol.v.toFixed(1)}` : ''}<br>25Δ RR 30일 <span class="${r.rr30 > 0 ? 'c-up' : 'c-down'}">${optVp(r.rr30)}</span> · GEX <span class="${r.gex >= 0 ? 'c-up' : 'c-down'}">${r.gex >= 0 ? '+' : '−'}${fmtMoney(Math.abs(r.gex))}</span>/1% · 플립 ${r.flip ? P(r.flip) : '—'} · 콜월 ${r.callWall ? P(r.callWall.k) : '—'} · 풋월 ${r.putWall ? P(r.putWall.k) : '—'}`;
+  return { txt, flags };
+}
+
+function pushOptionSummary(L){
+  const ccy = optCcy(), c = optCache[ccy], r = c && c.r;
+  L.push(`## 옵션 (Deribit ${ccy}${OPT.CCY.includes(currentAsset) ? '' : ' — 이 종목은 옵션 시장이 없어 시장 기준으로 표시'})`);
+  if(!r){ L.push(`- 데이터 없음${c && c.err ? ' (' + c.err + ')' : ''}`); L.push(''); return; }
+  const P = fmtPrice, pc = p => fmtSignedPct((p / r.S - 1) * 100);
+  L.push(`- 기준가 ${P(r.S)} · OI 콜 ${optCoin(r.cOI, ccy)} / 풋 ${optCoin(r.pOI, ccy)} (합계 ${fmtMoney((r.cOI + r.pOI) * r.S)}) · PCR OI ${r.pcrOI != null ? r.pcrOI.toFixed(2) : '—'} / 24h 거래량 ${r.pcrVol != null ? r.pcrVol.toFixed(2) : '—'}`);
+  L.push(`- ATM IV 7일 ${optIv(r.atm7)} / 30일 ${optIv(r.atm30)}${r.dvol ? ` · DVOL ${r.dvol.v.toFixed(1)} (24h 전 ${r.dvol.prev.toFixed(1)})` : ''} · 25Δ RR(콜−풋) 7일 ${optVp(r.rr7)} / 30일 ${optVp(r.rr30)} · 30일 BF ${optVp(r.bf30)}`);
+  L.push(`- GEX(딜러 콜 롱·풋 숏 가정, 가격 1%당) ${r.gex >= 0 ? '+' : '−'}${fmtMoney(Math.abs(r.gex))} · 감마 플립 ${r.flip ? `${P(r.flip)} (${pc(r.flip)})` : '±15% 안 없음'} · 콜월 ${r.callWall ? P(r.callWall.k) : '—'} · 풋월 ${r.putWall ? P(r.putWall.k) : '—'}`);
+  L.push('- 만기별 | 만기 | 남은 일 | OI | PCR | Max Pain | ATM IV | 25Δ RR | 25Δ BF |');
+  r.exps.filter(e => e.T * 365 <= 200 && e.oi >= 0.01 * (r.cOI + r.pOI)).slice(0, 10).forEach(e =>
+    L.push(`  | ${optD(e.exp)} | ${(e.T * 365).toFixed(1)} | ${fmtMoney(e.oi * r.S)} | ${e.pcr != null ? e.pcr.toFixed(2) : '—'} | ${P(e.mp)} (${pc(e.mp)}) | ${optIv(e.atm)} | ${optVp(e.rr)} | ${optVp(e.bf)} |`));
+  L.push('');
+}
+
 // ---------- 종합 브리핑: 사이트의 모든 데이터를 한 화면 요약 ----------
 // 추세 정렬 · 가격 레벨 위치 · 모멘텀 · 변동성/거래 · BTC 동조 · 시장 폭 · 선물 · 유사 과거 봉 · 확인 포인트
 // 판단을 대신하는 신호가 아니라, 아래 섹션들의 숫자를 진입 판단 순서대로 모아 놓은 것.
@@ -2156,6 +2394,10 @@ function buildBrief(){
     rows.push(['선물', `펀딩비 <span class="${fund != null && Math.abs(fund) >= 0.0003 ? 'br-hot' : ''}">${fmtFunding(fund)}</span> · OI 20봉 변화 4H ${fmtSignedPct(o4)} · 1H ${fmtSignedPct(o1)}`]);
     if(fund != null && Math.abs(fund) >= 0.0003) flag('warn', `펀딩비 ${fund > 0 ? '롱' : '숏'} 쏠림 ${fmtFunding(fund)}`);
   }
+
+  // 6-2) 옵션 (Deribit)
+  const ob = optBriefRow();
+  if(ob){ rows.push(['옵션', ob.txt]); ob.flags.forEach(([k, t]) => flag(k, t)); }
 
   // 7) 유사 과거 봉 (선택한 시간대)
   const sc2 = getCandles(A, currentTf), sim = sc2.detailed ? computeSimilar(sc2.candles, currentTf) : null;
@@ -2555,6 +2797,7 @@ mtfLine,
 `5. **Chop zone 여부**: '추세 지표'의 Chop Zone(EMA34 기울기 각도, TradingView 기본 공식)과 캔들 표의 스윙 고점/저점 구조를 함께 보고, 지금이 추세 구간인지 횡보 구간인지 먼저 판별한 뒤 그 판단을 전제로 나머지를 해석해라.`,
 ...(sym.label !== ANCHOR ? [`6. **BTC 기준**: 비트코인이 크립토 시장 전체 추세의 기준이다. 'BTC 추세 지표 — 시장 기준' 섹션과 이 종목의 추세 지표를 시간대별로 비교해 같은 방향(동조)인지 다른 방향(디커플링)인지 먼저 판단하고('BTC 대비 상관도'의 r·베타와 최근 20봉 r 변화도 함께 봐라), 그 결과를 시나리오와 확률에 반영해라.`] : []),
 `${sym.label !== ANCHOR ? 7 : 6}. **지금과 가장 비슷했던 과거 봉**: 대시보드가 시간대별 최근 500봉에서 지금 봉과 지표 상태(이평 배열·위치·간격, MACD 상태·강도, Chop Zone, 변동폭, 거래대금, 매수비중, 캔들 몸통, OI 변화, 펀딩비, 그리고 그 시간대보다 상위 시간대들의 이평 배열·가격과 이평 위치·MACD 상태·가격의 이평 대비 거리(%)·이평 간 간격(%))가 가장 비슷했던 봉의 시각을 유사도 순으로 뽑았다. 각 유사 봉 종가 기준 직후 3봉·5봉 이내의 최대 상승률(고가)과 최대 하락률(저가)도 대시보드가 이미 계산해 두었으니 그 값을 그대로 사용하고, 더 긴 이후 움직임이 필요하면 CSV에서 그 시각을 찾아 사실로 정리해라. CSV 범위 밖이면 그렇다고 말하고, 사례가 몇 개뿐이라는 점을 감안해라.`,
+`${sym.label !== ANCHOR ? 8 : 7}. **옵션 (Deribit)**: '옵션' 섹션의 PCR·Max Pain·ATM IV·DVOL·25Δ RR·GEX(감마 플립·콜월·풋월)를 참고해라. Max Pain은 만기 직전에만 의미가 크고, GEX는 딜러 포지션을 가정한 근사값이며, 이 종목이 BTC·ETH가 아니면 시장 기준(BTC) 옵션이라는 점을 감안해라. 옵션 데이터만으로 방향을 단정하지 마라.`,
 ``,
 `# Output Format`,
 `---`,
@@ -2677,6 +2920,7 @@ function buildTableText(){
   pushLevelSummary(L);
   if(currentAsset !== ANCHOR) pushIndicatorSummary(L, null, ANCHOR);
   pushCorrSummary(L);
+  pushOptionSummary(L);
   pushAnalogSummary(L, currentAsset);
   if(currentAsset !== ANCHOR) pushAnalogSummary(L, ANCHOR);
 
@@ -2755,6 +2999,7 @@ function buildMultiTableText(rowsPerTf){
   pushLevelSummary(L);
   if(currentAsset !== ANCHOR) pushIndicatorSummary(L, null, ANCHOR);
   pushCorrSummary(L);
+  pushOptionSummary(L);
   pushAnalogSummary(L, currentAsset);
   if(currentAsset !== ANCHOR) pushAnalogSummary(L, ANCHOR);
 
@@ -2864,6 +3109,7 @@ function switchTab(tf){
 function switchAsset(asset){
   const prevAsset = currentAsset;
   currentAsset = asset;
+  if(prevAsset !== asset){ optUser = null; optExp = 'all'; }
   // 안 보는 종목의 1000봉은 메모리에서 비운다 (BTC는 띠에 쓰므로 유지)
   if(prevAsset !== asset && prevAsset !== ANCHOR) delete deepCache[prevAsset];
   document.querySelectorAll('.asset-tab').forEach(t => t.classList.toggle('active', t.dataset.asset === asset));
