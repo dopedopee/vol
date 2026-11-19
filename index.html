@@ -600,7 +600,7 @@
       ※ 현재 진행 중인 봉은 거래대금이 아직 쌓이는 중이라, <b>경과율 반영 예상치</b>(현재 거래대금 ÷ 봉 경과 비율)를 함께 표시합니다.<br>
       ※ <b>OI(미결제약정)</b>와 <b>펀딩비</b>는 바이낸스 USDT 무기한 선물 데이터입니다. 가격·거래대금은 현물 기준이므로 서로 다른 시장의 데이터입니다. 펀딩비가 양수면 롱이 숏에게, 음수면 숏이 롱에게 지불합니다.<br>
       ※ 펀딩비 칸에 <b>★</b>가 붙은 값은 그 봉 구간에 실제 정산된 값(여러 번이면 합계)이고, 표시가 없으면 봉 시작 시점에 적용 중이던 직전 정산값입니다.<br>
-      ※ <b>지금 보고 있는 종목은 5개 시간대 모두 최근 1000봉</b>을 불러와 이동평균선·MACD·Chop Zone을 계산하고, 표에는 그중 <b>최근 500봉</b>을 보여줍니다(5분봉 약 42시간 · 15분봉 약 5.2일 · 1시간봉 약 21일 · 4시간봉 약 83일 · 1일봉 약 500일). 다른 종목은 요약 카드용으로 120봉만 불러옵니다. 바이낸스는 <b>OI 히스토리를 최근 30일, 최대 500개까지만</b> 제공하므로 그보다 오래된 봉의 OI는 비어 있습니다(—). 무기한 선물이 없는 종목은 OI·펀딩비 전체가 비어 있습니다.<br>
+      ※ <b>지금 보고 있는 종목은 5개 시간대 모두 최근 1000봉</b>을 불러와 이동평균선·MACD·Chop Zone을 계산하고, 표에는 그중 <b>최근 500봉</b>을 보여줍니다(5분봉 약 42시간 · 15분봉 약 5.2일 · 1시간봉 약 21일 · 4시간봉 약 83일 · 1일봉 약 500일). 다른 종목은 요약 카드용으로 120봉만 불러옵니다. 바이낸스는 <b>OI 히스토리를 최근 30일, 최대 500개까지만</b> 제공합니다(5분·15분·1시간봉은 500봉 전부 채워짐). <b>4시간·1일봉의 30일보다 오래된 OI</b>는 GitHub Actions가 하루 두 번 바이낸스 공식 공개 데이터(data.binance.vision)에서 모아 저장소(data/oi)에 쌓아 둔 기록으로 채웁니다(기기와 상관없이 공통). 기록이 없는 구간은 비어 있습니다(—). 무기한 선물이 없는 종목은 OI·펀딩비 전체가 비어 있습니다.<br>
       ※ 상단에 고정된 <b>BTC 띠</b>는 어떤 종목을 보든 비트코인의 가격과 5개 시간대 이평선 배열·MACD·Chop Zone을 보여주는 시장 기준선입니다(누르면 BTC로 이동). 다른 종목을 볼 때도 BTC는 1000봉으로 받아 지표 정확도를 유지합니다. 색은 상승 빨강·하락 파랑이며, Chop Zone 색 띠만 TradingView 원본 색을 그대로 씁니다.<br>
       ※ <b>지금과 가장 비슷했던 과거 봉</b>은 예측이 아니라 조회입니다. 선택한 시간대의 최근 500봉 각각에 대해 지표 12가지(이평 배열 · 가격과 이평 위치 · 이평 간격과 21이평 거리 · MACD 0선/시그널/히스토그램 방향 · MACD 강도 · Chop Zone 각도 · 20봉 평균 대비 변동폭 · 20봉 평균 대비 거래대금 · 매수비중 · 캔들 몸통 · OI 변화 · 펀딩비)가 지금 봉과 얼마나 같은지 0~100%로 매기고 평균을 냅니다. 여기에 <b>선택한 시간대보다 상위 시간대</b>(5분봉이면 15분·1시간·4시간·1일)의 이평 배열 · 가격과 이평 위치 · MACD 상태 · 가격이 8/21/50/100/200 이평 대비 몇 % 위·아래인지 · 이평 사이 간격(%) 5가지씩을 더합니다(시간대당 총 비중은 선택한 시간대 지표 3가지와 같게 고정). 거리·간격은 그 상위 시간대의 최근 1000봉에서 보통 얼마나 변하는지(표준편차)를 눈금으로 비교합니다. 상위 시간대는 그 과거 시점에 <b>이미 마감된 가장 최근 봉</b> 기준이고, 지금도 진행 중인 상위 봉은 쓰지 않습니다(그래서 위 추세 지표 카드의 값과 한 봉 차이가 날 수 있음). 숫자 지표는 이 500봉 안에서 보통 흔들리는 폭(표준편차)의 2배 이상 차이 나면 0%로 봅니다. 모든 값은 그 봉까지의 데이터로만 계산하며, 이평선은 위 EMA/SMA 선택을 따릅니다. 표시된 각 유사 봉 옆의 <b>직후 3봉·5봉 이내 최대 상승/하락</b>은 그 봉 종가 대비 이후 봉들의 최고가·최저가 비율이고, 요약 표의 평균·중앙값·가장 컸던 값은 <b>화면에 표시된 상위 10개 중</b> 유사도 80% 이상(또는 70% 이상)인 봉만 집계한 것입니다(전체 해당 봉이 아님).<br>
       ※ <b>주요 가격 레벨</b>은 추가 요청 없이 지금 보는 종목의 1일(주봉·월봉 합성)·4시간·1시간·15분·5분 1000봉으로, 같은 데이터면 항상 같은 선이 나오는 고정 규칙으로 계산합니다. 주요 스윙(좌우 N봉 고저 + ATR×1.5 필터)의 몸통~꼬리 구간을 ATR×0.3 안끼리 묶고, 터치·돌파·역할 전환, 거래량 프로파일(POC·VAH·VAL·HVN, OHLCV 근사), 피보나치(최근 구조를 깬 임펄스), 반응 이력 있는 이평, 전일·전주·전월 고저와 시가, 라운드 넘버가 겹치는 만큼 점수를 더해 6점 이상 핵심, 3~5점 보조로 표시합니다. <b>가격대</b>는 1일봉이 각 가격에 머문 날 수 분포로 나눈 것입니다.<br>
@@ -833,6 +833,33 @@ async function fetchLS(asset, kind){
   const raw = await res.json();
   if(!Array.isArray(raw) || !raw.length) return null;
   return raw.map(r => ({ t:+r.timestamp, r:+r.longShortRatio, l:+r.longAccount })).sort((a, b) => a.t - b.t);
+}
+
+// OI 과거 기록: 바이낸스 API는 OI를 최근 30일만 줘서 4시간·1일봉은 과거가 빈다.
+// GitHub Actions(.github/workflows/collect-oi.yml)가 하루 두 번 바이낸스 공식 공개 데이터(data.binance.vision)에서
+// 4시간·1일 OI를 모아 저장소 data/oi/<심볼>.json 에 쌓는다 → 기기·브라우저와 상관없이, 사이트를 안 열어도 쌓임.
+// 최근 30일은 API 값이 우선(더 최신), 그 이전은 저장소 기록으로 채운다.
+const OI_KEEP = { '4h':true, '1d':true };
+const OI_REPO = ['https://raw.githubusercontent.com/dopedopee/vol/main/data/oi/', 'data/oi/'];
+const oiRepo = {};   // asset -> { at, d }
+async function loadOiRepo(asset){
+  const c = oiRepo[asset];
+  if(c && Date.now() - c.at < (c.d ? 36e5 : 5 * 60e3)) return c.d;   // 1시간 캐시 (실패면 5분 뒤 재시도)
+  for(const base of OI_REPO){
+    try{
+      const r = await fetchWithTimeout(`${base}${SYMBOLS[asset].symbol}.json?h=${Math.floor(Date.now() / 36e5)}`, 8000);
+      if(r.ok){ const d = await r.json(); oiRepo[asset] = { at:Date.now(), d }; return d; }
+    }catch(e){}
+  }
+  oiRepo[asset] = { at:Date.now(), d:null };
+  return null;
+}
+function oiMergeRepo(repo, tf, fresh){
+  const rows = OI_KEEP[tf] && repo && Array.isArray(repo[tf]) ? repo[tf] : null;
+  if(!rows || !rows.length) return fresh;
+  const m = new Map(rows.map(r => [r[0], { ts:r[0], oi:r[1], oiValue:r[2] }]));
+  (fresh || []).forEach(r => m.set(r.ts, r));   // 겹치면 API 값 우선
+  return [...m.values()].sort((x, y) => x.ts - y.ts);
 }
 
 // 캔들에 OI·펀딩비를 시간 기준으로 병합한다.
@@ -3128,7 +3155,7 @@ function renderDetail(tf){
 // 한 번 받아두면 시간대 탭을 바꿔도 추가 요청 없이 바로 그린다.
 async function loadAssetDeep(asset){
   deepLoading.add(asset);
-  const [kRes, oiRes, fRes, pRes, fkRes, lsRes, topRes] = await Promise.all([
+  const [kRes, oiRes, fRes, pRes, fkRes, lsRes, topRes, oiRepoD] = await Promise.all([
     Promise.allSettled(TF_ORDER.map(tf => fetchKlines(asset, tf, DEEP_LIMIT))),
     Promise.allSettled(TF_ORDER.map(tf => fetchOpenInterest(asset, tf))),
     fetchFundingHistory(asset).then(v => v, () => null),
@@ -3136,6 +3163,7 @@ async function loadAssetDeep(asset){
     Promise.allSettled(TF_ORDER.map(tf => fetchFutKlines(asset, tf, DEEP_LIMIT))),
     fetchLS(asset, 'globalLongShortAccountRatio').then(v => v, () => null),
     fetchLS(asset, 'topLongShortPositionRatio').then(v => v, () => null),
+    loadOiRepo(asset),
   ]);
 
   const prev = deepCache[asset] ? deepCache[asset].tfs : {};
@@ -3145,8 +3173,9 @@ async function loadAssetDeep(asset){
   TF_ORDER.forEach((tf, i) => {
     if(kRes[i].status === 'fulfilled'){
       const candles = kRes[i].value;
-      const oi = oiRes[i].status === 'fulfilled' ? oiRes[i].value : null;
-      if(oi) futuresOk = true;
+      const oiFresh = oiRes[i].status === 'fulfilled' ? oiRes[i].value : null;
+      if(oiFresh) futuresOk = true;
+      const oi = oiMergeRepo(oiRepoD, tf, oiFresh);   // 4H·1D는 저장소에 쌓인 과거 OI와 합침
       mergeFuturesData(candles, oi, fRes);
       const fk = fkRes[i].status === 'fulfilled' ? fkRes[i].value : null;
       if(fk){ const m = new Map(fk.map(x => [x.t, x])); candles.forEach(c => { const f = m.get(c.openTime); if(f){ c.fDelta = 2 * f.b - f.q; c.fVol = f.q; c.fClose = f.c; } }); }
